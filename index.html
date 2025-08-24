@@ -16,13 +16,13 @@
       --ink:#f6f3ee;     /* «молочный» текст */
       --dim:#cfc8bb;     /* приглушённый */
       --pastel-pink:#ffd1dc;
-      --pastel-lav:#d9d0ff;
+      --pastel-lav:#ffd1dc;
       --pastel-mint:#c9f4e4;
-      --pastel-blue:#cde6ff;
+      --pastel-blue:#fff1b8;
       --pastel-peach:#ffe3c6;
       --accent:#ffd88a;  /* мёд */
       --accent2:#8fe4c0; /* мята */
-      --accent3:#bcd5ff; /* голубой подсвет */
+      --accent3:#ffe3c6; /* тёплая подсветка */
       --bezel-hi:#1a1c25;
       --bezel:#141821;
       --bezel-lo:#0a0c12;
@@ -49,8 +49,8 @@
     body::before{
       content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
       background:
-        radial-gradient(var(--pastel-blue) 1px, transparent 1px) 0 0/6px 6px,
-        radial-gradient(var(--pastel-lav) 1px, transparent 1px) 3px 3px/6px 6px;
+        radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
+        radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
       opacity:.05;
     }
 
@@ -89,7 +89,7 @@
         inset 0 0 0 8px #121725,
         inset 0 32px 120px rgba(0,0,0,.55),
         inset 0 -26px 70px rgba(0,0,0,.6),
-        inset 0 0 120px rgba(188,213,255,.07); /* мягкий голубой подсвет */
+        inset 0 0 120px rgba(255,227,198,.07); /* мягкий тёплый подсвет */
       padding:10px;  /* было 22px -> ещё больше экран */
       display:grid; place-items:center;
     }
@@ -190,7 +190,7 @@
     }
     .label-pink { color: var(--pastel-pink); }
     .label-mint { color: var(--pastel-mint); }
-    .label-blue { color: var(--pastel-blue); }
+    /* заменили «голубой» на тёплый оттенок */
     .label-peach{ color: var(--pastel-peach); }
 
     /* HUD-подсказка */
@@ -229,7 +229,7 @@
         <div class="screen" role="grid" aria-label="Меню">
           <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
             <canvas width="120" height="120"></canvas>
-            <span class="label-blue">SPACE</span>
+            <span class="label-peach">SPACE</span>
           </button>
           <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
             <canvas width="120" height="120"></canvas>
@@ -302,11 +302,11 @@
         heartHi:'#ffe4ef',
         ring:'#ffd6a6',  // peach-gold
         stem:'#ffe0b8',
-        bomb:'#394057',
-        fuse:'#d7c0ff',
+        bomb:'#353535',
+        fuse:'#ffd1dc',
         flame1:'#ffd88a',
         flame2:'#ffeedd',
-        sky:'#bcd5ff'
+        sky:'#ffe3c6'
       };
 
       function drawSpace(ctx){
@@ -368,19 +368,24 @@
       function drawKey(ctx){
         clear(ctx);
         const S=2, cx=24, cy=26;
-        // кольцо
-        for(let a=0;a<360;a+=6){
-          const r=8;
-          const x=(cx + Math.cos(a*Math.PI/180)*r)|0;
-          const y=(cy + Math.sin(a*Math.PI/180)*r)|0;
-          px(ctx,x,y,S,C.ring);
+        // кольцо — толстый пиксельный круг
+        for(let y=-8;y<=8;y++){
+          for(let x=-8;x<=8;x++){
+            const d=x*x + y*y;
+            if(d<=64 && d>=36) px(ctx,cx+x,cy+y,S,C.ring);
+          }
         }
         // стержень
-        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,C.stem);
+        for(let y=-1;y<=1;y++){
+          for(let x=0;x<12;x++) px(ctx,cx+8+x,cy+y,S,C.stem);
+        }
         // зубцы
-        px(ctx,cx+15,cy+1,S,C.stem);
-        px(ctx,cx+17,cy+2,S,C.stem);
-        px(ctx,cx+19,cy+1,S,C.stem);
+        for(let y=0;y<2;y++){
+          for(let x=0;x<3;x++) px(ctx,cx+16+x,cy+1+y,S,C.stem);
+        }
+        for(let y=0;y<2;y++){
+          for(let x=0;x<2;x++) px(ctx,cx+20+x,cy+3+y,S,C.stem);
+        }
       }
 
       function drawBomb(ctx){
