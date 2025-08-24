@@ -3,106 +3,121 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Arcade — 4 Icons</title>
+  <title>Arcade — Pastel Pixel</title>
   <!-- необязательно: пиксельный шрифт; оффлайн будет fallback -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      /* уютная ретро-палитра без неона */
-      --bg:#0c0b10;
-      --bg2:#0f111a;
-      --ink:#f2efe6;
-      --dim:#bfb9aa;
-      --accent:#ffd26a;
-      --accent2:#69d6a6;
-      --bezel:#191a22;
-      --bezel-hi:#2a2d3a;
-      --bezel-lo:#090a0f;
-      --scan:0.08;    /* интенсивность сканлайнов */
-      --crt-curve:22px; /* скругление "экрана" */
-      --tile:92px;    /* базовый размер иконок (CSS) */
+      /* Пастельная ретро-палитра (без неона) */
+      --bg0:#0b0b10;     /* тёмный фон вокруг автомата */
+      --bg1:#101219;     /* тёмный для корпуса */
+      --bg2:#0d1017;     /* тёмный для экрана */
+      --ink:#f6f3ee;     /* «молочный» текст */
+      --dim:#cfc8bb;     /* приглушённый */
+      --pastel-pink:#ffd1dc;
+      --pastel-lav:#d9d0ff;
+      --pastel-mint:#c9f4e4;
+      --pastel-blue:#cde6ff;
+      --pastel-peach:#ffe3c6;
+      --accent:#ffd88a;  /* мёд */
+      --accent2:#8fe4c0; /* мята */
+      --accent3:#bcd5ff; /* голубой подсвет */
+      --bezel-hi:#1a1c25;
+      --bezel:#141821;
+      --bezel-lo:#0a0c12;
+
+      --scan:0.06;        /* сканлайны мягче */
+      --crt-curve:24px;   /* скругление «стекла» */
+      --tile:132px;       /* базовый размер иконок (CSS) — крупнее */
       --px:1px;
+      --gap: clamp(16px, 3.8vmin, 28px);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:
-      radial-gradient(1200px 800px at 10% 0%, #14131a 0%, transparent 60%),
-      radial-gradient(1000px 700px at 110% 20%, #14131a 0%, transparent 60%),
-      linear-gradient(#0a0a0e,#0b0c12 40%, #0c0b10 100%);
-      color:var(--ink);
+    html,body{
+      height:100%; margin:0; color:var(--ink);
+      background:
+        radial-gradient(1600px 900px at 15% -10%, #14131b 0%, transparent 60%),
+        radial-gradient(1400px 800px at 110% 10%, #151420 0%, transparent 60%),
+        linear-gradient(#0b0b10,#0c0d13 40%, #0b0b10 100%);
       font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
-      letter-spacing:.5px;
+      letter-spacing:.45px;
       overflow:hidden;
     }
-    /* центрируем «кабинет» */
+
+    /* мелкий пастельный «пиксельный» узор на фоне */
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(var(--pastel-blue) 1px, transparent 1px) 0 0/6px 6px,
+        radial-gradient(var(--pastel-lav) 1px, transparent 1px) 3px 3px/6px 6px;
+      opacity:.05;
+    }
+
+    /* центрируем «кабинет», растягиваем почти на весь экран */
     .cabinet{
-      position:fixed; inset:0;
-      display:grid; place-items:center;
-      padding:min(4vw,28px);
+      position:fixed; inset:0; display:grid; place-items:center;
+      padding:min(2.5vw,18px);
+      z-index:1;
     }
 
-    /* рамка/корпус */
-    .screen-wrap{
-      position:relative;
-      width:min(1100px, 96vw);
-      height:min(680px, calc(96svh));
-      max-height:96svh;
+    /* внешний корпус — тоньше, чтобы экран был больше */
+    .shell{
+      width:min(1760px, 98vw);
+      height:min(980px, 98svh);
       display:grid; place-items:center;
-      /* внешний корпус */
-      background: linear-gradient(180deg,#12131a,#0e0f15 60%, #0b0c12);
-      border-radius:30px;
+      border-radius:26px;
+      background: linear-gradient(180deg, var(--bg1), #0e1016 55%, #0b0c12);
       box-shadow:
-        0 18px 40px rgba(0,0,0,.6),
-        inset 0 0 0 2px #06070a,
+        0 20px 46px rgba(0,0,0,.62),
+        inset 0 0 0 2px #07080c,
         inset 0 0 0 8px #0f1118,
-        inset 0 0 60px rgba(0,0,0,.65);
-      padding:26px;
+        inset 0 0 120px rgba(0,0,0,.55);
+      padding:12px;   /* было 26px -> экран вырос */
     }
 
-    /* внутренний скруглённый экран с обрамлением (bezel) */
+    /* внутренний обод (bezel) — пастельные отблески */
     .bezel{
-      position:relative;
-      width:100%;
-      height:100%;
-      border-radius:28px;
+      width:100%; height:100%;
+      border-radius:22px;
       background:
         linear-gradient(180deg, var(--bezel-hi), var(--bezel)),
-        radial-gradient(140% 120% at 50% -10%, rgba(255,255,255,.08), transparent 55%);
+        radial-gradient(150% 120% at 50% -20%, rgba(255,255,255,.06), transparent 55%),
+        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,.35), transparent 50%);
       box-shadow:
-        inset 0 0 0 3px #07080d,
-        inset 0 0 0 10px #131621,
-        inset 0 40px 120px rgba(0,0,0,.6),
-        inset 0 -30px 80px rgba(0,0,0,.7);
-      padding:22px;
+        inset 0 0 0 2px #070a0f,
+        inset 0 0 0 8px #121725,
+        inset 0 32px 120px rgba(0,0,0,.55),
+        inset 0 -26px 70px rgba(0,0,0,.6),
+        inset 0 0 120px rgba(188,213,255,.07); /* мягкий голубой подсвет */
+      padding:10px;  /* было 22px -> ещё больше экран */
       display:grid; place-items:center;
     }
 
-    /* «стекло/экран» */
+    /* сам «экран» — максимально крупный, пастельные блики */
     .screen{
       position:relative;
-      width:100%;
-      height:100%;
+      width:100%; height:100%;
       border-radius:var(--crt-curve);
       background:
-        radial-gradient(160% 130% at 50% 20%, rgba(255,255,255,.03), transparent 50%),
-        radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,.25), transparent 50%),
-        linear-gradient(180deg,#0b0f18,#0a0e16);
+        radial-gradient(160% 130% at 50% 18%, rgba(255,255,255,.04), transparent 55%),
+        radial-gradient(120% 120% at 50% 118%, rgba(0,0,0,.28), transparent 50%),
+        linear-gradient(180deg, #0a0f16, var(--bg2));
       box-shadow:
-        inset 0 0 0 2px #05060b,
+        inset 0 0 0 2px #05070c,
         inset 0 0 0 6px #0f121c,
-        inset 0 0 60px rgba(0,0,0,.7),
-        inset 0 0 220px rgba(0,0,0,.35);
+        inset 0 0 80px rgba(0,0,0,.58),
+        inset 0 0 320px rgba(0,0,0,.28);
       overflow:hidden;
       display:grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
-      gap:min(3.8vmin,26px);
-      padding:min(4.6vmin,34px);
-      align-content:center;
-      justify-items:center;
+      gap: var(--gap);
+      padding: calc(var(--gap) + 6px);
+      align-content:center; justify-items:center;
     }
 
-    /* сканлайны/виньетка/блики поверх «экрана» */
+    /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
       pointer-events:none; position:absolute; inset:0; border-radius:var(--crt-curve);
     }
@@ -117,109 +132,116 @@
       mix-blend-mode:multiply;
     }
     .vignette{
-      background: radial-gradient(120% 100% at 50% 50%, transparent 60%, rgba(0,0,0,.6) 100%);
+      background: radial-gradient(120% 100% at 50% 50%, transparent 62%, rgba(0,0,0,.55) 100%);
     }
     .glass{
       background:
-        linear-gradient(120deg, rgba(255,255,255,.06) 0 20%, transparent 20% 80%, rgba(255,255,255,.03) 80% 100%);
+        linear-gradient(110deg, rgba(255,255,255,.055) 0 22%, transparent 22% 80%, rgba(255,255,255,.03) 80% 100%),
+        radial-gradient(120% 140% at 0% 0%, rgba(255,209,220,.06), transparent 45%),
+        radial-gradient(120% 140% at 100% 0%, rgba(205,230,255,.05), transparent 40%);
       filter: blur(.3px);
     }
     .phosphor{
-      background: radial-gradient(100% 80% at 50% 45%, rgba(255,244,210,.04), transparent 55%);
+      background:
+        radial-gradient(100% 72% at 50% 44%, rgba(255,236,198,.045), transparent 52%),
+        radial-gradient(80% 60% at 50% 48%, rgba(201,244,228,.035), transparent 55%);
       mix-blend-mode:screen;
     }
 
-    /* плитки-значки */
+    /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
-      --size: clamp(80px, 11vmin, var(--tile));
+      --size: clamp(90px, 13.6vmin, var(--tile)); /* больше, чтобы заполнить экран */
       width: calc(var(--size) * 1.6);
       height: calc(var(--size) * 1.6);
       border-radius:18px;
-      background:
-        linear-gradient(180deg,#0f1421,#0d111a);
+      background: linear-gradient(180deg,#0e121a,#0c1016);
       border:2px solid #0a0c12;
       box-shadow:
-        inset 0 0 0 2px #161a24,
-        0 10px 22px rgba(0,0,0,.45);
+        inset 0 0 0 2px #151a26,
+        0 12px 26px rgba(0,0,0,.42);
       display:grid; grid-template-rows: 1fr auto; place-items:center;
       gap:12px;
-      cursor:pointer;
-      outline:none;
-      transition:transform .08s ease, filter .08s ease;
+      cursor:pointer; outline:none;
+      transition:transform .08s ease, filter .08s ease, box-shadow .08s ease;
     }
-    .tile:hover{ filter:brightness(1.08); }
-    .tile:active{ transform:translateY(1px) scale(.995); }
+    .tile:hover{ filter:brightness(1.07); }
+    .tile:active{ transform:translateY(1px) scale(.996); }
     .tile[data-focus="true"]{
       box-shadow:
-        inset 0 0 0 2px #1f2230,
-        0 0 0 3px rgba(255,210,90,.35),
-        0 14px 30px rgba(0,0,0,.55);
-      border-color:#2a2e40;
+        inset 0 0 0 2px #1b2130,
+        0 0 0 3px rgba(255,232,204,.42),
+        0 18px 34px rgba(0,0,0,.55),
+        0 0 28px rgba(205,230,255,.18); /* мягкое пастельное свечение */
+      border-color:#252c3f;
     }
     .tile canvas{
       width: calc(var(--size));
       height: calc(var(--size));
       image-rendering: pixelated;
       background:#0b0f16;
-      border-radius:10px;
-      border:2px solid #141924;
+      border-radius:12px;
+      border:2px solid #131a24;
       box-shadow: inset 0 0 0 2px #0c111a, 0 0 0 1px rgba(0,0,0,.22);
     }
     .tile span{
       font-size:11px; color:var(--dim);
       text-shadow:0 1px 0 rgba(0,0,0,.6);
-      letter-spacing:.8px;
-      user-select:none;
-      margin-bottom:6px;
+      letter-spacing:.8px; user-select:none; margin-bottom:6px;
     }
+    .label-pink { color: var(--pastel-pink); }
+    .label-mint { color: var(--pastel-mint); }
+    .label-blue { color: var(--pastel-blue); }
+    .label-peach{ color: var(--pastel-peach); }
 
     /* HUD-подсказка */
     .hud{
       position:absolute; left:0; right:0; top:10px;
       display:grid; place-items:center; pointer-events:none;
       font-size:11px; color:var(--accent);
-      text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 10px rgba(255,210,90,.2);
+      text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 10px rgba(255,236,188,.22);
       opacity:0; transform: translateY(-6px);
       transition:opacity .18s ease, transform .18s ease;
     }
     .hud.show{ opacity:1; transform: translateY(0); }
 
-    /* вспомогательная подпись снизу */
+    /* подсказка снизу */
     .hint{
-      position:absolute; bottom:14px; left:0; right:0;
-      text-align:center; font-size:10px; color:#c9c4b6;
-      opacity:.7; text-shadow:0 1px 0 rgba(0,0,0,.7);
+      position:absolute; bottom:12px; left:0; right:0;
+      text-align:center; font-size:10px; color:#d6d0c4;
+      opacity:.75; text-shadow:0 1px 0 rgba(0,0,0,.7);
       pointer-events:none;
     }
 
-    /* адаптив: сохраняем дух автомата, не ломаем 2×2 */
+    /* адаптив — сохраняем 2×2, уменьшаем внутренние отступы */
     @media (max-width: 560px){
-      .screen{ gap:14px; padding:16px; }
+      :root{ --gap:18px; }
+      .shell{ padding:10px; }
+      .bezel{ padding:8px; }
+      .screen{ padding:18px; }
       .tile{ border-radius:14px; }
-      .screen-wrap{ padding:16px; }
     }
   </style>
 </head>
 <body>
-  <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат">
-    <div class="screen-wrap">
+  <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат (пастель)">
+    <div class="shell">
       <div class="bezel">
         <div class="screen" role="grid" aria-label="Меню">
-          <button class="tile" role="gridcell" data-idx="0" aria-label="Космический">
-            <canvas width="96" height="96"></canvas>
-            <span>SPACE</span>
+          <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
+            <canvas width="120" height="120"></canvas>
+            <span class="label-blue">SPACE</span>
           </button>
           <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
-            <canvas width="96" height="96"></canvas>
-            <span>HEART</span>
+            <canvas width="120" height="120"></canvas>
+            <span class="label-pink">HEART</span>
           </button>
           <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
-            <canvas width="96" height="96"></canvas>
-            <span>KEY</span>
+            <canvas width="120" height="120"></canvas>
+            <span class="label-peach">KEY</span>
           </button>
           <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
-            <canvas width="96" height="96"></canvas>
-            <span>BOMB</span>
+            <canvas width="120" height="120"></canvas>
+            <span class="label-mint">BOMB</span>
           </button>
 
           <div class="scanlines" aria-hidden="true"></div>
@@ -240,48 +262,63 @@
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const hud = $('#hud');
 
-      // --- WebAudio (по жесту) ---
-      let actx, gain, unlocked = false;
+      /* ---------- WebAudio (разрешается по жесту) ---------- */
+      let actx, gain, unlocked=false;
       function ensureAudio(){
         if (actx) return;
         actx = new (window.AudioContext||window.webkitAudioContext)();
-        gain = actx.createGain(); gain.gain.value = .15;
+        gain = actx.createGain(); gain.gain.value = .14;
         gain.connect(actx.destination);
       }
       function unlock(){
         if (unlocked) return;
         ensureAudio();
-        actx.resume().then(()=>{ unlocked = true; });
+        actx.resume().then(()=>{ unlocked=true; });
       }
-      function beep(freq=880,dur=.06){
+      function beep(freq=620,dur=.06){
         if(!unlocked) return;
         const o = actx.createOscillator(), g = actx.createGain();
         o.type='square'; o.frequency.value=freq;
-        g.gain.value=0.0001;
-        o.connect(g).connect(gain);
+        g.gain.value=0.0001; o.connect(g).connect(gain);
         const t=actx.currentTime;
         o.start(t);
-        g.gain.exponentialRampToValueAtTime(.18,t+.01);
+        g.gain.exponentialRampToValueAtTime(.16,t+.01);
         g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
         o.stop(t+dur+.02);
       }
-
       addEventListener('pointerdown', unlock, {once:true,passive:true});
       addEventListener('keydown', unlock, {once:true});
 
-      // --- отрисовка пиксель-значков на канвасах ---
+      /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
+
+      const C = {
+        star:'#ffffff',
+        star2:'#ffe8cc',
+        ship:'#8fe4c0',  // mint
+        spark:'#ffd88a', // honey
+        heart:'#ff9eb8', // pink
+        heartHi:'#ffe4ef',
+        ring:'#ffd6a6',  // peach-gold
+        stem:'#ffe0b8',
+        bomb:'#394057',
+        fuse:'#d7c0ff',
+        flame1:'#ffd88a',
+        flame2:'#ffeedd',
+        sky:'#bcd5ff'
+      };
 
       function drawSpace(ctx){
         clear(ctx);
         const S=2, W=ctx.canvas.width/S, H=ctx.canvas.height/S;
-        // фон-звёзды
-        for(let i=0;i<75;i++){
+        // фон-звёзды (пастель)
+        for(let i=0;i<84;i++){
           const x=(Math.random()*W)|0, y=(Math.random()*H)|0;
-          px(ctx,x,y,S,'#fff');
-          if((i&7)===0) px(ctx,x+1,y,S,'#ffd26a');
+          px(ctx,x,y,S, (i%7===0)?C.star2:C.star);
         }
+        // ореол «неба» внизу
+        for(let x=0;x<W;x+=2){ px(ctx,x,H-2,S,C.sky); }
         // кораблик
         const cx=(W/2)|0, cy=(H/2)|0;
         const ship=[
@@ -297,11 +334,11 @@
         ];
         for(let y=0;y<ship.length;y++){
           for(let x=0;x<ship[0].length;x++){
-            if(ship[y][x]==='1') px(ctx, cx-3+x, cy-5+y, S, '#69d6a6');
+            if(ship[y][x]==='1') px(ctx, cx-3+x, cy-5+y, S, C.ship);
           }
         }
-        // маленький «выхлоп»
-        px(ctx,cx-1,cy+5,S,'#ffd26a'); px(ctx,cx,cy+6,S,'#ffad4a');
+        // выхлоп
+        px(ctx,cx-1,cy+5,S,C.spark); px(ctx,cx,cy+6,S,C.flame2);
       }
 
       function drawHeart(ctx){
@@ -321,11 +358,11 @@
         ];
         for(let y=0;y<data.length;y++){
           for(let x=0;x<data[0].length;x++){
-            if(data[y][x]==='1') px(ctx, cx-4+x, cy-7+y, S, '#ff6b6b');
+            if(data[y][x]==='1') px(ctx, cx-4+x, cy-7+y, S, C.heart);
           }
         }
         // блик
-        px(ctx,cx-1,cy-4,S,'#ffd26a'); px(ctx,cx,cy-5,S,'#ffd26a');
+        px(ctx,cx-1,cy-4,S,C.heartHi); px(ctx,cx,cy-5,S,C.heartHi);
       }
 
       function drawKey(ctx){
@@ -336,12 +373,14 @@
           const r=8;
           const x=(cx + Math.cos(a*Math.PI/180)*r)|0;
           const y=(cy + Math.sin(a*Math.PI/180)*r)|0;
-          px(ctx,x,y,S,'#ffd26a');
+          px(ctx,x,y,S,C.ring);
         }
         // стержень
-        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,'#ffd26a');
+        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,C.stem);
         // зубцы
-        px(ctx,cx+15,cy+1,S,'#ffd26a'); px(ctx,cx+17,cy+2,S,'#ffd26a'); px(ctx,cx+19,cy+1,S,'#ffd26a');
+        px(ctx,cx+15,cy+1,S,C.stem);
+        px(ctx,cx+17,cy+2,S,C.stem);
+        px(ctx,cx+19,cy+1,S,C.stem);
       }
 
       function drawBomb(ctx){
@@ -350,18 +389,20 @@
         // корпус
         for(let y=-6;y<=6;y++){
           for(let x=-6;x<=6;x++){
-            if(x*x + y*y <= 36) px(ctx,cx+x,cy+y,S,'#2e3344');
+            if(x*x + y*y <= 36) px(ctx,cx+x,cy+y,S,C.bomb);
           }
         }
         // фитиль
-        for(let i=0;i<6;i++) px(ctx,cx+5+i,cy-10+i,S,'#caa');
+        for(let i=0;i<6;i++) px(ctx,cx+5+i,cy-10+i,S,C.fuse);
         // искра
-        px(ctx,cx+12,cy-4,S,'#ffd26a'); px(ctx,cx+13,cy-3,S,'#ffe6a6'); px(ctx,cx+12,cy-2,S,'#ffad4a');
+        px(ctx,cx+12,cy-4,S,C.flame1);
+        px(ctx,cx+13,cy-3,S,C.flame2);
+        px(ctx,cx+12,cy-2,S,C.flame1);
       }
 
       const drawers=[drawSpace, drawHeart, drawKey, drawBomb];
 
-      // инициализация всех четырёх
+      // инициализация 4 значков
       $$('.tile').forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
         const ctx = cv.getContext('2d',{alpha:false});
@@ -369,7 +410,7 @@
         drawers[i%drawers.length](ctx);
       });
 
-      // --- фокус/навигация ---
+      /* ---------- Фокус/навигация ---------- */
       let idx=0, cols=2, total=$$('.tile').length;
       function setFocus(i, withScroll=true){
         idx = Math.max(0, Math.min(total-1, i));
@@ -386,7 +427,7 @@
         if(dir==='left') c=Math.max(0,col-1);
         if(dir==='right') c=Math.min(cols-1,col+1);
         setFocus(r*cols + c);
-        beep(660,.035);
+        beep(580,.035);
       }
 
       addEventListener('keydown', (e)=>{
@@ -394,9 +435,8 @@
         else if(e.key==='ArrowDown'){ e.preventDefault(); move('down'); }
         else if(e.key==='ArrowLeft'){ e.preventDefault(); move('left'); }
         else if(e.key==='ArrowRight'){ e.preventDefault(); move('right'); }
-        else if(e.key==='Enter'){
-          selectCurrent();
-        } else if(e.key==='Escape'){
+        else if(e.key==='Enter'){ selectCurrent(); }
+        else if(e.key==='Escape'){
           $$('.tile').forEach(t=> t.dataset.focus='false');
           hudOff();
         }
@@ -413,20 +453,20 @@
         const tile = $$('.tile')[idx];
         const label = tile?.querySelector('span')?.textContent || 'ITEM';
         hudOn('SELECT: '+label);
-        beep(520,.07);
+        beep(480,.07);
         setTimeout(hudOff, 800);
       }
 
-      // показать первоначальную подсказку
-      setTimeout(()=>hud.classList.add('show'), 200);
-      setTimeout(hudOff, 1800);
+      // стартовая подсказка
+      setTimeout(()=>hud.classList.add('show'), 220);
+      setTimeout(hudOff, 1900);
 
-      // подстраиваем канвасы под DPR (чёткая пиксельность)
+      // DPI-фикс для чёткого пикселя
       function fixDPR(){
         const dpr = Math.max(1, window.devicePixelRatio||1);
         $$('.tile canvas').forEach(cv=>{
-          const cssW = parseInt(getComputedStyle(cv).width,10);
-          const cssH = parseInt(getComputedStyle(cv).height,10);
+          const cssW = Math.max(1, parseInt(getComputedStyle(cv).width,10));
+          const cssH = Math.max(1, parseInt(getComputedStyle(cv).height,10));
           if(cv.width !== cssW*dpr || cv.height !== cssH*dpr){
             cv.width = cssW*dpr; cv.height = cssH*dpr;
             const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false; ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -439,9 +479,10 @@
         });
       }
       addEventListener('resize', fixDPR, {passive:true});
-      fixDPR();
+      // чуть позже, чтобы успели примениться CSS-размеры
+      requestAnimationFrame(fixDPR);
+      setTimeout(fixDPR, 60);
     })();
   </script>
 </body>
 </html>
-
