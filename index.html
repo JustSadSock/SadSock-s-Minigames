@@ -29,7 +29,7 @@
 
       --scan:0.06;        /* сканлайны мягче */
       --crt-curve:24px;   /* скругление «стекла» */
-      --tile:132px;       /* базовый размер иконок (CSS) — крупнее */
+      --tile:180px;       /* базовый размер иконок (CSS) — ещё крупнее */
       --px:1px;
       --gap: clamp(16px, 3.8vmin, 28px);
     }
@@ -109,13 +109,42 @@
         inset 0 0 80px rgba(255,195,100,.58),
         inset 0 0 320px rgba(255,180,80,.28);
       overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 16px;
+      background:linear-gradient(180deg,#ffe9b6,#ffd6a6);
+    }
+    .topbar .title{ flex:1; text-align:center; font-size:14px; }
+    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:64px; height:64px; }
+    .avatar canvas{ width:64px; height:64px; image-rendering:pixelated; display:block; }
+    #nickDisplay{ font-size:12px; }
+
+    .grid{
+      flex:1;
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: var(--gap);
-      padding: calc(var(--gap) + 6px);
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:var(--gap);
+      padding:calc(var(--gap) + 6px);
       align-content:center; justify-items:center;
     }
+
+    .menu{
+      position:absolute; top:80px; left:20px;
+      background:var(--bg2);
+      border:4px solid var(--ink);
+      border-radius:8px; padding:16px; font-size:12px;
+      display:none; z-index:10;
+    }
+    .menu.show{ display:block; }
+    .menu label{ display:block; margin-bottom:8px; }
 
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
@@ -150,7 +179,7 @@
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
-      --size: clamp(90px, 13.6vmin, var(--tile)); /* больше, чтобы заполнить экран */
+      --size: clamp(120px, 18vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
       width: calc(var(--size) * 1.6);
       height: calc(var(--size) * 1.6);
       border-radius:18px;
@@ -217,7 +246,7 @@
       :root{ --gap:18px; }
       .shell{ padding:10px; }
       .bezel{ padding:8px; }
-      .screen{ padding:18px; }
+      .grid{ padding:18px; }
       .tile{ border-radius:14px; }
     }
   </style>
@@ -226,24 +255,41 @@
   <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат (пастель)">
     <div class="shell">
       <div class="bezel">
-        <div class="screen" role="grid" aria-label="Меню">
-            <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
-              <canvas width="120" height="120"></canvas>
-              <span class="label-blue">SPACE</span>
+        <div class="screen">
+          <header class="topbar">
+            <button class="avatar" id="avatarBtn" aria-label="Профиль">
+              <canvas id="avatarCanvas" width="64" height="64"></canvas>
             </button>
-          <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-pink">HEART</span>
-          </button>
-          <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-peach">KEY</span>
-          </button>
-          <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-mint">BOMB</span>
-          </button>
-
+            <h2 class="title">Pastel Pixel Arcade</h2>
+            <span id="nickDisplay">Player</span>
+          </header>
+          <div class="grid" role="grid" aria-label="Меню">
+              <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
+                <canvas width="120" height="120"></canvas>
+                <span class="label-blue">SPACE</span>
+              </button>
+            <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
+              <canvas width="120" height="120"></canvas>
+              <span class="label-pink">HEART</span>
+            </button>
+            <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
+              <canvas width="120" height="120"></canvas>
+              <span class="label-peach">KEY</span>
+            </button>
+            <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
+              <canvas width="120" height="120"></canvas>
+              <span class="label-mint">BOMB</span>
+            </button>
+          </div>
+          <div id="avatarMenu" class="menu">
+            <form id="avatarForm">
+              <label>Ник: <input id="nick" type="text" value="Player"></label>
+              <label>Цвет кожи: <input id="skinColor" type="color" value="#ffcf9c"></label>
+              <label>Цвет волос: <input id="hairColor" type="color" value="#7b3f00"></label>
+              <label>Прическа: <select id="hairStyle"><option value="short">Короткая</option><option value="mohawk">Ирокез</option></select></label>
+              <button type="submit">OK</button>
+            </form>
+          </div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
           <div class="glass" aria-hidden="true"></div>
@@ -261,6 +307,15 @@
       const $ = (s,p=document)=>p.querySelector(s);
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const hud = $('#hud');
+      const nickDisplay = $('#nickDisplay');
+      const avatarCanvas = $('#avatarCanvas');
+      const avatarBtn = $('#avatarBtn');
+      const avatarMenu = $('#avatarMenu');
+      const avatarForm = $('#avatarForm');
+      const nickInput = $('#nick');
+      const skinInput = $('#skinColor');
+      const hairInput = $('#hairColor');
+      const hairStyleInput = $('#hairStyle');
 
       /* ---------- WebAudio (разрешается по жесту) ---------- */
       let actx, gain, unlocked=false;
@@ -407,6 +462,42 @@
 
       const drawers=[drawSpace, drawHeart, drawKey, drawBomb];
 
+      /* ---------- Аватар ---------- */
+      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short'};
+      const avCtx = avatarCanvas.getContext('2d',{alpha:false});
+      avCtx.imageSmoothingEnabled=false;
+      function drawAvatar(){
+        clear(avCtx);
+        const S=2;
+        for(let y=8;y<24;y++){
+          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.skin);
+        }
+        if(avatar.style==='short'){
+          for(let y=6;y<12;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+        } else if(avatar.style==='mohawk'){
+          for(let y=4;y<16;y++){
+            for(let x=15;x<17;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+        }
+        px(avCtx,12,16,S,'#000');
+        px(avCtx,20,16,S,'#000');
+        for(let x=12;x<=20;x++) px(avCtx,x,22,S,'#000');
+      }
+      drawAvatar();
+      avatarBtn.addEventListener('click',()=>{ avatarMenu.classList.toggle('show'); });
+      avatarForm.addEventListener('submit',e=>{
+        e.preventDefault();
+        avatar.nick = nickInput.value||'Player';
+        avatar.skin = skinInput.value;
+        avatar.hair = hairInput.value;
+        avatar.style = hairStyleInput.value;
+        drawAvatar();
+        nickDisplay.textContent = avatar.nick;
+        avatarMenu.classList.remove('show');
+      });
+
       // инициализация 4 значков
       $$('.tile').forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
@@ -469,7 +560,8 @@
       // DPI-фикс для чёткого пикселя
       function fixDPR(){
         const dpr = Math.max(1, window.devicePixelRatio||1);
-        $$('.tile canvas').forEach(cv=>{
+        const cvs = [...$$('.tile canvas'), avatarCanvas];
+        cvs.forEach(cv=>{
           const cssW = Math.max(1, parseInt(getComputedStyle(cv).width,10));
           const cssH = Math.max(1, parseInt(getComputedStyle(cv).height,10));
           if(cv.width !== cssW*dpr || cv.height !== cssH*dpr){
@@ -482,6 +574,7 @@
           const ctx = tile.querySelector('canvas').getContext('2d');
           drawers[i%drawers.length](ctx);
         });
+        drawAvatar();
       }
       addEventListener('resize', fixDPR, {passive:true});
       // чуть позже, чтобы успели примениться CSS-размеры
