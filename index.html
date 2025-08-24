@@ -10,22 +10,22 @@
   <style>
     :root{
       /* Пастельная ретро-палитра (без неона) */
-      --bg0:#0b0b10;     /* тёмный фон вокруг автомата */
-      --bg1:#101219;     /* тёмный для корпуса */
-      --bg2:#0d1017;     /* тёмный для экрана */
-      --ink:#f6f3ee;     /* «молочный» текст */
-      --dim:#cfc8bb;     /* приглушённый */
-      --pastel-pink:#ffd1dc;
-      --pastel-lav:#ffd1dc;
-      --pastel-mint:#c9f4e4;
-      --pastel-blue:#fff1b8;
-      --pastel-peach:#ffe3c6;
-      --accent:#ffd88a;  /* мёд */
-      --accent2:#8fe4c0; /* мята */
-      --accent3:#ffe3c6; /* тёплая подсветка */
-      --bezel-hi:#1a1c25;
-      --bezel:#141821;
-      --bezel-lo:#0a0c12;
+      --bg0:#fff6e5;     /* светлый фон вокруг автомата */
+      --bg1:#ffd9a3;     /* яркий корпус */
+      --bg2:#fff1cc;     /* светлый экран */
+      --ink:#2d1600;     /* тёмный текст */
+      --dim:#714f34;     /* приглушённый */
+      --pastel-pink:#ff5f9c;
+      --pastel-lav:#ff8cc6;
+      --pastel-mint:#00d9b8;
+      --pastel-blue:#46a0ff;
+      --pastel-peach:#ffca3a;
+      --accent:#ff595e;  /* коралл */
+      --accent2:#00bbf9; /* ярко-голубой */
+      --accent3:#ffca3a; /* тёплая подсветка */
+      --bezel-hi:#fff2d4;
+      --bezel:#ffe0b3;
+      --bezel-lo:#ffce91;
 
       --scan:0.06;        /* сканлайны мягче */
       --crt-curve:24px;   /* скругление «стекла» */
@@ -37,9 +37,9 @@
     html,body{
       height:100%; margin:0; color:var(--ink);
       background:
-        radial-gradient(1600px 900px at 15% -10%, #14131b 0%, transparent 60%),
-        radial-gradient(1400px 800px at 110% 10%, #151420 0%, transparent 60%),
-        linear-gradient(#0b0b10,#0c0d13 40%, #0b0b10 100%);
+        radial-gradient(1600px 900px at 15% -10%, #fff1d6 0%, transparent 60%),
+        radial-gradient(1400px 800px at 110% 10%, #ffe6f2 0%, transparent 60%),
+        linear-gradient(#fff6e5,#ffe0f0 40%, #fff6e5 100%);
       font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
       letter-spacing:.45px;
       overflow:hidden;
@@ -51,7 +51,7 @@
       background:
         radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
         radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
-      opacity:.05;
+      opacity:.25;
     }
 
     /* центрируем «кабинет», растягиваем почти на весь экран */
@@ -67,12 +67,12 @@
       height:min(980px, 98svh);
       display:grid; place-items:center;
       border-radius:26px;
-      background: linear-gradient(180deg, var(--bg1), #0e1016 55%, #0b0c12);
+      background: linear-gradient(180deg, var(--bg1), #ffc777 55%, #ffb347);
       box-shadow:
-        0 20px 46px rgba(0,0,0,.62),
-        inset 0 0 0 2px #07080c,
-        inset 0 0 0 8px #0f1118,
-        inset 0 0 120px rgba(0,0,0,.55);
+        0 20px 46px rgba(0,0,0,.22),
+        inset 0 0 0 2px #ffd59e,
+        inset 0 0 0 8px #ffbd69,
+        inset 0 0 120px rgba(255,205,110,.55);
       padding:12px;   /* было 26px -> экран вырос */
     }
 
@@ -82,14 +82,14 @@
       border-radius:22px;
       background:
         linear-gradient(180deg, var(--bezel-hi), var(--bezel)),
-        radial-gradient(150% 120% at 50% -20%, rgba(255,255,255,.06), transparent 55%),
-        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,.35), transparent 50%);
+        radial-gradient(150% 120% at 50% -20%, rgba(255,255,255,.25), transparent 55%),
+        radial-gradient(140% 140% at 50% 120%, rgba(255,175,110,.35), transparent 50%);
       box-shadow:
-        inset 0 0 0 2px #070a0f,
-        inset 0 0 0 8px #121725,
-        inset 0 32px 120px rgba(0,0,0,.55),
-        inset 0 -26px 70px rgba(0,0,0,.6),
-        inset 0 0 120px rgba(255,227,198,.07); /* мягкий тёплый подсвет */
+        inset 0 0 0 2px #ffd59e,
+        inset 0 0 0 8px #ffbd69,
+        inset 0 32px 120px rgba(255,200,110,.55),
+        inset 0 -26px 70px rgba(255,180,80,.6),
+        inset 0 0 120px rgba(255,227,198,.37); /* мягкий тёплый подсвет */
       padding:10px;  /* было 22px -> ещё больше экран */
       display:grid; place-items:center;
     }
@@ -100,14 +100,14 @@
       width:100%; height:100%;
       border-radius:var(--crt-curve);
       background:
-        radial-gradient(160% 130% at 50% 18%, rgba(255,255,255,.04), transparent 55%),
-        radial-gradient(120% 120% at 50% 118%, rgba(0,0,0,.28), transparent 50%),
-        linear-gradient(180deg, #0a0f16, var(--bg2));
+        radial-gradient(160% 130% at 50% 18%, rgba(255,255,255,.15), transparent 55%),
+        radial-gradient(120% 120% at 50% 118%, rgba(255,220,170,.38), transparent 50%),
+        linear-gradient(180deg, #ffe9b6, var(--bg2));
       box-shadow:
-        inset 0 0 0 2px #05070c,
-        inset 0 0 0 6px #0f121c,
-        inset 0 0 80px rgba(0,0,0,.58),
-        inset 0 0 320px rgba(0,0,0,.28);
+        inset 0 0 0 2px #ffbf69,
+        inset 0 0 0 6px #ffb347,
+        inset 0 0 80px rgba(255,195,100,.58),
+        inset 0 0 320px rgba(255,180,80,.28);
       overflow:hidden;
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -154,11 +154,11 @@
       width: calc(var(--size) * 1.6);
       height: calc(var(--size) * 1.6);
       border-radius:18px;
-      background: linear-gradient(180deg,#0e121a,#0c1016);
-      border:2px solid #0a0c12;
+      background: linear-gradient(180deg,#fff0d1,#ffd6a6);
+      border:2px solid #ffbd69;
       box-shadow:
-        inset 0 0 0 2px #151a26,
-        0 12px 26px rgba(0,0,0,.42);
+        inset 0 0 0 2px #ffe0b3,
+        0 12px 26px rgba(0,0,0,.22);
       display:grid; grid-template-rows: 1fr auto; place-items:center;
       gap:12px;
       cursor:pointer; outline:none;
@@ -168,37 +168,37 @@
     .tile:active{ transform:translateY(1px) scale(.996); }
     .tile[data-focus="true"]{
       box-shadow:
-        inset 0 0 0 2px #1b2130,
-        0 0 0 3px rgba(255,232,204,.42),
-        0 18px 34px rgba(0,0,0,.55),
-        0 0 28px rgba(205,230,255,.18); /* мягкое пастельное свечение */
-      border-color:#252c3f;
+        inset 0 0 0 2px #ffbd69,
+        0 0 0 3px rgba(255,154,0,.42),
+        0 18px 34px rgba(0,0,0,.35),
+        0 0 28px rgba(255,200,90,.38); /* мягкое тёплое свечение */
+      border-color:#ffae55;
     }
     .tile canvas{
       width: calc(var(--size));
       height: calc(var(--size));
       image-rendering: pixelated;
-      background:#0b0f16;
+      background:#ffe9b6;
       border-radius:12px;
-      border:2px solid #131a24;
-      box-shadow: inset 0 0 0 2px #0c111a, 0 0 0 1px rgba(0,0,0,.22);
+      border:2px solid #ffbd69;
+      box-shadow: inset 0 0 0 2px #ffd59e, 0 0 0 1px rgba(0,0,0,.12);
     }
     .tile span{
-      font-size:11px; color:var(--dim);
-      text-shadow:0 1px 0 rgba(0,0,0,.6);
+      font-size:11px; color:var(--ink);
+      text-shadow:0 1px 0 rgba(255,255,255,.6);
       letter-spacing:.8px; user-select:none; margin-bottom:6px;
     }
     .label-pink { color: var(--pastel-pink); }
     .label-mint { color: var(--pastel-mint); }
-    /* заменили «голубой» на тёплый оттенок */
     .label-peach{ color: var(--pastel-peach); }
+    .label-blue{ color: var(--pastel-blue); }
 
     /* HUD-подсказка */
     .hud{
       position:absolute; left:0; right:0; top:10px;
       display:grid; place-items:center; pointer-events:none;
       font-size:11px; color:var(--accent);
-      text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 10px rgba(255,236,188,.22);
+      text-shadow:0 1px 0 rgba(255,255,255,.7), 0 0 10px rgba(255,200,90,.42);
       opacity:0; transform: translateY(-6px);
       transition:opacity .18s ease, transform .18s ease;
     }
@@ -207,8 +207,8 @@
     /* подсказка снизу */
     .hint{
       position:absolute; bottom:12px; left:0; right:0;
-      text-align:center; font-size:10px; color:#d6d0c4;
-      opacity:.75; text-shadow:0 1px 0 rgba(0,0,0,.7);
+      text-align:center; font-size:10px; color:#7a5030;
+      opacity:.85; text-shadow:0 1px 0 rgba(255,255,255,.7);
       pointer-events:none;
     }
 
@@ -227,10 +227,10 @@
     <div class="shell">
       <div class="bezel">
         <div class="screen" role="grid" aria-label="Меню">
-          <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-peach">SPACE</span>
-          </button>
+            <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
+              <canvas width="120" height="120"></canvas>
+              <span class="label-blue">SPACE</span>
+            </button>
           <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
             <canvas width="120" height="120"></canvas>
             <span class="label-pink">HEART</span>
@@ -295,18 +295,18 @@
 
       const C = {
         star:'#ffffff',
-        star2:'#ffe8cc',
-        ship:'#8fe4c0',  // mint
-        spark:'#ffd88a', // honey
+        star2:'#ffa700',
+        ship:'#00d9b8',  // mint
+        spark:'#ffbd69', // honey
         heart:'#ff9eb8', // pink
         heartHi:'#ffe4ef',
-        ring:'#ffd6a6',  // peach-gold
-        stem:'#ffe0b8',
+        ring:'#ffbd69',  // peach-gold
+        stem:'#ffcf86',
         bomb:'#353535',
-        fuse:'#ffd1dc',
-        flame1:'#ffd88a',
-        flame2:'#ffeedd',
-        sky:'#ffe3c6'
+        fuse:'#ff5f9c',
+        flame1:'#ff595e',
+        flame2:'#ffca3a',
+        sky:'#46a0ff'
       };
 
       function drawSpace(ctx){
