@@ -1,1 +1,447 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Arcade — 4 Icons</title>
+  <!-- необязательно: пиксельный шрифт; оффлайн будет fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* уютная ретро-палитра без неона */
+      --bg:#0c0b10;
+      --bg2:#0f111a;
+      --ink:#f2efe6;
+      --dim:#bfb9aa;
+      --accent:#ffd26a;
+      --accent2:#69d6a6;
+      --bezel:#191a22;
+      --bezel-hi:#2a2d3a;
+      --bezel-lo:#090a0f;
+      --scan:0.08;    /* интенсивность сканлайнов */
+      --crt-curve:22px; /* скругление "экрана" */
+      --tile:92px;    /* базовый размер иконок (CSS) */
+      --px:1px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:
+      radial-gradient(1200px 800px at 10% 0%, #14131a 0%, transparent 60%),
+      radial-gradient(1000px 700px at 110% 20%, #14131a 0%, transparent 60%),
+      linear-gradient(#0a0a0e,#0b0c12 40%, #0c0b10 100%);
+      color:var(--ink);
+      font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
+      letter-spacing:.5px;
+      overflow:hidden;
+    }
+    /* центрируем «кабинет» */
+    .cabinet{
+      position:fixed; inset:0;
+      display:grid; place-items:center;
+      padding:min(4vw,28px);
+    }
+
+    /* рамка/корпус */
+    .screen-wrap{
+      position:relative;
+      width:min(1100px, 96vw);
+      height:min(680px, calc(96svh));
+      max-height:96svh;
+      display:grid; place-items:center;
+      /* внешний корпус */
+      background: linear-gradient(180deg,#12131a,#0e0f15 60%, #0b0c12);
+      border-radius:30px;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.6),
+        inset 0 0 0 2px #06070a,
+        inset 0 0 0 8px #0f1118,
+        inset 0 0 60px rgba(0,0,0,.65);
+      padding:26px;
+    }
+
+    /* внутренний скруглённый экран с обрамлением (bezel) */
+    .bezel{
+      position:relative;
+      width:100%;
+      height:100%;
+      border-radius:28px;
+      background:
+        linear-gradient(180deg, var(--bezel-hi), var(--bezel)),
+        radial-gradient(140% 120% at 50% -10%, rgba(255,255,255,.08), transparent 55%);
+      box-shadow:
+        inset 0 0 0 3px #07080d,
+        inset 0 0 0 10px #131621,
+        inset 0 40px 120px rgba(0,0,0,.6),
+        inset 0 -30px 80px rgba(0,0,0,.7);
+      padding:22px;
+      display:grid; place-items:center;
+    }
+
+    /* «стекло/экран» */
+    .screen{
+      position:relative;
+      width:100%;
+      height:100%;
+      border-radius:var(--crt-curve);
+      background:
+        radial-gradient(160% 130% at 50% 20%, rgba(255,255,255,.03), transparent 50%),
+        radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,.25), transparent 50%),
+        linear-gradient(180deg,#0b0f18,#0a0e16);
+      box-shadow:
+        inset 0 0 0 2px #05060b,
+        inset 0 0 0 6px #0f121c,
+        inset 0 0 60px rgba(0,0,0,.7),
+        inset 0 0 220px rgba(0,0,0,.35);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap:min(3.8vmin,26px);
+      padding:min(4.6vmin,34px);
+      align-content:center;
+      justify-items:center;
+    }
+
+    /* сканлайны/виньетка/блики поверх «экрана» */
+    .scanlines, .vignette, .glass, .phosphor{
+      pointer-events:none; position:absolute; inset:0; border-radius:var(--crt-curve);
+    }
+    .scanlines{
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,0,0,var(--scan)) 0px,
+        rgba(0,0,0,var(--scan)) 2px,
+        transparent 3px,
+        transparent 4px
+      );
+      mix-blend-mode:multiply;
+    }
+    .vignette{
+      background: radial-gradient(120% 100% at 50% 50%, transparent 60%, rgba(0,0,0,.6) 100%);
+    }
+    .glass{
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.06) 0 20%, transparent 20% 80%, rgba(255,255,255,.03) 80% 100%);
+      filter: blur(.3px);
+    }
+    .phosphor{
+      background: radial-gradient(100% 80% at 50% 45%, rgba(255,244,210,.04), transparent 55%);
+      mix-blend-mode:screen;
+    }
+
+    /* плитки-значки */
+    .tile{
+      --size: clamp(80px, 11vmin, var(--tile));
+      width: calc(var(--size) * 1.6);
+      height: calc(var(--size) * 1.6);
+      border-radius:18px;
+      background:
+        linear-gradient(180deg,#0f1421,#0d111a);
+      border:2px solid #0a0c12;
+      box-shadow:
+        inset 0 0 0 2px #161a24,
+        0 10px 22px rgba(0,0,0,.45);
+      display:grid; grid-template-rows: 1fr auto; place-items:center;
+      gap:12px;
+      cursor:pointer;
+      outline:none;
+      transition:transform .08s ease, filter .08s ease;
+    }
+    .tile:hover{ filter:brightness(1.08); }
+    .tile:active{ transform:translateY(1px) scale(.995); }
+    .tile[data-focus="true"]{
+      box-shadow:
+        inset 0 0 0 2px #1f2230,
+        0 0 0 3px rgba(255,210,90,.35),
+        0 14px 30px rgba(0,0,0,.55);
+      border-color:#2a2e40;
+    }
+    .tile canvas{
+      width: calc(var(--size));
+      height: calc(var(--size));
+      image-rendering: pixelated;
+      background:#0b0f16;
+      border-radius:10px;
+      border:2px solid #141924;
+      box-shadow: inset 0 0 0 2px #0c111a, 0 0 0 1px rgba(0,0,0,.22);
+    }
+    .tile span{
+      font-size:11px; color:var(--dim);
+      text-shadow:0 1px 0 rgba(0,0,0,.6);
+      letter-spacing:.8px;
+      user-select:none;
+      margin-bottom:6px;
+    }
+
+    /* HUD-подсказка */
+    .hud{
+      position:absolute; left:0; right:0; top:10px;
+      display:grid; place-items:center; pointer-events:none;
+      font-size:11px; color:var(--accent);
+      text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 10px rgba(255,210,90,.2);
+      opacity:0; transform: translateY(-6px);
+      transition:opacity .18s ease, transform .18s ease;
+    }
+    .hud.show{ opacity:1; transform: translateY(0); }
+
+    /* вспомогательная подпись снизу */
+    .hint{
+      position:absolute; bottom:14px; left:0; right:0;
+      text-align:center; font-size:10px; color:#c9c4b6;
+      opacity:.7; text-shadow:0 1px 0 rgba(0,0,0,.7);
+      pointer-events:none;
+    }
+
+    /* адаптив: сохраняем дух автомата, не ломаем 2×2 */
+    @media (max-width: 560px){
+      .screen{ gap:14px; padding:16px; }
+      .tile{ border-radius:14px; }
+      .screen-wrap{ padding:16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат">
+    <div class="screen-wrap">
+      <div class="bezel">
+        <div class="screen" role="grid" aria-label="Меню">
+          <button class="tile" role="gridcell" data-idx="0" aria-label="Космический">
+            <canvas width="96" height="96"></canvas>
+            <span>SPACE</span>
+          </button>
+          <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
+            <canvas width="96" height="96"></canvas>
+            <span>HEART</span>
+          </button>
+          <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
+            <canvas width="96" height="96"></canvas>
+            <span>KEY</span>
+          </button>
+          <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
+            <canvas width="96" height="96"></canvas>
+            <span>BOMB</span>
+          </button>
+
+          <div class="scanlines" aria-hidden="true"></div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div class="glass" aria-hidden="true"></div>
+          <div class="phosphor" aria-hidden="true"></div>
+          <div class="hud" id="hud">СТРЕЛКИ • ENTER • МЫШЬ</div>
+        </div>
+      </div>
+      <div class="hint">↑↓←→ — перемещение • Enter — выбрать • Esc — снять выделение</div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      'use strict';
+      const $ = (s,p=document)=>p.querySelector(s);
+      const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
+      const hud = $('#hud');
+
+      // --- WebAudio (по жесту) ---
+      let actx, gain, unlocked = false;
+      function ensureAudio(){
+        if (actx) return;
+        actx = new (window.AudioContext||window.webkitAudioContext)();
+        gain = actx.createGain(); gain.gain.value = .15;
+        gain.connect(actx.destination);
+      }
+      function unlock(){
+        if (unlocked) return;
+        ensureAudio();
+        actx.resume().then(()=>{ unlocked = true; });
+      }
+      function beep(freq=880,dur=.06){
+        if(!unlocked) return;
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type='square'; o.frequency.value=freq;
+        g.gain.value=0.0001;
+        o.connect(g).connect(gain);
+        const t=actx.currentTime;
+        o.start(t);
+        g.gain.exponentialRampToValueAtTime(.18,t+.01);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+        o.stop(t+dur+.02);
+      }
+
+      addEventListener('pointerdown', unlock, {once:true,passive:true});
+      addEventListener('keydown', unlock, {once:true});
+
+      // --- отрисовка пиксель-значков на канвасах ---
+      function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
+      function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
+
+      function drawSpace(ctx){
+        clear(ctx);
+        const S=2, W=ctx.canvas.width/S, H=ctx.canvas.height/S;
+        // фон-звёзды
+        for(let i=0;i<75;i++){
+          const x=(Math.random()*W)|0, y=(Math.random()*H)|0;
+          px(ctx,x,y,S,'#fff');
+          if((i&7)===0) px(ctx,x+1,y,S,'#ffd26a');
+        }
+        // кораблик
+        const cx=(W/2)|0, cy=(H/2)|0;
+        const ship=[
+          "0010000",
+          "0111000",
+          "1111100",
+          "1111110",
+          "0111111",
+          "0111111",
+          "1111111",
+          "0100010",
+          "0011100"
+        ];
+        for(let y=0;y<ship.length;y++){
+          for(let x=0;x<ship[0].length;x++){
+            if(ship[y][x]==='1') px(ctx, cx-3+x, cy-5+y, S, '#69d6a6');
+          }
+        }
+        // маленький «выхлоп»
+        px(ctx,cx-1,cy+5,S,'#ffd26a'); px(ctx,cx,cy+6,S,'#ffad4a');
+      }
+
+      function drawHeart(ctx){
+        clear(ctx);
+        const S=2, cx=24, cy=26;
+        const data=[
+          "00110110",
+          "01111111",
+          "11111111",
+          "11111111",
+          "11111111",
+          "01111111",
+          "00111111",
+          "00011111",
+          "00001111",
+          "00000111"
+        ];
+        for(let y=0;y<data.length;y++){
+          for(let x=0;x<data[0].length;x++){
+            if(data[y][x]==='1') px(ctx, cx-4+x, cy-7+y, S, '#ff6b6b');
+          }
+        }
+        // блик
+        px(ctx,cx-1,cy-4,S,'#ffd26a'); px(ctx,cx,cy-5,S,'#ffd26a');
+      }
+
+      function drawKey(ctx){
+        clear(ctx);
+        const S=2, cx=24, cy=26;
+        // кольцо
+        for(let a=0;a<360;a+=6){
+          const r=8;
+          const x=(cx + Math.cos(a*Math.PI/180)*r)|0;
+          const y=(cy + Math.sin(a*Math.PI/180)*r)|0;
+          px(ctx,x,y,S,'#ffd26a');
+        }
+        // стержень
+        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,'#ffd26a');
+        // зубцы
+        px(ctx,cx+15,cy+1,S,'#ffd26a'); px(ctx,cx+17,cy+2,S,'#ffd26a'); px(ctx,cx+19,cy+1,S,'#ffd26a');
+      }
+
+      function drawBomb(ctx){
+        clear(ctx);
+        const S=2, cx=24, cy=26;
+        // корпус
+        for(let y=-6;y<=6;y++){
+          for(let x=-6;x<=6;x++){
+            if(x*x + y*y <= 36) px(ctx,cx+x,cy+y,S,'#2e3344');
+          }
+        }
+        // фитиль
+        for(let i=0;i<6;i++) px(ctx,cx+5+i,cy-10+i,S,'#caa');
+        // искра
+        px(ctx,cx+12,cy-4,S,'#ffd26a'); px(ctx,cx+13,cy-3,S,'#ffe6a6'); px(ctx,cx+12,cy-2,S,'#ffad4a');
+      }
+
+      const drawers=[drawSpace, drawHeart, drawKey, drawBomb];
+
+      // инициализация всех четырёх
+      $$('.tile').forEach((tile, i)=>{
+        const cv = tile.querySelector('canvas');
+        const ctx = cv.getContext('2d',{alpha:false});
+        ctx.imageSmoothingEnabled = false;
+        drawers[i%drawers.length](ctx);
+      });
+
+      // --- фокус/навигация ---
+      let idx=0, cols=2, total=$$('.tile').length;
+      function setFocus(i, withScroll=true){
+        idx = Math.max(0, Math.min(total-1, i));
+        $$('.tile').forEach((t, j)=> t.dataset.focus = (j===idx));
+        $$('.tile')[idx].focus({preventScroll:!withScroll});
+      }
+      setFocus(0,false);
+
+      function move(dir){
+        const row = Math.floor(idx/cols), col = idx%cols;
+        let r=row, c=col;
+        if(dir==='up') r=Math.max(0,row-1);
+        if(dir==='down') r=Math.min(Math.ceil(total/cols)-1,row+1);
+        if(dir==='left') c=Math.max(0,col-1);
+        if(dir==='right') c=Math.min(cols-1,col+1);
+        setFocus(r*cols + c);
+        beep(660,.035);
+      }
+
+      addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowUp'){ e.preventDefault(); move('up'); }
+        else if(e.key==='ArrowDown'){ e.preventDefault(); move('down'); }
+        else if(e.key==='ArrowLeft'){ e.preventDefault(); move('left'); }
+        else if(e.key==='ArrowRight'){ e.preventDefault(); move('right'); }
+        else if(e.key==='Enter'){
+          selectCurrent();
+        } else if(e.key==='Escape'){
+          $$('.tile').forEach(t=> t.dataset.focus='false');
+          hudOff();
+        }
+      });
+
+      $$('.tile').forEach((t, i)=>{
+        t.addEventListener('pointerenter', ()=>{ setFocus(i); });
+        t.addEventListener('click', selectCurrent);
+      });
+
+      function hudOn(text){ hud.textContent=text; hud.classList.add('show'); }
+      function hudOff(){ hud.classList.remove('show'); }
+      function selectCurrent(){
+        const tile = $$('.tile')[idx];
+        const label = tile?.querySelector('span')?.textContent || 'ITEM';
+        hudOn('SELECT: '+label);
+        beep(520,.07);
+        setTimeout(hudOff, 800);
+      }
+
+      // показать первоначальную подсказку
+      setTimeout(()=>hud.classList.add('show'), 200);
+      setTimeout(hudOff, 1800);
+
+      // подстраиваем канвасы под DPR (чёткая пиксельность)
+      function fixDPR(){
+        const dpr = Math.max(1, window.devicePixelRatio||1);
+        $$('.tile canvas').forEach(cv=>{
+          const cssW = parseInt(getComputedStyle(cv).width,10);
+          const cssH = parseInt(getComputedStyle(cv).height,10);
+          if(cv.width !== cssW*dpr || cv.height !== cssH*dpr){
+            cv.width = cssW*dpr; cv.height = cssH*dpr;
+            const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false; ctx.setTransform(dpr,0,0,dpr,0,0);
+          }
+        });
+        // перерисовать
+        $$('.tile').forEach((tile, i)=>{
+          const ctx = tile.querySelector('canvas').getContext('2d');
+          drawers[i%drawers.length](ctx);
+        });
+      }
+      addEventListener('resize', fixDPR, {passive:true});
+      fixDPR();
+    })();
+  </script>
+</body>
+</html>
 
