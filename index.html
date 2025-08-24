@@ -10,19 +10,19 @@
   <style>
     :root{
       /* Пастельная ретро-палитра (без неона) */
-      --bg0:#0b0b10;     /* тёмный фон вокруг автомата */
-      --bg1:#101219;     /* тёмный для корпуса */
-      --bg2:#0d1017;     /* тёмный для экрана */
-      --ink:#f6f3ee;     /* «молочный» текст */
-      --dim:#cfc8bb;     /* приглушённый */
+      --bg0:#0b0b10;      /* тёмный фон вокруг автомата */
+      --bg1:#101219;      /* тёмный для корпуса */
+      --bg2:#0d1017;      /* тёмный для экрана */
+      --ink:#f6f3ee;      /* «молочный» текст */
+      --dim:#cfc8bb;      /* приглушённый */
       --pastel-pink:#ffd1dc;
-      --pastel-lav:#d9d0ff;
+      --pastel-lav:#f0e6ff;   /* теплее, без синевы */
       --pastel-mint:#c9f4e4;
-      --pastel-blue:#cde6ff;
+      --pastel-blue:#ffe6cc;  /* ЗАМЕНА: больше не голубой, а персик */
       --pastel-peach:#ffe3c6;
-      --accent:#ffd88a;  /* мёд */
-      --accent2:#8fe4c0; /* мята */
-      --accent3:#bcd5ff; /* голубой подсвет */
+      --accent:#ffd88a;   /* мёд */
+      --accent2:#8fe4c0;  /* мята */
+      --accent3:#ffe6cc;  /* ЗАМЕНА: тёплый «подсвет» вместо голубого */
       --bezel-hi:#1a1c25;
       --bezel:#141821;
       --bezel-lo:#0a0c12;
@@ -49,8 +49,8 @@
     body::before{
       content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
       background:
-        radial-gradient(var(--pastel-blue) 1px, transparent 1px) 0 0/6px 6px,
-        radial-gradient(var(--pastel-lav) 1px, transparent 1px) 3px 3px/6px 6px;
+        radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
+        radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
       opacity:.05;
     }
 
@@ -89,7 +89,7 @@
         inset 0 0 0 8px #121725,
         inset 0 32px 120px rgba(0,0,0,.55),
         inset 0 -26px 70px rgba(0,0,0,.6),
-        inset 0 0 120px rgba(188,213,255,.07); /* мягкий голубой подсвет */
+        inset 0 0 120px rgba(255,227,198,.10); /* ТЁПЛЫЙ подсвет вместо голубого */
       padding:10px;  /* было 22px -> ещё больше экран */
       display:grid; place-items:center;
     }
@@ -137,8 +137,8 @@
     .glass{
       background:
         linear-gradient(110deg, rgba(255,255,255,.055) 0 22%, transparent 22% 80%, rgba(255,255,255,.03) 80% 100%),
-        radial-gradient(120% 140% at 0% 0%, rgba(255,209,220,.06), transparent 45%),
-        radial-gradient(120% 140% at 100% 0%, rgba(205,230,255,.05), transparent 40%);
+        radial-gradient(120% 140% at 0% 0%, rgba(255,209,220,.07), transparent 45%),
+        radial-gradient(120% 140% at 100% 0%, rgba(255,227,198,.07), transparent 40%);
       filter: blur(.3px);
     }
     .phosphor{
@@ -171,7 +171,7 @@
         inset 0 0 0 2px #1b2130,
         0 0 0 3px rgba(255,232,204,.42),
         0 18px 34px rgba(0,0,0,.55),
-        0 0 28px rgba(205,230,255,.18); /* мягкое пастельное свечение */
+        0 0 28px rgba(255,227,198,.22); /* тёплое пастельное свечение */
       border-color:#252c3f;
     }
     .tile canvas{
@@ -190,7 +190,7 @@
     }
     .label-pink { color: var(--pastel-pink); }
     .label-mint { color: var(--pastel-mint); }
-    .label-blue { color: var(--pastel-blue); }
+    .label-blue { color: var(--pastel-peach); } /* больше не голубой */
     .label-peach{ color: var(--pastel-peach); }
 
     /* HUD-подсказка */
@@ -261,6 +261,7 @@
       const $ = (s,p=document)=>p.querySelector(s);
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const hud = $('#hud');
+      /* Тёплый палитровый апдейт: без серо-синих полутонов */
 
       /* ---------- WebAudio (разрешается по жесту) ---------- */
       let actx, gain, unlocked=false;
@@ -300,13 +301,15 @@
         spark:'#ffd88a', // honey
         heart:'#ff9eb8', // pink
         heartHi:'#ffe4ef',
-        ring:'#ffd6a6',  // peach-gold
-        stem:'#ffe0b8',
-        bomb:'#394057',
-        fuse:'#d7c0ff',
+        ring:'#f7c977',   // gold mid (для ключа)
+        ringDark:'#d9a95b',
+        ringHi:'#fff1db',
+        stem:'#eecb84',
+        bomb:'#3b3339',   // тёплый тёмный вместо синевато-серого
+        fuse:'#e6d3ff',   // теплее, без синевы
         flame1:'#ffd88a',
         flame2:'#ffeedd',
-        sky:'#bcd5ff'
+        haze:'#ffe6cc'    // ТЁПЛЫЙ «ореол» вместо голубого неба
       };
 
       function drawSpace(ctx){
@@ -318,7 +321,8 @@
           px(ctx,x,y,S, (i%7===0)?C.star2:C.star);
         }
         // ореол «неба» внизу
-        for(let x=0;x<W;x+=2){ px(ctx,x,H-2,S,C.sky); }
+        // тёплый «ореол» внизу (без голубых полутонов)
+        for(let x=0;x<W;x+=2){ px(ctx,x,H-2,S,C.haze); }
         // кораблик
         const cx=(W/2)|0, cy=(H/2)|0;
         const ship=[
@@ -365,22 +369,45 @@
         px(ctx,cx-1,cy-4,S,C.heartHi); px(ctx,cx,cy-5,S,C.heartHi);
       }
 
+      /* Новый ключ в «том же ретро-стиле», как сердце/бомба:
+         плотный силуэт + тёплые блики, без голубого */
       function drawKey(ctx){
         clear(ctx);
-        const S=2, cx=24, cy=26;
-        // кольцо
-        for(let a=0;a<360;a+=6){
-          const r=8;
-          const x=(cx + Math.cos(a*Math.PI/180)*r)|0;
-          const y=(cy + Math.sin(a*Math.PI/180)*r)|0;
-          px(ctx,x,y,S,C.ring);
+        const S=2, cx=22, cy=24;
+        // силует (золотой)
+        const key = [
+          "0001111000",
+          "0011111100",
+          "0111111110",
+          "0111011110",
+          "0111011110",
+          "0111111110",
+          "0011111100",
+          "0001111000",
+          "0000110000",
+          "1111111111",
+          "1111111111",
+          "1111000000",
+          "1111100000",
+          "1111000000"
+        ];
+        for(let y=0;y<key.length;y++){
+          for(let x=0;x<key[0].length;x++){
+            if(key[y][x]==='1') px(ctx, cx-6+x, cy-8+y, S, C.ring);
+          }
         }
-        // стержень
-        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,C.stem);
-        // зубцы
-        px(ctx,cx+15,cy+1,S,C.stem);
-        px(ctx,cx+17,cy+2,S,C.stem);
-        px(ctx,cx+19,cy+1,S,C.stem);
+        // затемнение снизу
+        for(let y=8;y<key.length;y++){
+          for(let x=0;x<key[0].length;x++){
+            if(key[y][x]==='1') px(ctx, cx-6+x, cy-8+y, S, C.ringDark);
+          }
+        }
+        // блик на кольце
+        px(ctx, cx-2, cy-5, S, C.ringHi);
+        px(ctx, cx-1, cy-6, S, C.ringHi);
+        // маленькие «зубцы» в носике
+        px(ctx, cx+7, cy+5, S, C.ringDark);
+        px(ctx, cx+9, cy+6, S, C.ringDark);
       }
 
       function drawBomb(ctx){
