@@ -33,6 +33,10 @@ if(!/var\(--slotX\)/.test(html)){
   throw new Error('Missing slotX variable');
 }
 
+if(!/% 4/.test(html)){
+  throw new Error('Tiles should be arranged in 4 columns');
+}
+
 const tileCount = (html.match(/class="tile"/g)||[]).length;
 if(tileCount !== 16){
   throw new Error('Expected 16 tiles');

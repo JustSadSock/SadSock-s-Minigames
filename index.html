@@ -244,12 +244,12 @@
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
-      --size: clamp(160px, 22vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
+      --size: clamp(80px, 12vmin, var(--tile));
       --slotY:0px;
       --slotX:0px;
       --slotScale:1;
-      width: calc(var(--size) * 1.6);
-      height: calc(var(--size) * 1.6);
+      width: var(--size);
+      height: var(--size);
       border-radius:18px;
       background: linear-gradient(180deg,#fff0d1,#ffd6a6);
       border:2px solid #ffbd69;
@@ -620,29 +620,30 @@
       /* ---------- Барабан и навигация ---------- */
       let idx = 0;
       const total = tiles.length;
-      const rows = Math.ceil(total/2);
+      const cols = 4;
+      const rows = Math.ceil(total/cols);
       let rowIdx = 0;
       let colIdx = 0;
       let stepY, stepX;
       function recalcSteps(){
-        const rect = tiles[0].getBoundingClientRect();
-        stepY = rect.height * 1.2;
-        stepX = rect.width * 0.8;
+        const r = reel.getBoundingClientRect();
+        const gap = 12;
+        const size = Math.min((r.width - gap*5)/4, (r.height - gap*5)/4);
+        stepX = size + gap;
+        stepY = size + gap;
+        tiles.forEach(t=> t.style.setProperty('--size', size + 'px'));
       }
       function updateReel(){
         tiles.forEach((t,i)=>{
-          const col = i % 2;
-          const row = Math.floor(i/2);
-          const diff = (row - rowIdx + rows) % rows; // 0..rows-1
-          const visible = diff < 2;
-          const y = (diff - 0.5) * stepY;
-          const x = col === 0 ? -stepX : stepX;
-          const scale = 1 - Math.abs(diff - 0.5) * 0.3;
+          const col = i % cols;
+          const row = Math.floor(i/cols);
+          const x = (col - (cols-1)/2) * stepX;
+          const y = (row - (rows-1)/2) * stepY;
           t.style.setProperty('--slotY', y + 'px');
           t.style.setProperty('--slotX', x + 'px');
-          t.style.setProperty('--slotScale', scale.toFixed(2));
-          t.style.opacity = visible ? 1 : 0;
-          t.style.zIndex = 100 - diff * 10;
+          t.style.setProperty('--slotScale', 1);
+          t.style.opacity = 1;
+          t.style.zIndex = 1;
           t.dataset.focus = i === idx;
         });
       }
@@ -651,14 +652,14 @@
 
       function move(dir){
         rowIdx = dir === 'down' ? (rowIdx + 1) % rows : (rowIdx - 1 + rows) % rows;
-        idx = rowIdx * 2 + colIdx;
+        idx = rowIdx * cols + colIdx;
         updateReel();
         Sound.fx('move');
       }
 
       function moveH(dir){
-        colIdx = dir === 'right' ? (colIdx + 1) % 2 : (colIdx - 1 + 2) % 2;
-        idx = rowIdx * 2 + colIdx;
+        colIdx = dir === 'right' ? (colIdx + 1) % cols : (colIdx - 1 + cols) % cols;
+        idx = rowIdx * cols + colIdx;
         updateReel();
         Sound.fx('move');
       }
@@ -696,8 +697,8 @@
       tiles.forEach((t, i)=>{
         t.addEventListener('click', ()=>{
           idx = i;
-          rowIdx = Math.floor(i/2);
-          colIdx = i % 2;
+          rowIdx = Math.floor(i/cols);
+          colIdx = i % cols;
           updateReel();
           selectCurrent();
         });
