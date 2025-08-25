@@ -9,4 +9,12 @@ if(!/function updateReel\(\)/.test(html)){
   throw new Error('Missing updateReel logic');
 }
 
+if(!/class="panel"/.test(html)){
+  throw new Error('Panel missing');
+}
+
+if(!/class="slot"/.test(html)){
+  throw new Error('Coin slot missing');
+}
+
 console.log('All tests passed');

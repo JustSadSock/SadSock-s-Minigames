@@ -97,6 +97,20 @@
       const t = Sound.ctx.currentTime;
       osc('square', 220, t, 0.25, 0.2);
       osc('square', 110, t+0.05, 0.3, 0.2);
+    },
+    coin(){            // монетка
+      const t = Sound.ctx.currentTime;
+      osc('square', 880, t, 0.12, 0.2);
+      osc('triangle', 440, t+0.05, 0.08, 0.1);
+    },
+    start(){           // старт
+      const t = Sound.ctx.currentTime;
+      osc('square', 660, t, 0.15, 0.2);
+      osc('square', 880, t+0.1, 0.1, 0.18);
+    },
+    option(){          // опции
+      const t = Sound.ctx.currentTime;
+      osc('triangle', 520, t, 0.12, 0.15);
     }
   };
 

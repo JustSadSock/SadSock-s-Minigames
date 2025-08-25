@@ -29,7 +29,7 @@
 
       --scan:0.06;        /* сканлайны мягче */
       --crt-curve:24px;   /* скругление «стекла» */
-      --tile:180px;       /* базовый размер иконок (CSS) — ещё крупнее */
+      --tile:220px;       /* базовый размер иконок (CSS) — ещё крупнее */
       --px:1px;
       --gap: clamp(16px, 3.8vmin, 28px);
     }
@@ -68,7 +68,7 @@
     .shell{
       width:min(1760px, 98vw);
       height:min(980px, 98svh);
-      display:grid; place-items:center;
+      display:flex; flex-direction:column; align-items:center;
       border-radius:26px;
       background: linear-gradient(180deg, var(--bg1), #ffc777 55%, #ffb347);
       box-shadow:
@@ -81,7 +81,7 @@
 
     /* внутренний обод (bezel) — пастельные отблески */
     .bezel{
-      width:100%; height:100%;
+      width:100%; flex:1;
       border-radius:22px;
       background:
         linear-gradient(180deg, var(--bezel-hi), var(--bezel)),
@@ -90,6 +90,8 @@
       box-shadow:
         inset 0 0 0 2px #ffd59e,
         inset 0 0 0 8px #ffbd69,
+        inset 0 6px 8px rgba(255,255,255,.65),
+        inset 0 -6px 8px rgba(0,0,0,.25),
         inset 0 32px 120px rgba(255,200,110,.55),
         inset 0 -26px 70px rgba(255,180,80,.6),
         inset 0 0 120px rgba(255,227,198,.37); /* мягкий тёплый подсвет */
@@ -109,6 +111,8 @@
       box-shadow:
         inset 0 0 0 2px #ffbf69,
         inset 0 0 0 6px #ffb347,
+        inset 0 6px 12px rgba(255,255,255,.35),
+        inset 0 -6px 12px rgba(0,0,0,.35),
         inset 0 0 80px rgba(255,195,100,.58),
         inset 0 0 320px rgba(255,180,80,.28);
       overflow:hidden;
@@ -128,13 +132,13 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:8px 16px;
+      gap:8px;
+      padding:4px 12px;
       background:linear-gradient(180deg,#ffe9b6,#ffd6a6);
     }
-    .topbar .title{ flex:1; text-align:center; font-size:14px; }
-    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:64px; height:64px; }
-    .avatar canvas{ width:64px; height:64px; image-rendering:pixelated; display:block; }
+    .topbar .title{ flex:1; text-align:center; font-size:12px; }
+    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:48px; height:48px; }
+    .avatar canvas{ width:48px; height:48px; image-rendering:pixelated; display:block; }
     .avatar{ position:relative; transition:transform .2s ease, filter .2s ease; }
     .avatar::after{
       content:""; position:absolute; inset:-2px; border-radius:50%;
@@ -144,7 +148,7 @@
     .avatar:hover{ transform:scale(1.06); filter:brightness(1.1); }
     .avatar:hover::after{ opacity:.9; }
     .avatar:active{ transform:scale(.94); }
-    #nickDisplay{ font-size:12px; }
+    #nickDisplay{ font-size:10px; }
 
     /* барабан со значками — один в ряд */
     .reel{
@@ -155,7 +159,38 @@
       padding:calc(var(--gap) + 6px);
     }
 
-    .navbtns{ display:flex; justify-content:center; gap:32px; padding:4px 0 18px; margin-top:auto; }
+    .panel{
+      width:100%;
+      height:130px;
+      margin-top:12px;
+      background:linear-gradient(180deg,#ffd6a6,#ffb347 70%,#e3952f);
+      border-radius:0 0 18px 18px;
+      box-shadow:inset 0 4px 0 #ffce91, inset 0 -6px 12px rgba(0,0,0,.35), 0 -2px 8px rgba(0,0,0,.15);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:40px;
+      position:relative;
+    }
+    .slot{
+      width:90px; height:26px;
+      border-radius:14px/8px;
+      background:#2d1600;
+      box-shadow:inset 0 3px 4px rgba(255,255,255,.4), inset 0 -4px 6px rgba(0,0,0,.6);
+      position:relative; overflow:hidden;
+    }
+    .coin{
+      position:absolute; top:-70px; left:50%; transform:translateX(-50%);
+      width:36px; height:36px; border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fff2a8, #ffca3a 70%, #e3a400 100%);
+      box-shadow:0 2px 0 #b8860b;
+    }
+    .coin.drop{ animation:coinDrop .8s ease-in forwards; }
+    @keyframes coinDrop{
+      0%{ transform:translate(-50%,-80px) rotate(0deg); }
+      70%{ transform:translate(-50%,0) rotate(360deg); }
+      100%{ transform:translate(-50%,4px) rotate(540deg); }
+    }
     .pbtn{
       font-size:12px; letter-spacing:1px; color:var(--ink);
       padding:12px 26px; cursor:pointer; user-select:none;
@@ -223,7 +258,7 @@
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
-      --size: clamp(120px, 18vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
+      --size: clamp(160px, 22vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
       --slotY:0px;
       --slotScale:1;
       width: calc(var(--size) * 1.6);
@@ -302,13 +337,12 @@
       .bezel{ padding:8px; }
       .reel{ padding:18px; }
       .tile{ border-radius:14px; }
-      .navbtns{ flex-direction:column; gap:14px; padding-bottom:10px; }
       .pbtn{ width:80%; margin:0 auto; }
+      .panel{ height:110px; gap:24px; }
     }
 
     @media (max-height:480px){
       .reel{ padding:12px; }
-      .navbtns{ padding:2px 0 8px; }
     }
 
     /* небольшие pixel-анимации */
@@ -333,7 +367,7 @@
         <div class="screen">
           <header class="topbar">
             <button class="avatar" id="avatarBtn" aria-label="Профиль">
-              <canvas id="avatarCanvas" width="64" height="64"></canvas>
+              <canvas id="avatarCanvas" width="48" height="48"></canvas>
             </button>
             <h2 class="title">Pastel Pixel Arcade</h2>
             <span id="nickDisplay">Player</span>
@@ -356,10 +390,6 @@
               <span class="label-mint">BOMB</span>
             </button>
           </div>
-          <footer class="navbtns">
-            <button class="pbtn" data-action="start">START</button>
-            <button class="pbtn" data-action="options">OPTIONS</button>
-          </footer>
           <div id="avatarMenu" class="menu">
             <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
             <div class="row">
@@ -389,6 +419,11 @@
           <div class="hud" id="hud">СТРЕЛКИ • ENTER • МЫШЬ</div>
         </div>
       </div>
+      <div class="panel">
+        <button class="pbtn" data-action="start">START</button>
+        <div class="slot"><div id="coin" class="coin"></div></div>
+        <button class="pbtn" data-action="options">OPTIONS</button>
+      </div>
       <div class="hint">↑↓←→ — перемещение • Enter — выбрать • Esc — снять выделение</div>
     </div>
   </div>
@@ -412,6 +447,7 @@
       const avatarOk = $('#avatarOk');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
+      const coin = $('#coin');
 
 
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
@@ -663,14 +699,29 @@
           selectCurrent();
         });
       });
-      const navBtns = $$('.pbtn');
+      const navBtns = $$('.panel .pbtn');
       navBtns.forEach(btn=>{
         btn.addEventListener('click',()=>{
-          hudOn(btn.dataset.action.toUpperCase());
-          Sound.fx("click");
+          const action = btn.dataset.action;
+          hudOn(action.toUpperCase());
+          if(action === 'start'){
+            dropCoin();
+            Sound.fx('start');
+          }else if(action === 'options'){
+            Sound.fx('option');
+          }else{
+            Sound.fx('click');
+          }
           setTimeout(hudOff,700);
         });
       });
+
+      function dropCoin(){
+        coin.classList.remove('drop');
+        void coin.offsetWidth;
+        coin.classList.add('drop');
+        Sound.fx('coin');
+      }
 
       function hudOn(text){ hud.textContent=text; hud.classList.add('show'); }
       function hudOff(){ hud.classList.remove('show'); }
