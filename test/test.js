@@ -17,4 +17,12 @@ if(!/class="slot"/.test(html)){
   throw new Error('Coin slot missing');
 }
 
+if(!/class="static"/.test(html)){
+  throw new Error('Static overlay missing');
+}
+
+if(!/calc\(-50% \+ var\(--slotY\)\)/.test(html)){
+  throw new Error('Tiles not centered');
+}
+
 console.log('All tests passed');
