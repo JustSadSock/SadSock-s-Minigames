@@ -311,6 +311,7 @@
   </style>
 </head>
 <body>
+  <canvas id="bgCanvas"></canvas>
   <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат (пастель)">
     <div class="shell">
       <div class="bezel">
@@ -381,29 +382,6 @@
       const hairStyleInput = $('#hairStyle');
       const grid = $('.grid');
       const tiles = $$('.tile');
-      const bgCanvas = document.createElement('canvas');
-      bgCanvas.id='bgCanvas';
-      document.body.prepend(bgCanvas);
-      const bgCtx = bgCanvas.getContext('2d');
-      bgCtx.imageSmoothingEnabled=false;
-      function resizeBg(){ bgCanvas.width=innerWidth; bgCanvas.height=innerHeight; }
-      resizeBg();
-      addEventListener('resize', resizeBg, {passive:true});
-      const sparks = Array.from({length:40},()=>({
-        x:Math.random()*bgCanvas.width,
-        y:Math.random()*bgCanvas.height,
-        vy:.3+Math.random()*.6,
-        color:['#ffd9a3','#ff8cc6','#00d9b8'][Math.floor(Math.random()*3)]
-      }));
-      function animBg(){
-        bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
-        sparks.forEach(s=>{
-          bgCtx.fillStyle=s.color; bgCtx.fillRect(s.x|0,s.y|0,2,2);
-          s.y+=s.vy; if(s.y>bgCanvas.height) s.y=0;
-        });
-        requestAnimationFrame(animBg);
-      }
-      animBg();
 
       /* ---------- WebAudio (разрешается по жесту) ---------- */
       let actx, gain, unlocked=false;
@@ -697,5 +675,6 @@
       setTimeout(fixDPR, 60);
     })();
   </script>
+  <script src="retrofx.js"></script>
 </body>
 </html>
