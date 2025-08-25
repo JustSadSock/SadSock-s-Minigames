@@ -37,6 +37,12 @@
     },
     start(){
       if(this.unlocked) Music.play();
+    },
+    setVolume(v){
+      if(this.master) this.master.gain.value = v;
+    },
+    getVolume(){
+      return this.master ? this.master.gain.value : 0;
     }
   };
 

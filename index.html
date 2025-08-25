@@ -121,7 +121,6 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      animation:crtFlicker 2.5s steps(2) infinite;
     }
 
     .screen::before{
@@ -131,7 +130,7 @@
       animation:screenGlow 6s ease-in-out infinite;
     }
 
-    .topbar{
+    .topbar{ 
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -140,6 +139,7 @@
       background:linear-gradient(180deg,#ffe9b6,#ffd6a6);
     }
     .topbar .title{ flex:1; text-align:center; font-size:12px; }
+    .topright{ display:flex; align-items:center; gap:8px; }
     .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:48px; height:48px; }
     .avatar canvas{ width:48px; height:48px; image-rendering:pixelated; display:block; }
     .avatar{ position:relative; transition:transform .2s ease, filter .2s ease; }
@@ -152,6 +152,8 @@
     .avatar:hover::after{ opacity:.9; }
     .avatar:active{ transform:scale(.94); }
     #nickDisplay{ font-size:10px; }
+    #settingsBtn{ width:32px; height:32px; }
+    #settingsBtn canvas{ width:32px; height:32px; }
 
     /* барабан со значками — один в ряд */
     .reel{
@@ -189,6 +191,9 @@
     }
     .menu.show{ display:block; }
     .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .menu .row.ar{ display:grid; grid-template-columns:80px 24px 1fr 24px; align-items:center; }
+    .menu .value{ text-align:center; }
+    .menu .row.wide input[type=range]{ flex:1; }
     .menu .swatch{ width:20px; height:20px; border:2px solid var(--ink); border-radius:4px; }
     .menu .arrow{ width:24px; height:24px; border:2px solid var(--ink); background:var(--bg1); cursor:pointer; font-size:12px; line-height:18px; }
 
@@ -257,13 +262,19 @@
       box-shadow:
         inset 0 0 0 2px #ffe0b3,
         0 12px 26px rgba(0,0,0,.22),
-        0 4px 0 #c99742; /* объёмная кромка */
+        0 4px 0 #c99742,
+        0 8px 0 #a87332; /* дополнительный объём */
       display:grid; place-items:center;
       cursor:pointer; outline:none;
       position:absolute; top:50%; left:50%;
       transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) translateZ(var(--slotZ)) scale(var(--slotScale));
       transform-style:preserve-3d;
       transition:transform .35s cubic-bezier(.33,.66,.66,1), filter .08s ease, box-shadow .08s ease, opacity .35s;
+    }
+    .tile::before{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      box-shadow: inset 0 6px 0 rgba(255,255,255,.55), inset 0 -6px 0 rgba(0,0,0,.3);
+      pointer-events:none;
     }
     .tile::after{
       content:""; position:absolute; inset:0; border-radius:inherit;
@@ -323,7 +334,6 @@
     @keyframes focusPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
     .tile[data-focus="true"]{ animation:focusPulse .8s steps(2) infinite; }
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
-    @keyframes crtFlicker{0%,100%{filter:brightness(1);}50%{filter:brightness(1.06);}}
     @keyframes screenGlow{0%,100%{opacity:.85;}50%{opacity:.65;}}
   </style>
 </head>
@@ -333,12 +343,17 @@
     <div class="shell">
       <div class="bezel">
         <div class="screen">
-          <header class="topbar">
+      <header class="topbar">
             <button class="avatar" id="avatarBtn" aria-label="Профиль">
               <canvas id="avatarCanvas" width="48" height="48"></canvas>
             </button>
             <h2 class="title">SadSock’s playground</h2>
-            <span id="nickDisplay">Player</span>
+            <div class="topright">
+              <span id="nickDisplay">Player</span>
+              <button class="avatar" id="settingsBtn" aria-label="Настройки">
+                <canvas id="settingsCanvas" width="32" height="32"></canvas>
+              </button>
+            </div>
           </header>
           <div class="reel" role="listbox" aria-label="Меню">
             <button class="tile" role="option" data-idx="0" data-color="#46a0ff" aria-label="Космос">
@@ -408,43 +423,54 @@
           </div>
           <div id="avatarMenu" class="menu">
             <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
-            <div class="row">
+            <div class="row ar">
               <span>Кожа:</span>
               <button class="arrow" data-part="skin" data-dir="-1">◀</button>
-              <div id="skinSwatch" class="swatch"></div>
+              <div id="skinSwatch" class="swatch value"></div>
               <button class="arrow" data-part="skin" data-dir="1">▶</button>
             </div>
-            <div class="row">
+            <div class="row ar">
               <span>Волосы:</span>
               <button class="arrow" data-part="hair" data-dir="-1">◀</button>
-              <div id="hairSwatch" class="swatch"></div>
+              <div id="hairSwatch" class="swatch value"></div>
               <button class="arrow" data-part="hair" data-dir="1">▶</button>
             </div>
-            <div class="row">
+            <div class="row ar">
               <span>Стиль:</span>
               <button class="arrow" data-part="style" data-dir="-1">◀</button>
-              <span id="styleName">Короткая</span>
+              <span id="styleName" class="value">Короткая</span>
               <button class="arrow" data-part="style" data-dir="1">▶</button>
             </div>
-            <div class="row">
+            <div class="row ar">
               <span>Глаза:</span>
               <button class="arrow" data-part="eyes" data-dir="-1">◀</button>
-              <div id="eyeSwatch" class="swatch"></div>
+              <div id="eyeSwatch" class="swatch value"></div>
               <button class="arrow" data-part="eyes" data-dir="1">▶</button>
             </div>
-            <div class="row">
+            <div class="row ar">
               <span>Рубашка:</span>
               <button class="arrow" data-part="shirt" data-dir="-1">◀</button>
-              <div id="shirtSwatch" class="swatch"></div>
+              <div id="shirtSwatch" class="swatch value"></div>
               <button class="arrow" data-part="shirt" data-dir="1">▶</button>
             </div>
-            <div class="row">
+            <div class="row ar">
               <span>Головной убор:</span>
               <button class="arrow" data-part="hat" data-dir="-1">◀</button>
-              <span id="hatName">Нет</span>
+              <span id="hatName" class="value">Нет</span>
               <button class="arrow" data-part="hat" data-dir="1">▶</button>
             </div>
             <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
+          </div>
+          <div id="settingsMenu" class="menu">
+            <div class="row wide">
+              <span>Громкость:</span>
+              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" />
+            </div>
+            <div class="row wide">
+              <span>Экран:</span>
+              <button id="fullscreenBtn" class="pbtn">Полноэкранно</button>
+            </div>
+            <div style="text-align:center"><button id="settingsOk" class="pbtn">OK</button></div>
           </div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="static" aria-hidden="true"></div>
@@ -467,6 +493,11 @@
       const avatarCanvas = $('#avatarCanvas');
       const avatarBtn = $('#avatarBtn');
       const avatarMenu = $('#avatarMenu');
+      const settingsBtn = $('#settingsBtn');
+      const settingsMenu = $('#settingsMenu');
+      const volumeSlider = $('#volume');
+      const fullscreenBtn = $('#fullscreenBtn');
+      const settingsOk = $('#settingsOk');
       const nickInput = $('#nick');
       const skinSwatch = $('#skinSwatch');
       const hairSwatch = $('#hairSwatch');
@@ -493,6 +524,16 @@
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
+      const gearCtx = $('#settingsCanvas').getContext('2d',{alpha:false});
+      gearCtx.imageSmoothingEnabled=false;
+      (function drawGear(){
+        const S=2; clear(gearCtx); gearCtx.fillStyle='#2d1600';
+        const g=[[3,0],[4,0],[5,0],[6,0],[7,1],[8,2],[9,3],[9,4],[9,5],[8,6],[7,7],[6,8],[5,8],[4,9],[3,9],[2,8],[1,7],[0,6],[0,5],[0,4],[0,3],[1,2],[2,1]];
+        g.forEach(([x,y])=>px(gearCtx,x,y,S,'#2d1600'));
+        ['#ffca3a'].forEach(c=>{
+          px(gearCtx,4,4,S,c); px(gearCtx,5,4,S,c); px(gearCtx,4,5,S,c); px(gearCtx,5,5,S,c);
+        });
+      })();
 
       // Значки отрисовываются из набора кадров в icons.js
       const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull'];
@@ -567,6 +608,26 @@
       avatarBtn.addEventListener('click',()=>{
         const show = avatarMenu.classList.toggle('show');
         Sound.fx(show?'open':'close');
+      });
+      settingsBtn.addEventListener('click',()=>{
+        const show = settingsMenu.classList.toggle('show');
+        if(show){ volumeSlider.value = Sound.getVolume(); }
+        Sound.fx(show?'open':'close');
+      });
+      settingsOk.addEventListener('click',()=>{
+        settingsMenu.classList.remove('show');
+        Sound.fx('select');
+      });
+      volumeSlider.addEventListener('input',e=>{
+        Sound.setVolume(parseFloat(e.target.value));
+      });
+      fullscreenBtn.addEventListener('click',()=>{
+        if(!document.fullscreenElement){
+          document.documentElement.requestFullscreen();
+        }else{
+          document.exitFullscreen();
+        }
+        Sound.fx('option');
       });
       arrows.forEach(btn=>{
         btn.addEventListener('click',()=>{
