@@ -655,6 +655,39 @@ XXXXX
 `, {X:'#ffdd00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [coin1,coin2,coin3,coin4,coin5] = coinFrames;
 
+  const potionFrames = makeFrames(`
+..X..
+.XSX.
+.XXX.
+.XXX.
+..X..
+`, {X:'#00bbf9',S:'#7b3f00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [potion1,potion2,potion3,potion4,potion5] = potionFrames;
+  const crownFrames = makeFrames(`
+X.X.X
+XXXXX
+XXXXX
+.XXX.
+..X..
+`, {X:'#ffdd00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [crown1,crown2,crown3,crown4,crown5] = crownFrames;
+  const treeFrames = makeFrames(`
+..X..
+.XXX.
+XXXXX
+..X..
+..T..
+`, {X:'#00d97e',T:'#7b3f00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [tree1,tree2,tree3,tree4,tree5] = treeFrames;
+  const skullFrames = makeFrames(`
+.XXX.
+XOXOX
+XXXXX
+.X.X.
+.X.X.
+`, {X:'#adb5ff',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [skull1,skull2,skull3,skull4,skull5] = skullFrames;
+
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
     bomb:[bomb1,bomb2,bomb3,bomb4,bomb5],
@@ -667,7 +700,11 @@ XXXXX
     car:[car1,car2,car3,car4,car5],
     sword:[sword1,sword2,sword3,sword4,sword5],
     shield:[shield1,shield2,shield3,shield4,shield5],
-    coin:[coin1,coin2,coin3,coin4,coin5]
+    coin:[coin1,coin2,coin3,coin4,coin5],
+    potion:[potion1,potion2,potion3,potion4,potion5],
+    crown:[crown1,crown2,crown3,crown4,crown5],
+    tree:[tree1,tree2,tree3,tree4,tree5],
+    skull:[skull1,skull2,skull3,skull4,skull5]
   };
 
   window.Icons={draw};

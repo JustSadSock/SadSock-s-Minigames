@@ -172,28 +172,29 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:40px;
+      gap:24px;
       position:relative;
     }
-    .slot{
-      width:90px; height:26px;
-      border-radius:14px/8px;
-      background:#2d1600;
-      box-shadow:inset 0 3px 4px rgba(255,255,255,.4), inset 0 -4px 6px rgba(0,0,0,.6);
-      position:relative; overflow:hidden;
+    .dpad{
+      width:90px; height:90px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows:repeat(3,1fr);
+      gap:6px;
     }
-    .coin{
-      position:absolute; top:-70px; left:50%; transform:translateX(-50%);
-      width:36px; height:36px; border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, #fff2a8, #ffca3a 70%, #e3a400 100%);
-      box-shadow:0 2px 0 #b8860b;
+    .dpad button{
+      border:4px solid var(--ink);
+      border-radius:8px;
+      background:linear-gradient(180deg,#ffe2f0,#ffd0e0);
+      box-shadow:0 4px 0 var(--ink), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.25);
+      font-size:16px; line-height:1; cursor:pointer;
+      transition:transform .1s steps(2), filter .2s ease;
     }
-    .coin.drop{ animation:coinDrop .8s ease-in forwards; }
-    @keyframes coinDrop{
-      0%{ transform:translate(-50%,-80px) rotate(0deg); }
-      70%{ transform:translate(-50%,0) rotate(360deg); }
-      100%{ transform:translate(-50%,4px) rotate(540deg); }
-    }
+    .dpad button:active{ transform:translateY(2px); box-shadow:0 2px 0 var(--ink), inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(0,0,0,.25); }
+    .dpad .up{ grid-area:1/2; }
+    .dpad .left{ grid-area:2/1; }
+    .dpad .right{ grid-area:2/3; }
+    .dpad .down{ grid-area:3/2; }
     .pbtn{
       font-size:12px; letter-spacing:1px; color:var(--ink);
       padding:12px 26px; cursor:pointer; user-select:none;
@@ -203,6 +204,7 @@
       position:relative;
       transition:transform .1s steps(2), filter .2s ease;
     }
+    .panel .pbtn{ padding:8px 18px; font-size:10px; }
     .pbtn::before{
       content:""; position:absolute; inset:0; border-radius:6px;
       background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,0));
@@ -438,6 +440,22 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Монета</span>
             </button>
+            <button class="tile" role="option" data-idx="12" data-color="#00bbf9" aria-label="Зелье">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Зелье</span>
+            </button>
+            <button class="tile" role="option" data-idx="13" data-color="#ffdd00" aria-label="Корона">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Корона</span>
+            </button>
+            <button class="tile" role="option" data-idx="14" data-color="#00d97e" aria-label="Дерево">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Дерево</span>
+            </button>
+            <button class="tile" role="option" data-idx="15" data-color="#adb5ff" aria-label="Череп">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Череп</span>
+            </button>
           </div>
           <div class="scrollNav">
             <button id="scrollUp" aria-label="Вверх">▲</button>
@@ -491,8 +509,13 @@
         </div>
       </div>
       <div class="panel">
+        <div class="dpad">
+          <button class="up" data-dir="up" aria-label="Вверх">▲</button>
+          <button class="left" data-dir="left" aria-label="Влево">◀</button>
+          <button class="right" data-dir="right" aria-label="Вправо">▶</button>
+          <button class="down" data-dir="down" aria-label="Вниз">▼</button>
+        </div>
         <button class="pbtn" data-action="start">START</button>
-        <div class="slot"><div id="coin" class="coin"></div></div>
         <button class="pbtn" data-action="options">OPTIONS</button>
       </div>
     </div>
@@ -520,9 +543,9 @@
       const avatarOk = $('#avatarOk');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
-      const coin = $('#coin');
       const scrollUp = $('#scrollUp');
       const scrollDown = $('#scrollDown');
+      const dpadBtns = $$('.dpad button');
 
       // блокируем двойные касания и прокрутку страницы
       addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
@@ -540,7 +563,7 @@
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin'];
+      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull'];
 
       /* ---------- Аватар ---------- */
       const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none'};
@@ -670,24 +693,24 @@
       const total = tiles.length;
       const rows = Math.ceil(total/2);
       let rowIdx = 0;
+      let colIdx = 0;
       function updateReel(){
         const rect = tiles[0].getBoundingClientRect();
-        const stepY = rect.height * 1.4;
+        const stepY = rect.height * 1.2;
         const stepX = rect.width * 0.8;
         tiles.forEach((t,i)=>{
           const col = i % 2;
           const row = Math.floor(i/2);
-          let diff = row - rowIdx;
-          if(diff > rows/2) diff -= rows;
-          if(diff < -rows/2) diff += rows;
-          const y = Math.round(diff * stepY);
+          const diff = (row - rowIdx + rows) % rows; // 0..rows-1
+          const visible = diff < 2;
+          const y = (diff - 0.5) * stepY;
           const x = col === 0 ? -stepX : stepX;
-          const scale = 1 - Math.abs(diff)*0.25;
+          const scale = 1 - Math.abs(diff - 0.5) * 0.3;
           t.style.setProperty('--slotY', y + 'px');
           t.style.setProperty('--slotX', x + 'px');
           t.style.setProperty('--slotScale', scale.toFixed(2));
-          t.style.opacity = Math.abs(diff) > 1 ? 0 : 1;
-          t.style.zIndex = 100 - Math.abs(diff)*10;
+          t.style.opacity = visible ? 1 : 0;
+          t.style.zIndex = 100 - diff * 10;
           t.dataset.focus = i === idx;
         });
       }
@@ -695,7 +718,14 @@
 
       function move(dir){
         rowIdx = dir === 'down' ? (rowIdx + 1) % rows : (rowIdx - 1 + rows) % rows;
-        idx = rowIdx * 2;
+        idx = rowIdx * 2 + colIdx;
+        updateReel();
+        Sound.fx('move');
+      }
+
+      function moveH(dir){
+        colIdx = dir === 'right' ? (colIdx + 1) % 2 : (colIdx - 1 + 2) % 2;
+        idx = rowIdx * 2 + colIdx;
         updateReel();
         Sound.fx('move');
       }
@@ -703,6 +733,8 @@
       addEventListener('keydown', e=>{
         if(e.key === 'ArrowUp'){ e.preventDefault(); move('up'); }
         else if(e.key === 'ArrowDown'){ e.preventDefault(); move('down'); }
+        else if(e.key === 'ArrowLeft'){ e.preventDefault(); moveH('left'); }
+        else if(e.key === 'ArrowRight'){ e.preventDefault(); moveH('right'); }
         else if(e.key === 'Enter'){ selectCurrent(); }
         else if(e.key === 'Escape'){ tiles.forEach(t=> t.dataset.focus='false'); }
       });
@@ -713,11 +745,18 @@
       }, {passive:false});
       scrollUp.addEventListener('click',()=> move('up'));
       scrollDown.addEventListener('click',()=> move('down'));
+      dpadBtns.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const dir = btn.dataset.dir;
+          if(dir==='up'||dir==='down') move(dir); else moveH(dir);
+        });
+      });
 
       tiles.forEach((t, i)=>{
         t.addEventListener('click', ()=>{
           idx = i;
           rowIdx = Math.floor(i/2);
+          colIdx = i % 2;
           updateReel();
           selectCurrent();
         });
@@ -727,7 +766,6 @@
         btn.addEventListener('click',()=>{
           const action = btn.dataset.action;
           if(action === 'start'){
-            dropCoin();
             Sound.fx('start');
           }else if(action === 'options'){
             Sound.fx('option');
@@ -736,13 +774,6 @@
           }
         });
       });
-
-      function dropCoin(){
-        coin.classList.remove('drop');
-        void coin.offsetWidth;
-        coin.classList.add('drop');
-        Sound.fx('coin');
-      }
 
       function selectCurrent(){
         const tile = tiles[idx];

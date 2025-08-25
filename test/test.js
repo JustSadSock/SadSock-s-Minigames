@@ -13,8 +13,9 @@ if(!/class="panel"/.test(html)){
   throw new Error('Panel missing');
 }
 
-if(!/class="slot"/.test(html)){
-  throw new Error('Coin slot missing');
+
+if(!/class="dpad"/.test(html)){
+  throw new Error('D-pad missing');
 }
 
 if(!/class="static"/.test(html)){
@@ -30,8 +31,8 @@ if(!/var\(--slotX\)/.test(html)){
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 12){
-  throw new Error('Expected 12 tiles');
+if(tileCount !== 16){
+  throw new Error('Expected 16 tiles');
 }
 
 if(!/id="scrollUp"/.test(html) || !/id="scrollDown"/.test(html)){
