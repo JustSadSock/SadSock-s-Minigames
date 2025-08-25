@@ -146,17 +146,16 @@
     .avatar:active{ transform:scale(.94); }
     #nickDisplay{ font-size:12px; }
 
-    .grid{
+    /* барабан со значками — один в ряд */
+    .reel{
       flex:1;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      grid-template-rows:1fr 1fr;
-      gap:var(--gap);
+      position:relative;
+      overflow:hidden;
+      perspective:800px;
       padding:calc(var(--gap) + 6px);
-      align-content:center; justify-items:center;
     }
 
-    .navbtns{ display:flex; justify-content:center; gap:32px; padding:4px 0 18px; }
+    .navbtns{ display:flex; justify-content:center; gap:32px; padding:4px 0 18px; margin-top:auto; }
     .pbtn{
       font-size:12px; letter-spacing:1px; color:var(--ink);
       padding:12px 26px; cursor:pointer; user-select:none;
@@ -225,6 +224,8 @@
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
       --size: clamp(120px, 18vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
+      --slotY:0px;
+      --slotScale:1;
       width: calc(var(--size) * 1.6);
       height: calc(var(--size) * 1.6);
       border-radius:18px;
@@ -235,8 +236,10 @@
         0 12px 26px rgba(0,0,0,.22);
       display:grid; grid-template-rows: 1fr auto; place-items:center;
       gap:12px;
-      cursor:pointer; outline:none; position:relative;
-      transition:transform .08s ease, filter .08s ease, box-shadow .08s ease;
+      cursor:pointer; outline:none;
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%, var(--slotY)) scale(var(--slotScale));
+      transition:transform .35s cubic-bezier(.33,.66,.66,1), filter .08s ease, box-shadow .08s ease, opacity .35s;
     }
     .tile::after{
       content:""; position:absolute; inset:0; border-radius:inherit;
@@ -245,7 +248,7 @@
     }
     .tile:hover{ filter:brightness(1.07); }
     .tile:hover::after{ opacity:.55; }
-    .tile:active{ transform:translateY(1px) scale(.996); }
+    .tile:active{ transform:translate(-50%, calc(var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
     .tile[data-focus="true"]{
       box-shadow:
         inset 0 0 0 2px #ffbd69,
@@ -292,28 +295,19 @@
       pointer-events:none; animation:hintPulse 4s ease-in-out infinite;
     }
 
-    /* адаптив — сохраняем 2×2, уменьшаем внутренние отступы */
+    /* адаптивные отступы для барабана */
     @media (max-width: 560px){
       :root{ --gap:18px; }
       .shell{ padding:10px; }
       .bezel{ padding:8px; }
-      .grid{ padding:18px; }
+      .reel{ padding:18px; }
       .tile{ border-radius:14px; }
       .navbtns{ flex-direction:column; gap:14px; padding-bottom:10px; }
       .pbtn{ width:80%; margin:0 auto; }
     }
 
-    /* ориентация: вертикаль — две плитки в ряд */
-    @media (orientation:portrait){
-      .grid{ grid-template-columns:1fr 1fr; grid-template-rows:repeat(2,1fr); }
-    }
-    /* ориентация: ландшафт на широких экранах — в ряд */
-    @media (orientation:landscape) and (min-width:700px){
-      .grid{ grid-template-columns:repeat(4,1fr); grid-template-rows:1fr; }
-    }
-
     @media (max-height:480px){
-      .grid{ padding:12px; gap:12px; }
+      .reel{ padding:12px; }
       .navbtns{ padding:2px 0 8px; }
     }
 
@@ -322,7 +316,7 @@
       0%,100%{ transform:translateY(0); }
       50%{ transform:translateY(-2px); }
     }
-    .tile:hover{ animation:tileBounce .6s steps(2) infinite; }
+    /* анимации при наведении отключены, чтобы не мешать барабану */
     @keyframes focusPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
     .tile[data-focus="true"]{ animation:focusPulse .8s steps(2) infinite; }
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
@@ -344,20 +338,20 @@
             <h2 class="title">Pastel Pixel Arcade</h2>
             <span id="nickDisplay">Player</span>
           </header>
-          <div class="grid" role="grid" aria-label="Меню">
-              <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
+          <div class="reel" role="listbox" aria-label="Меню">
+              <button class="tile" role="option" data-idx="0" aria-label="Космос">
                 <canvas width="120" height="120"></canvas>
                 <span class="label-blue">SPACE</span>
               </button>
-            <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
+            <button class="tile" role="option" data-idx="1" aria-label="Сердце">
               <canvas width="120" height="120"></canvas>
               <span class="label-pink">HEART</span>
             </button>
-            <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
+            <button class="tile" role="option" data-idx="2" aria-label="Ключ">
               <canvas width="120" height="120"></canvas>
               <span class="label-peach">KEY</span>
             </button>
-            <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
+            <button class="tile" role="option" data-idx="3" aria-label="Бомба">
               <canvas width="120" height="120"></canvas>
               <span class="label-mint">BOMB</span>
             </button>
@@ -416,8 +410,8 @@
       const styleName = $('#styleName');
       const arrows = $$('.arrow');
       const avatarOk = $('#avatarOk');
-      const grid = $('.grid');
-      const tiles = $$('.tile');
+      const reel = $('.reel');
+      const tiles = $$('.reel .tile');
 
 
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
@@ -625,52 +619,49 @@
       }
       animateIcons();
 
-      /* ---------- Фокус/навигация ---------- */
-      let idx=0, cols=2, total=tiles.length;
-      function updateLayout(){
-        cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-        total = tiles.length;
+      /* ---------- Барабан и навигация ---------- */
+      let idx = 0;
+      const total = tiles.length;
+      function updateReel(){
+        const step = tiles[0].offsetHeight * 1.1;
+        tiles.forEach((t, i)=>{
+          let diff = (i - idx + total) % total;
+          if(diff > total/2) diff -= total;
+          const y = diff * step;
+          const scale = 1 - Math.abs(diff)*0.25;
+          t.style.setProperty('--slotY', y + 'px');
+          t.style.setProperty('--slotScale', scale.toFixed(2));
+          t.style.opacity = Math.abs(diff) > 2 ? 0 : 1;
+          t.style.zIndex = 100 - Math.abs(diff);
+          t.dataset.focus = diff === 0;
+        });
       }
-      addEventListener('resize', updateLayout, {passive:true});
-      requestAnimationFrame(updateLayout);
-      addEventListener('orientationchange', ()=>{
-        const mode = (screen.orientation?.type||'').includes('landscape')?'LANDSCAPE':'PORTRAIT';
-        hudOn(mode);
-        setTimeout(hudOff,600);
-      });
-      function setFocus(i, withScroll=true){
-        idx = Math.max(0, Math.min(total-1, i));
-        tiles.forEach((t, j)=> t.dataset.focus = (j===idx));
-        tiles[idx].focus({preventScroll:!withScroll});
-      }
-      setFocus(0,false);
+      updateReel();
 
       function move(dir){
-        const row = Math.floor(idx/cols), col = idx%cols;
-        let r=row, c=col;
-        if(dir==='up') r=Math.max(0,row-1);
-        if(dir==='down') r=Math.min(Math.ceil(total/cols)-1,row+1);
-        if(dir==='left') c=Math.max(0,col-1);
-        if(dir==='right') c=Math.min(cols-1,col+1);
-        setFocus(r*cols + c);
+        idx = (dir === 'down') ? (idx + 1) % total : (idx - 1 + total) % total;
+        updateReel();
         Sound.fx("move");
       }
 
-      addEventListener('keydown', (e)=>{
-        if(e.key==='ArrowUp'){ e.preventDefault(); move('up'); }
-        else if(e.key==='ArrowDown'){ e.preventDefault(); move('down'); }
-        else if(e.key==='ArrowLeft'){ e.preventDefault(); move('left'); }
-        else if(e.key==='ArrowRight'){ e.preventDefault(); move('right'); }
-        else if(e.key==='Enter'){ selectCurrent(); }
-        else if(e.key==='Escape'){
-          tiles.forEach(t=> t.dataset.focus='false');
-          hudOff();
-        }
+      addEventListener('keydown', e=>{
+        if(e.key === 'ArrowUp'){ e.preventDefault(); move('up'); }
+        else if(e.key === 'ArrowDown'){ e.preventDefault(); move('down'); }
+        else if(e.key === 'Enter'){ selectCurrent(); }
+        else if(e.key === 'Escape'){ tiles.forEach(t=> t.dataset.focus='false'); hudOff(); }
       });
 
+      reel.addEventListener('wheel', e=>{
+        e.preventDefault();
+        move(e.deltaY > 0 ? 'down' : 'up');
+      }, {passive:false});
+
       tiles.forEach((t, i)=>{
-        t.addEventListener('pointerenter', ()=>{ setFocus(i); });
-        t.addEventListener('click', selectCurrent);
+        t.addEventListener('click', ()=>{
+          idx = i;
+          updateReel();
+          selectCurrent();
+        });
       });
       const navBtns = $$('.pbtn');
       navBtns.forEach(btn=>{
