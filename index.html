@@ -245,9 +245,10 @@
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
       --size: clamp(80px, 12vmin, var(--tile));
-      --slotY:0px;
-      --slotX:0px;
-      --slotScale:1;
+      --slotY:0px;      /* вертикальная позиция барабана */
+      --slotX:0px;      /* горизонтальная позиция */
+      --slotZ:0px;      /* глубина для объёма */
+      --slotScale:1;    /* масштаб при удалении */
       width: var(--size);
       height: var(--size);
       border-radius:18px;
@@ -255,11 +256,13 @@
       border:2px solid #ffbd69;
       box-shadow:
         inset 0 0 0 2px #ffe0b3,
-        0 12px 26px rgba(0,0,0,.22);
+        0 12px 26px rgba(0,0,0,.22),
+        0 4px 0 #c99742; /* объёмная кромка */
       display:grid; place-items:center;
       cursor:pointer; outline:none;
       position:absolute; top:50%; left:50%;
-      transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) scale(var(--slotScale));
+      transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) translateZ(var(--slotZ)) scale(var(--slotScale));
+      transform-style:preserve-3d;
       transition:transform .35s cubic-bezier(.33,.66,.66,1), filter .08s ease, box-shadow .08s ease, opacity .35s;
     }
     .tile::after{
@@ -620,7 +623,7 @@
       /* ---------- Барабан и навигация ---------- */
       let idx = 0;
       const total = tiles.length;
-      const cols = 4;
+      const cols = 2; // на экране два столбца
       const rows = Math.ceil(total/cols);
       let rowIdx = 0;
       let colIdx = 0;
@@ -628,7 +631,7 @@
       function recalcSteps(){
         const r = reel.getBoundingClientRect();
         const gap = 12;
-        const size = Math.min((r.width - gap*5)/4, (r.height - gap*5)/4);
+        const size = Math.min((r.width - gap*3)/2, (r.height - gap*3)/2);
         stepX = size + gap;
         stepY = size + gap;
         tiles.forEach(t=> t.style.setProperty('--size', size + 'px'));
@@ -637,13 +640,24 @@
         tiles.forEach((t,i)=>{
           const col = i % cols;
           const row = Math.floor(i/cols);
+          let diff = (row - rowIdx + rows) % rows;
+          if(diff === rows-1) diff = -1; // ряд выше
+          if(diff > 2){
+            t.style.opacity = 0;
+            t.dataset.focus = 'false';
+            return;
+          }
           const x = (col - (cols-1)/2) * stepX;
-          const y = (row - (rows-1)/2) * stepY;
+          const y = (diff - 0.5) * stepY;
+          const scale = (diff === 0 || diff === 1) ? 1 : .7;
+          const z = (diff === 0 || diff === 1) ? 0 : -120;
           t.style.setProperty('--slotY', y + 'px');
           t.style.setProperty('--slotX', x + 'px');
-          t.style.setProperty('--slotScale', 1);
-          t.style.opacity = 1;
-          t.style.zIndex = 1;
+          t.style.setProperty('--slotZ', z + 'px');
+          t.style.setProperty('--slotScale', scale);
+          t.style.opacity = (diff === 0 || diff === 1) ? 1 : 0;
+          t.style.zIndex = diff === 0 || diff === 1 ? 2 : 1;
+          t.style.pointerEvents = (diff === 0 || diff === 1) ? 'auto' : 'none';
           t.dataset.focus = i === idx;
         });
       }

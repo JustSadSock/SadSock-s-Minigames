@@ -33,8 +33,12 @@ if(!/var\(--slotX\)/.test(html)){
   throw new Error('Missing slotX variable');
 }
 
-if(!/% 4/.test(html)){
-  throw new Error('Tiles should be arranged in 4 columns');
+if(!/const cols = 2/.test(html)){
+  throw new Error('Reel should use two columns');
+}
+
+if(!/--slotZ/.test(html)){
+  throw new Error('Depth variable missing for tiles');
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
