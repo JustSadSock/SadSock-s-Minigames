@@ -9,13 +9,16 @@ if(!/function updateReel\(\)/.test(html)){
   throw new Error('Missing updateReel logic');
 }
 
-if(!/class="panel"/.test(html)){
-  throw new Error('Panel missing');
+if(/class="panel"/.test(html)){
+  throw new Error('Panel should be removed');
 }
 
+if(/class="dpad"/.test(html)){
+  throw new Error('D-pad should be removed');
+}
 
-if(!/class="dpad"/.test(html)){
-  throw new Error('D-pad missing');
+if(/id="scrollUp"/.test(html) || /id="scrollDown"/.test(html)){
+  throw new Error('Scroll arrows should be removed');
 }
 
 if(!/class="static"/.test(html)){
@@ -33,10 +36,6 @@ if(!/var\(--slotX\)/.test(html)){
 const tileCount = (html.match(/class="tile"/g)||[]).length;
 if(tileCount !== 16){
   throw new Error('Expected 16 tiles');
-}
-
-if(!/id="scrollUp"/.test(html) || !/id="scrollDown"/.test(html)){
-  throw new Error('Scroll arrows missing');
 }
 
 console.log('All tests passed');
