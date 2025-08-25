@@ -611,7 +611,7 @@ XXXXX
 XXXXX
 XXXXX
 X.X.X
-`, {X:'#adb5ff',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+`, {X:'#46a0ff',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [ghost1,ghost2,ghost3,ghost4,ghost5] = ghostFrames;
   const appleFrames = makeFrames(`
 ..S..
@@ -644,7 +644,7 @@ BBBBB
 XXXXX
 .XXX.
 ..X..
-`, {X:'#8ecae6'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [shield1,shield2,shield3,shield4,shield5] = shieldFrames;
   const coinFrames = makeFrames(`
 ..X..
@@ -685,7 +685,7 @@ XOXOX
 XXXXX
 .X.X.
 .X.X.
-`, {X:'#adb5ff',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+`, {X:'#ffcf86',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [skull1,skull2,skull3,skull4,skull5] = skullFrames;
 
   const frames={

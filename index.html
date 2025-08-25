@@ -254,6 +254,7 @@
       --slotX:0px;      /* горизонтальная позиция */
       --slotZ:0px;      /* глубина для объёма */
       --slotScale:1;    /* масштаб при удалении */
+      --slotBright:1;   /* яркость для эффекта глубины */
       width: var(--size);
       height: var(--size);
       border-radius:18px;
@@ -269,7 +270,8 @@
       position:absolute; top:50%; left:50%;
       transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) translateZ(var(--slotZ)) scale(var(--slotScale));
       transform-style:preserve-3d;
-      transition:transform .35s cubic-bezier(.33,.66,.66,1), filter .08s ease, box-shadow .08s ease, opacity .35s;
+      filter:brightness(var(--slotBright));
+      transition:transform .55s cubic-bezier(.2,1.1,.22,1.05), filter .55s, box-shadow .25s, opacity .55s;
     }
     .tile::before{
       content:""; position:absolute; inset:0; border-radius:inherit;
@@ -281,7 +283,6 @@
       background:linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 60%);
       mix-blend-mode:overlay; opacity:0; transition:opacity .2s ease;
     }
-    .tile:hover{ filter:brightness(1.07); }
     .tile:hover::after{ opacity:.55; }
     .tile:active{ transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
     .tile[data-focus="true"]{
@@ -310,6 +311,26 @@
       font-size:10px;
       pointer-events:none;
       color:#2d1600;
+    }
+
+    .indicator{
+      position:absolute;
+      right:6px;
+      top:50%;
+      transform:translateY(-50%);
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .indicator div{
+      width:8px; height:8px;
+      border-radius:50%;
+      background:rgba(0,0,0,.2);
+      box-shadow:0 1px 0 rgba(255,255,255,.4), 0 -1px 0 rgba(0,0,0,.3);
+    }
+    .indicator div.active{
+      background:var(--accent);
+      box-shadow:0 0 6px var(--accent);
     }
 
     /* адаптивные отступы для барабана */
@@ -380,7 +401,7 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Корабль</span>
             </button>
-            <button class="tile" role="option" data-idx="6" data-color="#adb5ff" aria-label="Призрак">
+            <button class="tile" role="option" data-idx="6" data-color="#46a0ff" aria-label="Призрак">
               <canvas width="120" height="120"></canvas>
               <span class="label">Призрак</span>
             </button>
@@ -396,7 +417,7 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Меч</span>
             </button>
-            <button class="tile" role="option" data-idx="10" data-color="#8ecae6" aria-label="Щит">
+            <button class="tile" role="option" data-idx="10" data-color="#46a0ff" aria-label="Щит">
               <canvas width="120" height="120"></canvas>
               <span class="label">Щит</span>
             </button>
@@ -416,10 +437,11 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Дерево</span>
             </button>
-            <button class="tile" role="option" data-idx="15" data-color="#adb5ff" aria-label="Череп">
+            <button class="tile" role="option" data-idx="15" data-color="#ffcf86" aria-label="Череп">
               <canvas width="120" height="120"></canvas>
               <span class="label">Череп</span>
             </button>
+            <div class="indicator" aria-hidden="true"></div>
           </div>
           <div id="avatarMenu" class="menu">
             <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
@@ -509,6 +531,7 @@
       const avatarOk = $('#avatarOk');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
+      const indicator = $('.indicator');
 
       // блокируем двойные касания и прокрутку страницы
       addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
@@ -686,6 +709,8 @@
       const total = tiles.length;
       const cols = 2; // на экране два столбца
       const rows = Math.ceil(total/cols);
+      indicator.innerHTML = '<div></div>'.repeat(rows);
+      const dots = [...indicator.children];
       let rowIdx = 0;
       let colIdx = 0;
       let stepY, stepX;
@@ -703,24 +728,32 @@
           const row = Math.floor(i/cols);
           let diff = (row - rowIdx + rows) % rows;
           if(diff === rows-1) diff = -1; // ряд выше
-          if(diff > 2){
+          if(diff < -1 || diff > 2){
             t.style.opacity = 0;
             t.dataset.focus = 'false';
             return;
           }
           const x = (col - (cols-1)/2) * stepX;
           const y = (diff - 0.5) * stepY;
-          const scale = (diff === 0 || diff === 1) ? 1 : .7;
-          const z = (diff === 0 || diff === 1) ? 0 : -120;
+          const scale = (diff === 0 || diff === 1) ? 1 : .8;
+          const z = diff === 0 ? 80 : diff === 1 ? 40 : -120;
+          const bright = diff === 0 ? 1.15 : diff === 1 ? 1 : 0.7;
+          const op = (diff === 0 || diff === 1) ? 1 : 0.5;
           t.style.setProperty('--slotY', y + 'px');
           t.style.setProperty('--slotX', x + 'px');
           t.style.setProperty('--slotZ', z + 'px');
           t.style.setProperty('--slotScale', scale);
-          t.style.opacity = (diff === 0 || diff === 1) ? 1 : 0;
-          t.style.zIndex = diff === 0 || diff === 1 ? 2 : 1;
+          t.style.setProperty('--slotBright', bright);
+          t.style.opacity = op;
+          t.style.zIndex = diff === 0 ? 3 : diff === 1 ? 2 : 1;
           t.style.pointerEvents = (diff === 0 || diff === 1) ? 'auto' : 'none';
           t.dataset.focus = i === idx;
         });
+        updateIndicator();
+      }
+
+      function updateIndicator(){
+        dots.forEach((d,i)=> d.classList.toggle('active', i === rowIdx));
       }
       recalcSteps();
       updateReel();
