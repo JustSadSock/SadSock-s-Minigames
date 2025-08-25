@@ -12,6 +12,23 @@
     });
   }
 
+  function baseFromPattern(pattern,palette){
+    const rows=pattern.trim().split('\n');
+    const pts=[];
+    rows.forEach((row,y)=>{
+      row.split('').forEach((ch,x)=>{
+        const col=palette[ch];
+        if(col) pts.push({c:col,x:x+8,y:y+8});
+      });
+    });
+    return pts;
+  }
+
+  function makeFrames(pattern,palette,hlColor,highlights){
+    const base=baseFromPattern(pattern,palette);
+    return highlights.map(([hx,hy])=> base.concat({c:hlColor,x:hx+8,y:hy+8}));
+  }
+
   const heart1=[
     {c:'#ff9eb8',x:15,y:8},
     {c:'#ff9eb8',x:16,y:8},
@@ -572,11 +589,85 @@
     {c:'#ffffff',x:30,y:10}
   ];
 
+  const starFrames = makeFrames(`
+..X..
+.XXX.
+XXXXX
+.XXX.
+..X..
+`, {X:'#ffca3a'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [star1,star2,star3,star4,star5] = starFrames;
+  const shipFrames = makeFrames(`
+..X..
+.XXX.
+XXXXX
+.XXX.
+X...X
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [ship1,ship2,ship3,ship4,ship5] = shipFrames;
+  const ghostFrames = makeFrames(`
+.XOX.
+XXXXX
+XXXXX
+XXXXX
+X.X.X
+`, {X:'#adb5ff',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [ghost1,ghost2,ghost3,ghost4,ghost5] = ghostFrames;
+  const appleFrames = makeFrames(`
+..S..
+.XXX.
+XXXXX
+.XXX.
+..X..
+`, {X:'#ff595e',S:'#7b3f00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [apple1,apple2,apple3,apple4,apple5] = appleFrames;
+  const carFrames = makeFrames(`
+XXXXX
+XXXXX
+X...X
+XXXXX
+O...O
+`, {X:'#ff6b6b',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [car1,car2,car3,car4,car5] = carFrames;
+  const swordFrames = makeFrames(`
+..X..
+..X..
+BBBBB
+..X..
+..X..
+..X..
+`, {X:'#c0c0c0',B:'#8b4513'}, '#fff', [[2,0],[2,1],[2,3],[2,4],[2,5]]);
+  const [sword1,sword2,sword3,sword4,sword5] = swordFrames;
+  const shieldFrames = makeFrames(`
+..X..
+.XXX.
+XXXXX
+.XXX.
+..X..
+`, {X:'#8ecae6'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [shield1,shield2,shield3,shield4,shield5] = shieldFrames;
+  const coinFrames = makeFrames(`
+..X..
+.XXX.
+XXXXX
+.XXX.
+..X..
+`, {X:'#ffdd00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [coin1,coin2,coin3,coin4,coin5] = coinFrames;
+
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
     bomb:[bomb1,bomb2,bomb3,bomb4,bomb5],
     key:[key1,key2,key3,key4,key5],
-    space:[space1,space2,space3,space4,space5]
+    space:[space1,space2,space3,space4,space5],
+    star:[star1,star2,star3,star4,star5],
+    ship:[ship1,ship2,ship3,ship4,ship5],
+    ghost:[ghost1,ghost2,ghost3,ghost4,ghost5],
+    apple:[apple1,apple2,apple3,apple4,apple5],
+    car:[car1,car2,car3,car4,car5],
+    sword:[sword1,sword2,sword3,sword4,sword5],
+    shield:[shield1,shield2,shield3,shield4,shield5],
+    coin:[coin1,coin2,coin3,coin4,coin5]
   };
 
   window.Icons={draw};

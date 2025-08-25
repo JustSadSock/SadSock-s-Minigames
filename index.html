@@ -266,6 +266,7 @@
       opacity:.08;
       mix-blend-mode:overlay;
       animation:staticShift .2s steps(2) infinite;
+      pointer-events:none;
     }
 
     @keyframes scanMove{ from{background-position:0 0;} to{background-position:0 4px;} }
@@ -277,6 +278,7 @@
     .tile{
       --size: clamp(160px, 22vmin, var(--tile)); /* ещё больше, чтобы заполнить экран */
       --slotY:0px;
+      --slotX:0px;
       --slotScale:1;
       width: calc(var(--size) * 1.6);
       height: calc(var(--size) * 1.6);
@@ -289,7 +291,7 @@
       display:grid; place-items:center;
       cursor:pointer; outline:none;
       position:absolute; top:50%; left:50%;
-      transform:translate(-50%, calc(-50% + var(--slotY))) scale(var(--slotScale));
+      transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) scale(var(--slotScale));
       transition:transform .35s cubic-bezier(.33,.66,.66,1), filter .08s ease, box-shadow .08s ease, opacity .35s;
     }
     .tile::after{
@@ -299,7 +301,7 @@
     }
     .tile:hover{ filter:brightness(1.07); }
     .tile:hover::after{ opacity:.55; }
-    .tile:active{ transform:translate(-50%, calc(-50% + var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
+    .tile:active{ transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
     .tile[data-focus="true"]{
       box-shadow:
         inset 0 0 0 2px #ffbd69,
@@ -316,6 +318,34 @@
       border-radius:12px;
       border:2px solid #ffbd69;
       box-shadow: inset 0 0 0 2px #ffd59e, 0 0 0 1px rgba(0,0,0,.12);
+    }
+
+    .tile .label{
+      position:absolute;
+      bottom:4px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:10px;
+      pointer-events:none;
+      color:#2d1600;
+    }
+
+    .scrollNav{
+      position:absolute;
+      top:50%;
+      right:4px;
+      transform:translateY(-50%);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .scrollNav button{
+      width:24px;
+      height:24px;
+      border:2px solid #ffbd69;
+      background:#ffe9b6;
+      cursor:pointer;
+      font-size:12px;
     }
 
     /* адаптивные отступы для барабана */
@@ -360,18 +390,58 @@
             <span id="nickDisplay">Player</span>
           </header>
           <div class="reel" role="listbox" aria-label="Меню">
-              <button class="tile" role="option" data-idx="0" data-color="#46a0ff" aria-label="Космос">
-                <canvas width="120" height="120"></canvas>
-              </button>
+            <button class="tile" role="option" data-idx="0" data-color="#46a0ff" aria-label="Космос">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Космос</span>
+            </button>
             <button class="tile" role="option" data-idx="1" data-color="#ff9eb8" aria-label="Сердце">
               <canvas width="120" height="120"></canvas>
+              <span class="label">Сердце</span>
             </button>
             <button class="tile" role="option" data-idx="2" data-color="#ffcf86" aria-label="Ключ">
               <canvas width="120" height="120"></canvas>
+              <span class="label">Ключ</span>
             </button>
             <button class="tile" role="option" data-idx="3" data-color="#00d9b8" aria-label="Бомба">
               <canvas width="120" height="120"></canvas>
+              <span class="label">Бомба</span>
             </button>
+            <button class="tile" role="option" data-idx="4" data-color="#ffca3a" aria-label="Звезда">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Звезда</span>
+            </button>
+            <button class="tile" role="option" data-idx="5" data-color="#46a0ff" aria-label="Корабль">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Корабль</span>
+            </button>
+            <button class="tile" role="option" data-idx="6" data-color="#adb5ff" aria-label="Призрак">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Призрак</span>
+            </button>
+            <button class="tile" role="option" data-idx="7" data-color="#ff595e" aria-label="Яблоко">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Яблоко</span>
+            </button>
+            <button class="tile" role="option" data-idx="8" data-color="#ff6b6b" aria-label="Машина">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Машина</span>
+            </button>
+            <button class="tile" role="option" data-idx="9" data-color="#c0c0c0" aria-label="Меч">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Меч</span>
+            </button>
+            <button class="tile" role="option" data-idx="10" data-color="#8ecae6" aria-label="Щит">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Щит</span>
+            </button>
+            <button class="tile" role="option" data-idx="11" data-color="#ffdd00" aria-label="Монета">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Монета</span>
+            </button>
+          </div>
+          <div class="scrollNav">
+            <button id="scrollUp" aria-label="Вверх">▲</button>
+            <button id="scrollDown" aria-label="Вниз">▼</button>
           </div>
           <div id="avatarMenu" class="menu">
             <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
@@ -451,6 +521,8 @@
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const coin = $('#coin');
+      const scrollUp = $('#scrollUp');
+      const scrollDown = $('#scrollDown');
 
       // блокируем двойные касания и прокрутку страницы
       addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
@@ -468,7 +540,7 @@
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['space','heart','key','bomb'];
+      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin'];
 
       /* ---------- Аватар ---------- */
       const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none'};
@@ -596,26 +668,36 @@
       /* ---------- Барабан и навигация ---------- */
       let idx = 0;
       const total = tiles.length;
+      const rows = Math.ceil(total/2);
+      let rowIdx = 0;
       function updateReel(){
-        const step = tiles[0].getBoundingClientRect().height * 1.7;
-        tiles.forEach((t, i)=>{
-          let diff = (i - idx + total) % total;
-          if(diff > total/2) diff -= total;
-          const y = Math.round(diff * step);
+        const rect = tiles[0].getBoundingClientRect();
+        const stepY = rect.height * 1.4;
+        const stepX = rect.width * 0.8;
+        tiles.forEach((t,i)=>{
+          const col = i % 2;
+          const row = Math.floor(i/2);
+          let diff = row - rowIdx;
+          if(diff > rows/2) diff -= rows;
+          if(diff < -rows/2) diff += rows;
+          const y = Math.round(diff * stepY);
+          const x = col === 0 ? -stepX : stepX;
           const scale = 1 - Math.abs(diff)*0.25;
           t.style.setProperty('--slotY', y + 'px');
+          t.style.setProperty('--slotX', x + 'px');
           t.style.setProperty('--slotScale', scale.toFixed(2));
-          t.style.opacity = Math.abs(diff) > 2 ? 0 : 1;
-          t.style.zIndex = 100 - Math.abs(diff);
-          t.dataset.focus = diff === 0;
+          t.style.opacity = Math.abs(diff) > 1 ? 0 : 1;
+          t.style.zIndex = 100 - Math.abs(diff)*10;
+          t.dataset.focus = i === idx;
         });
       }
       updateReel();
 
       function move(dir){
-        idx = (dir === 'down') ? (idx + 1) % total : (idx - 1 + total) % total;
+        rowIdx = dir === 'down' ? (rowIdx + 1) % rows : (rowIdx - 1 + rows) % rows;
+        idx = rowIdx * 2;
         updateReel();
-        Sound.fx("move");
+        Sound.fx('move');
       }
 
       addEventListener('keydown', e=>{
@@ -629,10 +711,13 @@
         e.preventDefault();
         move(e.deltaY > 0 ? 'down' : 'up');
       }, {passive:false});
+      scrollUp.addEventListener('click',()=> move('up'));
+      scrollDown.addEventListener('click',()=> move('down'));
 
       tiles.forEach((t, i)=>{
         t.addEventListener('click', ()=>{
           idx = i;
+          rowIdx = Math.floor(i/2);
           updateReel();
           selectCurrent();
         });
