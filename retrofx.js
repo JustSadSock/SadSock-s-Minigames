@@ -4,6 +4,7 @@
   const cvs = document.getElementById("bgCanvas");
   const ctx = cvs.getContext("2d");
   ctx.imageSmoothingEnabled = false;
+  const palette=['#ff5f9c','#ff8cc6','#ffca3a','#00d9b8','#46a0ff','#ff595e'];
   const DPR = window.devicePixelRatio || 1;
   function resize(){ cvs.width=innerWidth*DPR; cvs.height=innerHeight*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);}
   addEventListener("resize",resize); resize();
@@ -852,4 +853,5 @@
     requestAnimationFrame(loop);
   }
   loop();
+  window.RetroFX = {spawn};
 })();

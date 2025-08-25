@@ -160,14 +160,17 @@
     .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink); }
 
     .menu{
-      position:absolute; top:80px; left:20px;
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
       background:var(--bg2);
       border:4px solid var(--ink);
       border-radius:8px; padding:16px; font-size:12px;
-      display:none; z-index:10;
+      display:none; z-index:10; width:260px; max-width:90vw;
     }
     .menu.show{ display:block; }
-    .menu label{ display:block; margin-bottom:8px; }
+    .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .menu .swatch{ width:20px; height:20px; border:2px solid var(--ink); border-radius:4px; }
+    .menu .arrow{ width:24px; height:24px; border:2px solid var(--ink); background:var(--bg1); cursor:pointer; font-size:12px; line-height:18px; }
 
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
@@ -300,12 +303,19 @@
       .grid{ grid-template-columns:repeat(4,1fr); grid-template-rows:1fr; }
     }
 
+    @media (max-height:480px){
+      .grid{ padding:12px; gap:12px; }
+      .navbtns{ padding:2px 0 8px; }
+    }
+
     /* небольшие pixel-анимации */
     @keyframes tileBounce{
       0%,100%{ transform:translateY(0); }
       50%{ transform:translateY(-2px); }
     }
     .tile:hover{ animation:tileBounce .6s steps(2) infinite; }
+    @keyframes focusPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
+    .tile[data-focus="true"]{ animation:focusPulse .8s steps(2) infinite; }
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
     @keyframes hintPulse{0%,100%{opacity:.85;}50%{opacity:.4;}}
   </style>
@@ -346,13 +356,26 @@
             <button class="pbtn" data-action="options">OPTIONS</button>
           </footer>
           <div id="avatarMenu" class="menu">
-            <form id="avatarForm">
-              <label>Ник: <input id="nick" type="text" value="Player"></label>
-              <label>Цвет кожи: <input id="skinColor" type="color" value="#ffcf9c"></label>
-              <label>Цвет волос: <input id="hairColor" type="color" value="#7b3f00"></label>
-              <label>Прическа: <select id="hairStyle"><option value="short">Короткая</option><option value="mohawk">Ирокез</option></select></label>
-              <button type="submit">OK</button>
-            </form>
+            <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
+            <div class="row">
+              <span>Кожа:</span>
+              <button class="arrow" data-part="skin" data-dir="-1">◀</button>
+              <div id="skinSwatch" class="swatch"></div>
+              <button class="arrow" data-part="skin" data-dir="1">▶</button>
+            </div>
+            <div class="row">
+              <span>Волосы:</span>
+              <button class="arrow" data-part="hair" data-dir="-1">◀</button>
+              <div id="hairSwatch" class="swatch"></div>
+              <button class="arrow" data-part="hair" data-dir="1">▶</button>
+            </div>
+            <div class="row">
+              <span>Стиль:</span>
+              <button class="arrow" data-part="style" data-dir="-1">◀</button>
+              <span id="styleName">Короткая</span>
+              <button class="arrow" data-part="style" data-dir="1">▶</button>
+            </div>
+            <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
           </div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
@@ -376,11 +399,12 @@
       const avatarCanvas = $('#avatarCanvas');
       const avatarBtn = $('#avatarBtn');
       const avatarMenu = $('#avatarMenu');
-      const avatarForm = $('#avatarForm');
       const nickInput = $('#nick');
-      const skinInput = $('#skinColor');
-      const hairInput = $('#hairColor');
-      const hairStyleInput = $('#hairStyle');
+      const skinSwatch = $('#skinSwatch');
+      const hairSwatch = $('#hairSwatch');
+      const styleName = $('#styleName');
+      const arrows = $$('.arrow');
+      const avatarOk = $('#avatarOk');
       const grid = $('.grid');
       const tiles = $$('.tile');
 
@@ -506,6 +530,11 @@
 
       /* ---------- Аватар ---------- */
       const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short'};
+      const skinColors=['#ffcf9c','#f1c27d','#e0ac69','#c68642'];
+      const hairColors=['#7b3f00','#ff595e','#2e2e2e','#ffa726','#c0c0c0'];
+      const hairStyles=['short','mohawk','long'];
+      const hairNames={short:'Короткая',mohawk:'Ирокез',long:'Длинная'};
+      let skinIdx=0, hairIdx=0, styleIdx=0;
       const avCtx = avatarCanvas.getContext('2d',{alpha:false});
       avCtx.imageSmoothingEnabled=false;
       function drawAvatar(){
@@ -522,26 +551,51 @@
           for(let y=4;y<16;y++){
             for(let x=15;x<17;x++) px(avCtx,x,y,S,avatar.hair);
           }
+        } else if(avatar.style==='long'){
+          for(let y=4;y<18;y++){
+            for(let x=6;x<26;x++) px(avCtx,x,y,S,avatar.hair);
+          }
         }
         px(avCtx,12,16,S,'#000');
         px(avCtx,20,16,S,'#000');
         for(let x=12;x<=20;x++) px(avCtx,x,22,S,'#000');
       }
+      function updateAvatarControls(){
+        skinSwatch.style.background = avatar.skin;
+        hairSwatch.style.background = avatar.hair;
+        styleName.textContent = hairNames[avatar.style];
+      }
       drawAvatar();
+      updateAvatarControls();
       avatarBtn.addEventListener('click',()=>{
-          const show = avatarMenu.classList.toggle('show');
-          Sound.fx(show?'open':'close');
+        const show = avatarMenu.classList.toggle('show');
+        Sound.fx(show?'open':'close');
+      });
+      arrows.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const part=btn.dataset.part;
+          const dir=parseInt(btn.dataset.dir,10);
+          if(part==='skin'){
+            skinIdx=(skinIdx+dir+skinColors.length)%skinColors.length;
+            avatar.skin=skinColors[skinIdx];
+          }else if(part==='hair'){
+            hairIdx=(hairIdx+dir+hairColors.length)%hairColors.length;
+            avatar.hair=hairColors[hairIdx];
+          }else if(part==='style'){
+            styleIdx=(styleIdx+dir+hairStyles.length)%hairStyles.length;
+            avatar.style=hairStyles[styleIdx];
+          }
+          updateAvatarControls();
+          drawAvatar();
         });
-      avatarForm.addEventListener('submit',e=>{
+      });
+      avatarOk.addEventListener('click',e=>{
         e.preventDefault();
         avatar.nick = nickInput.value||'Player';
-        avatar.skin = skinInput.value;
-        avatar.hair = hairInput.value;
-        avatar.style = hairStyleInput.value;
-        drawAvatar();
         nickDisplay.textContent = avatar.nick;
+        drawAvatar();
         avatarMenu.classList.remove('show');
-          Sound.fx('select');
+        Sound.fx('select');
       });
 
       // инициализация 4 значков
@@ -622,6 +676,15 @@
         const tile = tiles[idx];
         const label = tile?.querySelector('span')?.textContent || 'ITEM';
         hudOn('SELECT: '+label);
+        const rect = tile.getBoundingClientRect();
+        const color = getComputedStyle(tile.querySelector('span')).color;
+        for(let i=0;i<8;i++){
+          RetroFX.spawn(
+            rect.left + rect.width/2 + (Math.random()*40-20),
+            rect.top + rect.height/2 + (Math.random()*40-20),
+            color
+          );
+        }
         tile.classList.add('flash');
         setTimeout(()=>tile.classList.remove('flash'),300);
         Sound.fx("select");

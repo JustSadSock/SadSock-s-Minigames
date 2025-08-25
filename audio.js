@@ -403,6 +403,25 @@
   ];
   melody.push(...melodyB);
 
+  const counter = [
+    {note:'E6',len:1},
+    {note:'G6',len:1},
+    {note:'A6',len:2},
+    {note:'G6',len:1},
+    {note:'E6',len:1},
+    {note:'C6',len:2},
+    {note:'D6',len:1},
+    {note:'F6',len:3},
+    {note:'E6',len:1},
+    {note:'C6',len:1},
+    {note:'B5',len:2},
+    {note:'G5',len:1},
+    {note:'A5',len:1},
+    {note:'E5',len:2},
+    {note:'F5',len:1},
+    {note:'D5',len:3}
+  ];
+
   const bass = [
     {note:'C3',len:4},
     {note:'C3',len:4},
@@ -493,6 +512,7 @@
 
   Music.tracks = [
     {inst:'pulse', pattern:melody},
+    {inst:'tri', pattern:counter},
     {inst:'bass', pattern:bass},
     {inst:'noise', pattern:drum}
   ];
