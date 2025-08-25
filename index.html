@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Arcade — Pastel Pixel</title>
+  <title>SadSock’s playground</title>
   <!-- необязательно: пиксельный шрифт; оффлайн будет fallback -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
@@ -43,6 +43,9 @@
       font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
       letter-spacing:.45px;
       overflow:hidden;
+      touch-action:manipulation;
+      -webkit-user-select:none;
+      user-select:none;
     }
 
     /* мелкий пастельный «пиксельный» узор на фоне */
@@ -196,11 +199,17 @@
       padding:12px 26px; cursor:pointer; user-select:none;
       border:4px solid var(--ink); border-radius:10px;
       background:linear-gradient(180deg,#ffe2f0,#ffd0e0);
-      box-shadow:0 4px 0 var(--ink);
+      box-shadow:0 4px 0 var(--ink), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.25);
+      position:relative;
       transition:transform .1s steps(2), filter .2s ease;
     }
+    .pbtn::before{
+      content:""; position:absolute; inset:0; border-radius:6px;
+      background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,0));
+      pointer-events:none;
+    }
     .pbtn:hover{ filter:brightness(1.1); }
-    .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink); }
+    .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink), inset 0 1px 0 rgba(0,0,0,.35); }
 
     .menu{
       position:absolute; top:50%; left:50%;
@@ -269,8 +278,7 @@
       box-shadow:
         inset 0 0 0 2px #ffe0b3,
         0 12px 26px rgba(0,0,0,.22);
-      display:grid; grid-template-rows: 1fr auto; place-items:center;
-      gap:12px;
+      display:grid; place-items:center;
       cursor:pointer; outline:none;
       position:absolute; top:50%; left:50%;
       transform:translate(-50%, var(--slotY)) scale(var(--slotScale));
@@ -301,34 +309,6 @@
       border:2px solid #ffbd69;
       box-shadow: inset 0 0 0 2px #ffd59e, 0 0 0 1px rgba(0,0,0,.12);
     }
-    .tile span{
-      font-size:11px; color:var(--ink);
-      text-shadow:0 1px 0 rgba(255,255,255,.6);
-      letter-spacing:.8px; user-select:none; margin-bottom:6px;
-    }
-    .label-pink { color: var(--pastel-pink); }
-    .label-mint { color: var(--pastel-mint); }
-    .label-peach{ color: var(--pastel-peach); }
-    .label-blue{ color: var(--pastel-blue); }
-
-    /* HUD-подсказка */
-    .hud{
-      position:absolute; left:0; right:0; top:10px;
-      display:grid; place-items:center; pointer-events:none;
-      font-size:11px; color:var(--accent);
-      text-shadow:0 1px 0 rgba(255,255,255,.7), 0 0 10px rgba(255,200,90,.42);
-      opacity:0; transform: translateY(-6px);
-      transition:opacity .18s ease, transform .18s ease;
-    }
-    .hud.show{ opacity:1; transform: translateY(0); }
-
-    /* подсказка снизу */
-    .hint{
-      position:absolute; bottom:12px; left:0; right:0;
-      text-align:center; font-size:10px; color:#7a5030;
-      opacity:.85; text-shadow:0 1px 0 rgba(255,255,255,.7);
-      pointer-events:none; animation:hintPulse 4s ease-in-out infinite;
-    }
 
     /* адаптивные отступы для барабана */
     @media (max-width: 560px){
@@ -354,7 +334,6 @@
     @keyframes focusPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
     .tile[data-focus="true"]{ animation:focusPulse .8s steps(2) infinite; }
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
-    @keyframes hintPulse{0%,100%{opacity:.85;}50%{opacity:.4;}}
     @keyframes crtFlicker{0%,100%{filter:brightness(1);}50%{filter:brightness(1.06);}}
     @keyframes screenGlow{0%,100%{opacity:.85;}50%{opacity:.65;}}
   </style>
@@ -369,25 +348,21 @@
             <button class="avatar" id="avatarBtn" aria-label="Профиль">
               <canvas id="avatarCanvas" width="48" height="48"></canvas>
             </button>
-            <h2 class="title">Pastel Pixel Arcade</h2>
+            <h2 class="title">SadSock’s playground</h2>
             <span id="nickDisplay">Player</span>
           </header>
           <div class="reel" role="listbox" aria-label="Меню">
-              <button class="tile" role="option" data-idx="0" aria-label="Космос">
+              <button class="tile" role="option" data-idx="0" data-color="#46a0ff" aria-label="Космос">
                 <canvas width="120" height="120"></canvas>
-                <span class="label-blue">SPACE</span>
               </button>
-            <button class="tile" role="option" data-idx="1" aria-label="Сердце">
+            <button class="tile" role="option" data-idx="1" data-color="#ff9eb8" aria-label="Сердце">
               <canvas width="120" height="120"></canvas>
-              <span class="label-pink">HEART</span>
             </button>
-            <button class="tile" role="option" data-idx="2" aria-label="Ключ">
+            <button class="tile" role="option" data-idx="2" data-color="#ffcf86" aria-label="Ключ">
               <canvas width="120" height="120"></canvas>
-              <span class="label-peach">KEY</span>
             </button>
-            <button class="tile" role="option" data-idx="3" aria-label="Бомба">
+            <button class="tile" role="option" data-idx="3" data-color="#00d9b8" aria-label="Бомба">
               <canvas width="120" height="120"></canvas>
-              <span class="label-mint">BOMB</span>
             </button>
           </div>
           <div id="avatarMenu" class="menu">
@@ -410,13 +385,30 @@
               <span id="styleName">Короткая</span>
               <button class="arrow" data-part="style" data-dir="1">▶</button>
             </div>
+            <div class="row">
+              <span>Глаза:</span>
+              <button class="arrow" data-part="eyes" data-dir="-1">◀</button>
+              <div id="eyeSwatch" class="swatch"></div>
+              <button class="arrow" data-part="eyes" data-dir="1">▶</button>
+            </div>
+            <div class="row">
+              <span>Рубашка:</span>
+              <button class="arrow" data-part="shirt" data-dir="-1">◀</button>
+              <div id="shirtSwatch" class="swatch"></div>
+              <button class="arrow" data-part="shirt" data-dir="1">▶</button>
+            </div>
+            <div class="row">
+              <span>Головной убор:</span>
+              <button class="arrow" data-part="hat" data-dir="-1">◀</button>
+              <span id="hatName">Нет</span>
+              <button class="arrow" data-part="hat" data-dir="1">▶</button>
+            </div>
             <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
           </div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
           <div class="glass" aria-hidden="true"></div>
           <div class="phosphor" aria-hidden="true"></div>
-          <div class="hud" id="hud">СТРЕЛКИ • ENTER • МЫШЬ</div>
         </div>
       </div>
       <div class="panel">
@@ -424,17 +416,16 @@
         <div class="slot"><div id="coin" class="coin"></div></div>
         <button class="pbtn" data-action="options">OPTIONS</button>
       </div>
-      <div class="hint">↑↓←→ — перемещение • Enter — выбрать • Esc — снять выделение</div>
     </div>
   </div>
 
   <script src="audio.js"></script>
+  <script src="icons.js"></script>
   <script>
     (function(){
       'use strict';
       const $ = (s,p=document)=>p.querySelector(s);
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
-      const hud = $('#hud');
       const nickDisplay = $('#nickDisplay');
       const avatarCanvas = $('#avatarCanvas');
       const avatarBtn = $('#avatarBtn');
@@ -442,140 +433,45 @@
       const nickInput = $('#nick');
       const skinSwatch = $('#skinSwatch');
       const hairSwatch = $('#hairSwatch');
+      const eyeSwatch = $('#eyeSwatch');
+      const shirtSwatch = $('#shirtSwatch');
       const styleName = $('#styleName');
+      const hatName = $('#hatName');
       const arrows = $$('.arrow');
       const avatarOk = $('#avatarOk');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const coin = $('#coin');
 
+      // блокируем двойные касания и прокрутку страницы
+      addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
+      let lastTouch=0;
+      addEventListener('touchend', e=>{
+        const now=Date.now();
+        if(now-lastTouch<400){ e.preventDefault(); }
+        lastTouch=now;
+      }, {passive:false});
+      addEventListener('touchmove', e=> e.preventDefault(), {passive:false});
+      addEventListener('scroll', ()=> window.scrollTo(0,0));
 
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
 
-      const C = {
-        star:'#ffffff',
-        star2:'#ffa700',
-        ship:'#00d9b8',  // mint
-        spark:'#ffbd69', // honey
-        heart:'#ff9eb8', // pink
-        heartHi:'#ffe4ef',
-        ring:'#ffbd69',  // peach-gold
-        stem:'#ffcf86',
-        bomb:'#353535',
-        fuse:'#ff5f9c',
-        flame1:'#ff595e',
-        flame2:'#ffca3a',
-        sky:'#46a0ff'
-      };
-
-      function drawSpace(ctx,f=0){
-        clear(ctx);
-        const S=2, W=ctx.canvas.width/S, H=ctx.canvas.height/S;
-        // постоянные звёзды
-        if(!drawSpace.stars){
-          drawSpace.stars = Array.from({length:84},()=>[(Math.random()*W)|0,(Math.random()*H)|0]);
-        }
-        drawSpace.stars.forEach((s,i)=>{
-          const tw = (f+i)%40<2; px(ctx,s[0],s[1],S, tw?C.star2:C.star);
-        });
-        for(let x=0;x<W;x+=2){ px(ctx,x,H-2,S,C.sky); }
-        const cx=(W/2)|0, cy=((H/2)|0) + ((f%20)<10?0:1);
-        const ship=[
-          "0010000",
-          "0111000",
-          "1111100",
-          "1111110",
-          "0111111",
-          "0111111",
-          "1111111",
-          "0100010",
-          "0011100"
-        ];
-        for(let y=0;y<ship.length;y++){
-          for(let x=0;x<ship[0].length;x++){
-            if(ship[y][x]==='1') px(ctx, cx-3+x, cy-5+y, S, C.ship);
-          }
-        }
-        if(f%6<3){ px(ctx,cx-1,cy+5,S,C.spark); px(ctx,cx,cy+6,S,C.flame2); }
-        else { px(ctx,cx-1,cy+5,S,C.flame2); }
-      }
-
-      function drawHeart(ctx,f=0){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        const beat = (f%30<15)?0:1;
-        const base=[
-          "00110110",
-          "01111111",
-          "11111111",
-          "11111111",
-          "11111111",
-          "01111111",
-          "00111111",
-          "00011111",
-          "00001111",
-          "00000111"
-        ];
-        for(let y=0;y<base.length;y++){
-          for(let x=0;x<base[0].length;x++){
-            if(base[y][x]==='1') px(ctx, cx-4+x, cy-7+y - beat, S, C.heart);
-          }
-        }
-        if(beat){
-          px(ctx,cx-5,cy-4,S,C.heart);
-          px(ctx,cx+4,cy-4,S,C.heart);
-        }
-        const shine = (f%60<30)?C.heartHi:C.star2;
-        px(ctx,cx-1,cy-4,S,shine); px(ctx,cx,cy-5,S,shine);
-      }
-
-      function drawKey(ctx,f=0){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        for(let y=-8;y<=8;y++){
-          for(let x=-8;x<=8;x++){
-            const d=x*x + y*y; if(d<=64 && d>=36) px(ctx,cx+x,cy+y,S,C.ring);
-          }
-        }
-        for(let y=-1;y<=1;y++){
-          for(let x=0;x<12;x++) px(ctx,cx+8+x,cy+y,S,C.stem);
-        }
-        for(let y=0;y<2;y++){
-          for(let x=0;x<3;x++) px(ctx,cx+16+x,cy+1+y,S,C.stem);
-        }
-        for(let y=0;y<2;y++){
-          for(let x=0;x<2;x++) px(ctx,cx+20+x,cy+3+y,S,C.stem);
-        }
-        const sparkle = (f%64)|0;
-        if(sparkle<16){ px(ctx,cx+8+sparkle%8,cy-8+Math.floor(sparkle/8),S,C.star2); }
-      }
-
-      function drawBomb(ctx,f=0){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        for(let y=-6;y<=6;y++){
-          for(let x=-6;x<=6;x++){
-            if(x*x + y*y <= 36) px(ctx,cx+x,cy+y,S,C.bomb);
-          }
-        }
-        for(let i=0;i<6;i++) px(ctx,cx+5+i,cy-10+i,S,C.fuse);
-        const flame = (f%10<5)?C.flame1:C.flame2;
-        px(ctx,cx+12,cy-4,S,flame);
-        px(ctx,cx+13,cy-3,S,flame);
-        px(ctx,cx+12,cy-2,S,flame);
-      }
-
-      const drawers=[drawSpace, drawHeart, drawKey, drawBomb];
+      // Значки отрисовываются из набора кадров в icons.js
+      const drawers=['space','heart','key','bomb'];
 
       /* ---------- Аватар ---------- */
-      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short'};
+      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none'};
       const skinColors=['#ffcf9c','#f1c27d','#e0ac69','#c68642'];
       const hairColors=['#7b3f00','#ff595e','#2e2e2e','#ffa726','#c0c0c0'];
       const hairStyles=['short','mohawk','long'];
       const hairNames={short:'Короткая',mohawk:'Ирокез',long:'Длинная'};
-      let skinIdx=0, hairIdx=0, styleIdx=0;
+      const eyeColors=['#000','#1a1a1a','#004bff','#00d9b8','#ff595e'];
+      const shirtColors=['#ff9eb8','#ffca3a','#46a0ff','#00d9b8','#ffffff','#ffd6a6'];
+      const hatStyles=['none','cap','crown','bandana'];
+      const hatNames={none:'Нет',cap:'Кепка',crown:'Корона',bandana:'Бандана'};
+      let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0;
       const avCtx = avatarCanvas.getContext('2d',{alpha:false});
       avCtx.imageSmoothingEnabled=false;
       function drawAvatar(){
@@ -583,6 +479,9 @@
         const S=2;
         for(let y=8;y<24;y++){
           for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.skin);
+        }
+        for(let y=24;y<32;y++){
+          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.shirt);
         }
         if(avatar.style==='short'){
           for(let y=6;y<12;y++){
@@ -597,14 +496,35 @@
             for(let x=6;x<26;x++) px(avCtx,x,y,S,avatar.hair);
           }
         }
-        px(avCtx,12,16,S,'#000');
-        px(avCtx,20,16,S,'#000');
+        px(avCtx,12,16,S,avatar.eyes);
+        px(avCtx,20,16,S,avatar.eyes);
         for(let x=12;x<=20;x++) px(avCtx,x,22,S,'#000');
+        if(avatar.hat==='cap'){
+          for(let y=2;y<6;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+          for(let x=8;x<24;x++) px(avCtx,x,6,S,avatar.hair);
+        }else if(avatar.hat==='crown'){
+          for(let x=10;x<22;x++) px(avCtx,x,2,S,'#ffd700');
+          for(let i=0;i<3;i++){
+            px(avCtx,11+i*4,1,S,'#ffd700');
+            px(avCtx,12+i*4,0,S,'#ffd700');
+            px(avCtx,13+i*4,1,S,'#ffd700');
+          }
+        }else if(avatar.hat==='bandana'){
+          for(let y=4;y<8;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+          for(let x=20;x<26;x++) px(avCtx,x,6,S,avatar.hair);
+        }
       }
       function updateAvatarControls(){
         skinSwatch.style.background = avatar.skin;
         hairSwatch.style.background = avatar.hair;
+        eyeSwatch.style.background = avatar.eyes;
+        shirtSwatch.style.background = avatar.shirt;
         styleName.textContent = hairNames[avatar.style];
+        hatName.textContent = hatNames[avatar.hat];
       }
       drawAvatar();
       updateAvatarControls();
@@ -625,6 +545,15 @@
           }else if(part==='style'){
             styleIdx=(styleIdx+dir+hairStyles.length)%hairStyles.length;
             avatar.style=hairStyles[styleIdx];
+          }else if(part==='eyes'){
+            eyeIdx=(eyeIdx+dir+eyeColors.length)%eyeColors.length;
+            avatar.eyes=eyeColors[eyeIdx];
+          }else if(part==='shirt'){
+            shirtIdx=(shirtIdx+dir+shirtColors.length)%shirtColors.length;
+            avatar.shirt=shirtColors[shirtIdx];
+          }else if(part==='hat'){
+            hatIdx=(hatIdx+dir+hatStyles.length)%hatStyles.length;
+            avatar.hat=hatStyles[hatIdx];
           }
           updateAvatarControls();
           drawAvatar();
@@ -645,12 +574,12 @@
         const cv = tile.querySelector('canvas');
         const ctx = cv.getContext('2d',{alpha:false});
         ctx.imageSmoothingEnabled = false;
-        items.push({ctx, draw: drawers[i%drawers.length]});
+        items.push({ctx, name: drawers[i%drawers.length]});
       });
       let frame=0;
       function animateIcons(){
         frame++;
-        items.forEach(it=> it.draw(it.ctx, frame));
+        items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
         requestAnimationFrame(animateIcons);
       }
       animateIcons();
@@ -684,7 +613,7 @@
         if(e.key === 'ArrowUp'){ e.preventDefault(); move('up'); }
         else if(e.key === 'ArrowDown'){ e.preventDefault(); move('down'); }
         else if(e.key === 'Enter'){ selectCurrent(); }
-        else if(e.key === 'Escape'){ tiles.forEach(t=> t.dataset.focus='false'); hudOff(); }
+        else if(e.key === 'Escape'){ tiles.forEach(t=> t.dataset.focus='false'); }
       });
 
       reel.addEventListener('wheel', e=>{
@@ -703,7 +632,6 @@
       navBtns.forEach(btn=>{
         btn.addEventListener('click',()=>{
           const action = btn.dataset.action;
-          hudOn(action.toUpperCase());
           if(action === 'start'){
             dropCoin();
             Sound.fx('start');
@@ -712,7 +640,6 @@
           }else{
             Sound.fx('click');
           }
-          setTimeout(hudOff,700);
         });
       });
 
@@ -723,14 +650,10 @@
         Sound.fx('coin');
       }
 
-      function hudOn(text){ hud.textContent=text; hud.classList.add('show'); }
-      function hudOff(){ hud.classList.remove('show'); }
       function selectCurrent(){
         const tile = tiles[idx];
-        const label = tile?.querySelector('span')?.textContent || 'ITEM';
-        hudOn('SELECT: '+label);
         const rect = tile.getBoundingClientRect();
-        const color = getComputedStyle(tile.querySelector('span')).color;
+        const color = tile.dataset.color || '#ffca3a';
         for(let i=0;i<8;i++){
           RetroFX.spawn(
             rect.left + rect.width/2 + (Math.random()*40-20),
@@ -741,12 +664,9 @@
         tile.classList.add('flash');
         setTimeout(()=>tile.classList.remove('flash'),300);
         Sound.fx("select");
-        setTimeout(hudOff, 800);
       }
 
       // стартовая подсказка
-      setTimeout(()=>hud.classList.add('show'), 220);
-      setTimeout(hudOff, 1900);
 
       // DPI-фикс для чёткого пикселя
       function fixDPR(){
