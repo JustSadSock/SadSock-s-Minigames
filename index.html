@@ -365,6 +365,7 @@
     </div>
   </div>
 
+  <script src="audio.js"></script>
   <script>
     (function(){
       'use strict';
@@ -383,32 +384,6 @@
       const grid = $('.grid');
       const tiles = $$('.tile');
 
-      /* ---------- WebAudio (разрешается по жесту) ---------- */
-      let actx, gain, unlocked=false;
-      function ensureAudio(){
-        if (actx) return;
-        actx = new (window.AudioContext||window.webkitAudioContext)();
-        gain = actx.createGain(); gain.gain.value = .14;
-        gain.connect(actx.destination);
-      }
-      function unlock(){
-        if (unlocked) return;
-        ensureAudio();
-        actx.resume().then(()=>{ unlocked=true; });
-      }
-      function beep(freq=620,dur=.06){
-        if(!unlocked) return;
-        const o = actx.createOscillator(), g = actx.createGain();
-        o.type='square'; o.frequency.value=freq;
-        g.gain.value=0.0001; o.connect(g).connect(gain);
-        const t=actx.currentTime;
-        o.start(t);
-        g.gain.exponentialRampToValueAtTime(.16,t+.01);
-        g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-        o.stop(t+dur+.02);
-      }
-      addEventListener('pointerdown', unlock, {once:true,passive:true});
-      addEventListener('keydown', unlock, {once:true});
 
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
@@ -553,7 +528,10 @@
         for(let x=12;x<=20;x++) px(avCtx,x,22,S,'#000');
       }
       drawAvatar();
-      avatarBtn.addEventListener('click',()=>{ avatarMenu.classList.toggle('show'); });
+      avatarBtn.addEventListener('click',()=>{
+          const show = avatarMenu.classList.toggle('show');
+          Sound.fx(show?'open':'close');
+        });
       avatarForm.addEventListener('submit',e=>{
         e.preventDefault();
         avatar.nick = nickInput.value||'Player';
@@ -563,6 +541,7 @@
         drawAvatar();
         nickDisplay.textContent = avatar.nick;
         avatarMenu.classList.remove('show');
+          Sound.fx('select');
       });
 
       // инициализация 4 значков
@@ -609,7 +588,7 @@
         if(dir==='left') c=Math.max(0,col-1);
         if(dir==='right') c=Math.min(cols-1,col+1);
         setFocus(r*cols + c);
-        beep(580,.035);
+        Sound.fx("move");
       }
 
       addEventListener('keydown', (e)=>{
@@ -632,7 +611,7 @@
       navBtns.forEach(btn=>{
         btn.addEventListener('click',()=>{
           hudOn(btn.dataset.action.toUpperCase());
-          beep(440,.07);
+          Sound.fx("click");
           setTimeout(hudOff,700);
         });
       });
@@ -645,7 +624,7 @@
         hudOn('SELECT: '+label);
         tile.classList.add('flash');
         setTimeout(()=>tile.classList.remove('flash'),300);
-        beep(480,.07);
+        Sound.fx("select");
         setTimeout(hudOff, 800);
       }
 
