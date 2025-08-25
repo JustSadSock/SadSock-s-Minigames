@@ -58,7 +58,8 @@
 
     /* центрируем «кабинет», растягиваем почти на весь экран */
     .cabinet{
-      position:fixed; inset:0; display:grid; place-items:center;
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
       padding:min(2.5vw,18px);
       z-index:1;
     }
@@ -113,6 +114,14 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
+      animation:crtFlicker 2.5s steps(2) infinite;
+    }
+
+    .screen::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), transparent 70%);
+      mix-blend-mode:overlay; opacity:.85;
+      animation:screenGlow 6s ease-in-out infinite;
     }
 
     .topbar{
@@ -294,9 +303,9 @@
       .pbtn{ width:80%; margin:0 auto; }
     }
 
-    /* ориентация: вертикаль — плитки столбиком */
+    /* ориентация: вертикаль — две плитки в ряд */
     @media (orientation:portrait){
-      .grid{ grid-template-columns:1fr; grid-template-rows:repeat(4,1fr); }
+      .grid{ grid-template-columns:1fr 1fr; grid-template-rows:repeat(2,1fr); }
     }
     /* ориентация: ландшафт на широких экранах — в ряд */
     @media (orientation:landscape) and (min-width:700px){
@@ -318,6 +327,8 @@
     .tile[data-focus="true"]{ animation:focusPulse .8s steps(2) infinite; }
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
     @keyframes hintPulse{0%,100%{opacity:.85;}50%{opacity:.4;}}
+    @keyframes crtFlicker{0%,100%{filter:brightness(1);}50%{filter:brightness(1.06);}}
+    @keyframes screenGlow{0%,100%{opacity:.85;}50%{opacity:.65;}}
   </style>
 </head>
 <body>

@@ -1,0 +1,8 @@
+{
+  "name": "sadsock-minigames",
+  "version": "1.0.0",
+  "description": "Retro style menu with tests",
+  "scripts": {
+    "test": "node test/test.js"
+  }
+}
