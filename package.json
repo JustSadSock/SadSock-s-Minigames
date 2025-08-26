@@ -1,0 +1,8 @@
+{
+  "name": "sadsocks-playground",
+  "version": "1.0.0",
+  "description": "SadSock’s playground",
+  "scripts": {
+    "test": "node test/test.js"
+  }
+}
