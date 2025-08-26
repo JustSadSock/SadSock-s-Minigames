@@ -826,7 +826,10 @@
         }
       }
 
+      let snapping = false;
       function snap(dist){
+        if(snapping) return;
+        snapping = true;
         const start = frac;
         const end = start + dist;
         const t0 = performance.now();
@@ -839,6 +842,7 @@
           if(p<1) requestAnimationFrame(step); else{
             index = (Math.round(index + dist) % rows + rows) % rows;
             frac = 0;
+            snapping = false;
             render();
           }
         }
@@ -892,8 +896,10 @@
         t.addEventListener('click',()=>{
           const row = Math.floor(i/cols);
           colIdx = i % cols;
-          const diff = row - index;
-          snap(diff);
+          let diff = row - index;
+          diff = ((diff % rows) + rows) % rows;
+          if(diff > rows/2) diff -= rows;
+          if(diff) snap(diff);
           selectCurrent();
           if(t.dataset.game){ openGame(t); }
         });
