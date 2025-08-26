@@ -2,6 +2,7 @@ const fs = require('fs');
 const html = fs.readFileSync('index.html', 'utf8');
 const audio = fs.readFileSync('audio.js', 'utf8');
 const retro = fs.readFileSync('retrofx.js','utf8');
+const icons = fs.readFileSync('icons.js','utf8');
 
 if(!/class="reel"/.test(html)){
   throw new Error('Reel container missing');
@@ -44,6 +45,10 @@ if(!/var\(--slotRot\)/.test(html)){
 
 if(!/const cols = 2/.test(html)){
   throw new Error('Reel should use two columns');
+}
+
+if(!/overlap/.test(html)){
+  throw new Error('Overlap variable missing');
 }
 
 if(!/--slotBlur/.test(html)){
@@ -116,6 +121,10 @@ if(!/touchStartT/.test(html)){
 }
 if(!/index\s*=\s*\(Math\.round\(index \+ dist\) % rows \+ rows\) % rows;/.test(html)){
   throw new Error('Index wrap missing');
+}
+
+if(!/drawImage/.test(icons)){
+  throw new Error('Icons should use cached drawImage');
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;

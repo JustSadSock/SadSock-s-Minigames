@@ -759,8 +759,9 @@
         const r = reel.getBoundingClientRect();
         const gap = 14;
         const size = Math.min((r.width - gap*(cols+1))/cols, (r.height - gap*3)/2);
+        const overlap = size*0.2;                 // перекрытие плиток ~20%
         stepX = size + gap;
-        STEP = size + gap;
+        STEP = size - overlap;                    // шаг меньше размера => перекрытие
         R = STEP * 1.4;
         for(let i=0;i<tiles.length;i++){
           tiles[i].style.setProperty('--size', size + 'px');
@@ -791,6 +792,7 @@
           t.style.setProperty('--slotBright', bright);
           t.style.setProperty('--slotBlur', blur+'px');
           t.style.setProperty('--slotRot', theta+'rad');
+          t.style.zIndex = (1000 - z) | 0;         // корректный порядок перекрытия
           t.dataset.active = (Math.abs(delta)<0.51 && col===colIdx)?'1':'0';
         }
         const active = Math.round((center % rows + rows) % rows);

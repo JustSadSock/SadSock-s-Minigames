@@ -1,16 +1,7 @@
 (function(){
   'use strict';
   const S=3;
-  function draw(ctx,name,frame){
-    const set=frames[name];
-    if(!set) return;
-    const data=set[frame%set.length];
-    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    data.forEach(p=>{
-      ctx.fillStyle=p.c;
-      ctx.fillRect(p.x*S,p.y*S,S,S);
-    });
-  }
+  const cache={};              // кэш готовых кадров для оптимизации
 
   function baseFromPattern(pattern,palette){
     const rows=pattern.trim().split('\n');
@@ -706,6 +697,23 @@ XXXXX
     tree:[tree1,tree2,tree3,tree4,tree5],
     skull:[skull1,skull2,skull3,skull4,skull5]
   };
+  Object.keys(frames).forEach(name=>{
+    cache[name]=frames[name].map(data=>{
+      const cv=document.createElement('canvas');
+      cv.width=120; cv.height=120;
+      const ctx=cv.getContext('2d',{alpha:false});
+      ctx.imageSmoothingEnabled=false;
+      data.forEach(p=>{ ctx.fillStyle=p.c; ctx.fillRect(p.x*S,p.y*S,S,S); });
+      return cv;
+    });
+  });
+
+  function draw(ctx,name,frame){
+    const set=cache[name];
+    if(!set) return;
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    ctx.drawImage(set[frame%set.length],0,0);
+  }
 
   window.Icons={draw};
 })();
