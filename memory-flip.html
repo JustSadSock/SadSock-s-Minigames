@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Memory Flip</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg0:#fff6e5;
+      --bg1:#ffd9a3;
+      --bg2:#fff1cc;
+      --ink:#2d1600;
+      --pastel-pink:#ff5f9c;
+      --pastel-blue:#46a0ff;
+      --pastel-mint:#00d9b8;
+      --pastel-peach:#ffca3a;
+      --accent:#ff595e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      background:var(--bg0);
+      min-height:100svh;
+      font-family:'Press Start 2P',ui-monospace,monospace;
+      color:var(--ink);
+    }
+    h1{margin:16px 0;font-size:18px;}
+    #grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:6px;
+    }
+    .card{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      aspect-ratio:1/1;
+      border:2px solid var(--pastel-peach);
+      background:var(--pastel-blue);
+      border-radius:8px;
+      cursor:pointer;
+      user-select:none;
+      touch-action:manipulation;
+      font-size:30px;
+    }
+    .card.open{background:var(--pastel-peach);}
+    .card.matched{background:var(--pastel-mint);}
+    #score{margin:12px 0;font-size:14px;}
+    #controls{display:flex;gap:12px;margin-bottom:12px;}
+    button{
+      padding:8px 12px;
+      font-size:14px;
+      background:var(--pastel-pink);
+      border:2px solid var(--accent);
+      border-radius:8px;
+      color:var(--ink);
+      cursor:pointer;
+    }
+    button:active{transform:translateY(2px);}
+  </style>
+</head>
+<body>
+  <h1>Memory Flip</h1>
+  <div id="score">Найдено пар: 0/8</div>
+  <div id="controls">
+    <button id="startBtn">Старт</button>
+    <button id="resetBtn">Сброс</button>
+  </div>
+  <div id="grid"></div>
+<script>
+(function(){
+  'use strict';
+  const icons=['🍎','🚗','🍀','👻','🗝️','💣','⭐','🛡️'];
+  let cards=[], firstCard=null, secondCard=null, matchedCount=0;
+  const grid=document.getElementById('grid');
+  const scoreEl=document.getElementById('score');
+  const startBtn=document.getElementById('startBtn');
+  const resetBtn=document.getElementById('resetBtn');
+  function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [array[i],array[j]]=[array[j],array[i]];
+    }
+    return array;
+  }
+  function resetGame(){
+    grid.innerHTML='';
+    const values=shuffle(icons.concat(icons));
+    cards=[];
+    matchedCount=0;
+    scoreEl.textContent='Найдено пар: 0/8';
+    values.forEach(val=>{
+      const card=document.createElement('div');
+      card.className='card';
+      card.dataset.value=val;
+      card.addEventListener('click',()=>handleCard(card));
+      grid.appendChild(card);
+      cards.push(card);
+    });
+    firstCard=secondCard=null;
+  }
+  function handleCard(card){
+    if(card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
+    reveal(card);
+    if(!firstCard){
+      firstCard=card;
+    }else{
+      secondCard=card;
+      if(firstCard.dataset.value===secondCard.dataset.value){
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        matchedCount++;
+        scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
+        firstCard=secondCard=null;
+        if(matchedCount===icons.length){
+          alert('Поздравляем! Вы нашли все пары.');
+        }
+      }else{
+        setTimeout(()=>{
+          hide(firstCard);
+          hide(secondCard);
+          firstCard=secondCard=null;
+        },700);
+      }
+    }
+  }
+  function reveal(card){
+    card.classList.add('open');
+    card.textContent=card.dataset.value;
+  }
+  function hide(card){
+    card.classList.remove('open');
+    card.textContent='';
+  }
+  startBtn.addEventListener('click',resetGame);
+  resetBtn.addEventListener('click',resetGame);
+  function adjustGrid(){
+    const side=Math.min(window.innerWidth, window.innerHeight)*0.9;
+    grid.style.width=side+'px';
+    grid.style.height=side+'px';
+  }
+  addEventListener('resize',adjustGrid,{passive:true});
+  adjustGrid();
+  resetGame();
+})();
+</script>
+</body>
+</html>

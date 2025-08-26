@@ -686,6 +686,14 @@ XXXXX
 XXXXX
 `, {X:'#00d9b8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [snake1,snake2,snake3,snake4,snake5] = snakeFrames;
+  const cardsFrames = makeFrames(`
+XXXXX
+X.X.X
+XXXXX
+X.X.X
+XXXXX
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [cards1,cards2,cards3,cards4,cards5] = cardsFrames;
   const skullFrames = makeFrames(`
   .XXX.
   XOXOX
@@ -713,7 +721,8 @@ XXXXX
     tree:[tree1,tree2,tree3,tree4,tree5],
     skull:[skull1,skull2,skull3,skull4,skull5],
     music:[music1,music2,music3,music4,music5],
-    snake:[snake1,snake2,snake3,snake4,snake5]
+    snake:[snake1,snake2,snake3,snake4,snake5],
+    cards:[cards1,cards2,cards3,cards4,cards5]
   };
   Object.keys(frames).forEach(name=>{
     cache[name]=frames[name].map(data=>{
