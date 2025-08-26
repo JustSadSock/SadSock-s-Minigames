@@ -48,22 +48,37 @@
       margin:0 auto;
     }
     .card{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      aspect-ratio:1/1;
-      border:2px solid var(--pastel-peach);
-      background:var(--pastel-blue);
-      border-radius:8px;
+      perspective:600px;
       cursor:pointer;
       user-select:none;
       touch-action:manipulation;
-      font-size:30px;
+      aspect-ratio:1/1;
     }
-    .card.open{background:var(--pastel-peach);}
-    .card.matched{background:var(--pastel-mint);}
-    #score{margin:0;font-size:14px;}
-    #controls{display:flex;gap:12px;margin:0;}
+    .card-inner{
+      position:relative;
+      width:100%;
+      height:100%;
+      transform-style:preserve-3d;
+      transition:transform .4s;
+    }
+    .card.open .card-inner{transform:rotateY(180deg);}
+    .face{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid var(--pastel-peach);
+      border-radius:8px;
+      font-size:30px;
+      backface-visibility:hidden;
+    }
+    .front{background:var(--pastel-blue);}
+    .back{background:var(--pastel-peach);transform:rotateY(180deg);}
+    .card.matched .back{background:var(--pastel-mint);}
+    #score{margin:0;font-size:14px;text-align:center;}
+    #timer{margin:0;font-size:14px;text-align:center;}
+    #controls{display:flex;gap:12px;margin:0;justify-content:center;}
     button{
       padding:8px 12px;
       font-size:14px;
@@ -95,12 +110,24 @@
       margin:0 0 12px;
       font-size:14px;
     }
-    .overlay .panel button{margin-top:8px;}
+    .overlay .panel button{
+      margin-top:8px;
+      padding:8px 16px;
+      font-size:14px;
+      background:linear-gradient(180deg,var(--pastel-pink),var(--accent));
+      border:2px solid var(--accent);
+      border-radius:8px;
+      color:var(--ink);
+      box-shadow:0 4px 0 var(--accent);
+      cursor:pointer;
+    }
+    .overlay .panel button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent);}
   </style>
 </head>
 <body>
   <h1>Memory Flip</h1>
   <div id="score">Найдено пар: 0/8</div>
+  <div id="timer">Время: 0.0с</div>
   <div id="controls">
     <button id="startBtn">Старт</button>
     <button id="resetBtn">Сброс</button>
@@ -131,6 +158,19 @@
   const msg=document.getElementById('msg');
   const againBtn=document.getElementById('againBtn');
   const exitBtn=document.getElementById('exitBtn');
+  const timerEl=document.getElementById('timer');
+  let startTime=0, penalty=0, timerId=null;
+
+  function startTimer(){
+    startTime=performance.now();
+    penalty=0;
+    clearInterval(timerId);
+    timerId=setInterval(()=>{
+      const t=((performance.now()-startTime)/1000)+penalty;
+      timerEl.textContent='Время: '+t.toFixed(1)+'с';
+    },100);
+  }
+  function stopTimer(){clearInterval(timerId);}
 
   function notify(text){
     msg.textContent=text;
@@ -165,11 +205,13 @@
       const card=document.createElement('div');
       card.className='card';
       card.dataset.value=val;
+      card.innerHTML='<div class="card-inner"><div class="face front"></div><div class="face back">'+val+'</div></div>';
       card.addEventListener('click',()=>handleCard(card));
       grid.appendChild(card);
       cards.push(card);
     });
     firstCard=secondCard=null;
+    startTimer();
   }
   function handleCard(card){
     if(card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
@@ -185,9 +227,12 @@
         scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
         firstCard=secondCard=null;
         if(matchedCount===icons.length){
-          notify('Поздравляем! Вы нашли все пары.');
+          stopTimer();
+          const total=((performance.now()-startTime)/1000)+penalty;
+          notify('Поздравляем! Вы нашли все пары. Время: '+total.toFixed(1)+'с');
         }
       }else{
+        penalty+=0.5;
         setTimeout(()=>{
           hide(firstCard);
           hide(secondCard);
@@ -198,16 +243,14 @@
   }
   function reveal(card){
     card.classList.add('open');
-    card.textContent=card.dataset.value;
   }
   function hide(card){
     card.classList.remove('open');
-    card.textContent='';
   }
   startBtn.addEventListener('click',resetGame);
   resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
-    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
+    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - controls.offsetHeight - 36;
     const availableWidth=play.clientWidth;
     const size=Math.min(availableWidth, availableHeight);
     grid.style.width=size+'px';
@@ -216,6 +259,8 @@
   window.addEventListener('resize',adjustGrid);
   adjustGrid();
   resetGame();
+  stopTimer();
+  timerEl.textContent='Время: 0.0с';
 })();
 </script>
 </body>
