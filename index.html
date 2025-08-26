@@ -39,7 +39,7 @@
       --gap: clamp(16px, 3.8vmin, 28px);
       --persp:1200px;     /* перспектива барабана */
       --radius:180px;     /* базовый радиус цилиндра */
-      --dur:480ms;        /* длительность прокрутки чуть плавнее */
+      --dur:280ms;        /* длительность прокрутки быстрее */
       --ease:cubic-bezier(.2,.9,.1,1.15);
     }
     *{box-sizing:border-box}
@@ -319,7 +319,6 @@
     .tile[data-active="0"]{
       background:var(--tile-bg-dim);
       filter:blur(.5px) brightness(.9) contrast(.95);
-      opacity:.7;
     }
     .tile canvas{
       width: calc(var(--size));
@@ -775,7 +774,9 @@
           const t = tiles[i];
           const col = i % cols;
           const row = Math.floor(i/cols);
-          const delta = row - center;
+          let delta = row - center;
+          delta = ((delta % rows) + rows) % rows;
+          if(delta > rows/2) delta -= rows;
           const theta = delta * (STEP / R);
           const y = R * Math.sin(theta);
           const z = R * (1 - Math.cos(theta));
@@ -783,7 +784,6 @@
           const scale = 1 - Math.min(Math.abs(delta)*0.06, 0.18);
           const blur = Math.min(Math.abs(delta)*0.8, 1.2);
           const bright = 1 - Math.min(Math.abs(delta)*0.25, .35);
-          const alpha = 1 - Math.min(Math.abs(delta)*0.22, 0.65);
           t.style.setProperty('--slotX', x+'px');
           t.style.setProperty('--slotY', y+'px');
           t.style.setProperty('--slotZ', (-z)+'px');
@@ -791,7 +791,6 @@
           t.style.setProperty('--slotBright', bright);
           t.style.setProperty('--slotBlur', blur+'px');
           t.style.setProperty('--slotRot', theta+'rad');
-          t.style.opacity = alpha;
           t.dataset.active = (Math.abs(delta)<0.51 && col===colIdx)?'1':'0';
         }
         const active = Math.round((center % rows + rows) % rows);
@@ -811,7 +810,7 @@
           frac = start + (end-start)*e;
           render();
           if(p<1) requestAnimationFrame(step); else{
-            index = Math.round(index + dist);
+            index = (Math.round(index + dist) % rows + rows) % rows;
             frac = 0;
             render();
           }
@@ -845,8 +844,8 @@
         const t=e.touches[0];
         touchStartX=t.clientX; touchStartY=t.clientY; touchStartT=performance.now();
       },{passive:true});
-      reel.addEventListener('touchend',e=>{
-        const t=e.changedTouches[0];
+      reel.addEventListener('touchmove',e=>{
+        const t=e.touches[0];
         const dx=t.clientX-touchStartX;
         const dy=t.clientY-touchStartY;
         const dt=performance.now()-touchStartT;
@@ -854,10 +853,13 @@
           let steps=Math.round(Math.abs(dy)/STEP + Math.abs(dy)/dt*0.3);
           steps=Math.max(1,Math.min(steps,5));
           snap(dy<0?steps:-steps);
+          touchStartY=t.clientY; touchStartT=performance.now();
         }else if(Math.abs(dx)>20){
           moveH(dx>0?'right':'left');
+          touchStartX=t.clientX; touchStartT=performance.now();
         }
-      },{passive:true});
+        e.preventDefault();
+      },{passive:false});
 
       tiles.forEach((t,i)=>{
         t.addEventListener('click',()=>{

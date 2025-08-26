@@ -49,6 +49,9 @@ if(!/const cols = 2/.test(html)){
 if(!/--slotBlur/.test(html)){
   throw new Error('Blur variable missing');
 }
+if(!/touchmove/.test(html)){
+  throw new Error('touchmove handler missing');
+}
 
 if(!/rgba\(255,255,255,.10\)/.test(html)){
   throw new Error('Mobile scanline gradient missing');
@@ -56,6 +59,9 @@ if(!/rgba\(255,255,255,.10\)/.test(html)){
 
 if(!/blur\(.5px\)/.test(html)){
   throw new Error('Inactive tile blur missing');
+}
+if(/tile\[data-active="0"\][^}]*opacity/.test(html)){
+  throw new Error('Inactive tile should not fade');
 }
 
 if(!/mask-image:linear-gradient\(to bottom, transparent 0%, rgba\(0,0,0,.85\) 10%, rgba\(0,0,0,1\) 90%, transparent 100%\)/.test(html)){
@@ -107,6 +113,9 @@ if(!/hatColors\s*=\s*\[/.test(html)){
 
 if(!/touchStartT/.test(html)){
   throw new Error('Touch inertia timing missing');
+}
+if(!/index\s*=\s*\(Math\.round\(index \+ dist\) % rows \+ rows\) % rows;/.test(html)){
+  throw new Error('Index wrap missing');
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
