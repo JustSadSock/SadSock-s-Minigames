@@ -36,6 +36,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      position:relative;
     }
     #grid{
       width:100%;
@@ -44,6 +45,7 @@
       display:grid;
       grid-template-columns:repeat(4,1fr);
       gap:6px;
+      margin:0 auto;
     }
     .card{
       display:flex;
@@ -73,20 +75,27 @@
     }
     button:active{transform:translateY(2px);}
 
-    #msg{
-      position:fixed;
-      top:16px;
-      left:50%;
-      transform:translateX(-50%);
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .overlay .panel{
       background:var(--pastel-pink);
       border:2px solid var(--accent);
       border-radius:8px;
-      padding:8px 12px;
-      font-size:14px;
+      padding:16px;
+      text-align:center;
       color:var(--ink);
-      box-shadow:0 4px 8px rgba(0,0,0,0.2);
-      display:none;
     }
+    .overlay .panel p{
+      margin:0 0 12px;
+      font-size:14px;
+    }
+    .overlay .panel button{margin-top:8px;}
   </style>
 </head>
 <body>
@@ -98,8 +107,14 @@
   </div>
   <div class="play">
     <div id="grid"></div>
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <p id="msg"></p>
+        <button id="againBtn">Сыграть ещё</button>
+        <button id="exitBtn">Выход</button>
+      </div>
+    </div>
   </div>
-  <div id="msg" aria-live="polite"></div>
 <script>
 (function(){
   'use strict';
@@ -111,13 +126,25 @@
   const resetBtn=document.getElementById('resetBtn');
   const header=document.querySelector('h1');
   const controls=document.getElementById('controls');
+  const play=document.querySelector('.play');
+  const overlay=document.getElementById('overlay');
   const msg=document.getElementById('msg');
+  const againBtn=document.getElementById('againBtn');
+  const exitBtn=document.getElementById('exitBtn');
 
   function notify(text){
     msg.textContent=text;
-    msg.style.display='block';
-    setTimeout(()=>{msg.style.display='none';},2000);
+    overlay.style.display='flex';
+    startBtn.disabled=true;
+    resetBtn.disabled=true;
+    againBtn.onclick=()=>{
+      overlay.style.display='none';
+      startBtn.disabled=false;
+      resetBtn.disabled=false;
+      resetGame();
+    };
   }
+  exitBtn.onclick=()=>{window.location.href='index.html';};
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -126,6 +153,9 @@
     return array;
   }
   function resetGame(){
+    overlay.style.display='none';
+    startBtn.disabled=false;
+    resetBtn.disabled=false;
     grid.innerHTML='';
     const values=shuffle(icons.concat(icons));
     cards=[];
@@ -178,7 +208,8 @@
   resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
     const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
-    const size=Math.min(window.innerWidth, availableHeight);
+    const availableWidth=play.clientWidth;
+    const size=Math.min(availableWidth, availableHeight);
     grid.style.width=size+'px';
     grid.style.height=size+'px';
   }

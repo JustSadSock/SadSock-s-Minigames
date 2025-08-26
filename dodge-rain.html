@@ -37,6 +37,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      position:relative;
     }
     #gameCanvas{
       background:var(--bg2);
@@ -57,20 +58,27 @@
     }
     button:active{transform:translateY(2px);}
 
-    #msg{
-      position:fixed;
-      top:16px;
-      left:50%;
-      transform:translateX(-50%);
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .overlay .panel{
       background:var(--pastel-pink);
       border:2px solid var(--accent);
       border-radius:8px;
-      padding:8px 12px;
-      font-size:14px;
+      padding:16px;
+      text-align:center;
       color:var(--ink);
-      box-shadow:0 4px 8px rgba(0,0,0,0.2);
-      display:none;
     }
+    .overlay .panel p{
+      margin:0 0 12px;
+      font-size:14px;
+    }
+    .overlay .panel button{margin-top:8px;}
   </style>
 </head>
 <body>
@@ -82,8 +90,14 @@
   </div>
   <div class="play">
     <canvas id="gameCanvas" width="160" height="120"></canvas>
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <p id="msg"></p>
+        <button id="againBtn">Сыграть ещё</button>
+        <button id="exitBtn">Выход</button>
+      </div>
+    </div>
   </div>
-  <div id="msg" aria-live="polite"></div>
   <script>
   (function(){
     'use strict';
@@ -97,13 +111,25 @@
     const resetBtn=document.getElementById('resetBtn');
     const header=document.querySelector('h1');
     const controls=document.getElementById('controls');
+    const overlay=document.getElementById('overlay');
     const msg=document.getElementById('msg');
+    const againBtn=document.getElementById('againBtn');
+    const exitBtn=document.getElementById('exitBtn');
+    let left=false,right=false;
 
     function notify(text){
       msg.textContent=text;
-      msg.style.display='block';
-      setTimeout(()=>{msg.style.display='none';},2000);
+      overlay.style.display='flex';
+      startBtn.disabled=true;
+      resetBtn.disabled=true;
+      againBtn.onclick=()=>{
+        overlay.style.display='none';
+        startBtn.disabled=false;
+        resetBtn.disabled=false;
+        resetGame();
+      };
     }
+    exitBtn.onclick=()=>{window.location.href='index.html';};
 
     function resize(){
       const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
@@ -117,6 +143,9 @@
     }
     window.addEventListener('resize',resize);
     function resetGame(){
+      overlay.style.display='none';
+      startBtn.disabled=false;
+      resetBtn.disabled=false;
       running=false;
       player={x:canvas.width/2-5,y:canvas.height-10,w:10,h:5};
       objects=[];
@@ -136,6 +165,8 @@
     }
     function update(){
       if(!running) return;
+      if(left) movePlayerTo(player.x-2);
+      if(right) movePlayerTo(player.x+2);
       spawnTimer++;
       if(spawnTimer>20){
         spawnObject();
@@ -184,8 +215,13 @@
     },{passive:false});
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a') movePlayerTo(player.x-10);
-      else if(k==='arrowright' || k==='d') movePlayerTo(player.x+10);
+      if(k==='arrowleft' || k==='a') left=true;
+      else if(k==='arrowright' || k==='d') right=true;
+    });
+    document.addEventListener('keyup',e=>{
+      const k=e.key.toLowerCase();
+      if(k==='arrowleft' || k==='a') left=false;
+      else if(k==='arrowright' || k==='d') right=false;
     });
     startBtn.addEventListener('click',()=>{
       if(!running){
