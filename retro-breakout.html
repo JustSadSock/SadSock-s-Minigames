@@ -148,8 +148,9 @@
       e.preventDefault();
     },{passive:false});
     document.addEventListener('keydown',e=>{
-      if(e.key==='ArrowLeft') setPaddle(paddle.x-10);
-      else if(e.key==='ArrowRight') setPaddle(paddle.x+10);
+      const k=e.key.toLowerCase();
+      if(k==='arrowleft' || k==='a') setPaddle(paddle.x-10);
+      else if(k==='arrowright' || k==='d') setPaddle(paddle.x+10);
     });
     startBtn.addEventListener('click',()=>{
       if(!gameRunning){

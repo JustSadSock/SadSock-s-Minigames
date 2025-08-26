@@ -29,6 +29,10 @@
     }
     h1{margin:16px 0;font-size:18px;}
     #grid{
+      flex:1;
+      width:100%;
+      max-width:400px;
+      aspect-ratio:1/1;
       display:grid;
       grid-template-columns:repeat(4,1fr);
       gap:6px;
@@ -79,6 +83,8 @@
   const scoreEl=document.getElementById('score');
   const startBtn=document.getElementById('startBtn');
   const resetBtn=document.getElementById('resetBtn');
+  const controls=document.getElementById('controls');
+  const header=document.querySelector('h1');
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -138,9 +144,10 @@
   startBtn.addEventListener('click',resetGame);
   resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
-    const side=Math.min(window.innerWidth, window.innerHeight)*0.9;
-    grid.style.width=side+'px';
-    grid.style.height=side+'px';
+    const availH=window.innerHeight - header.offsetHeight - controls.offsetHeight - scoreEl.offsetHeight - 32;
+    const size=Math.min(window.innerWidth, availH);
+    grid.style.width=size+'px';
+    grid.style.height=size+'px';
   }
   addEventListener('resize',adjustGrid,{passive:true});
   adjustGrid();
