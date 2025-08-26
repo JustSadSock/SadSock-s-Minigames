@@ -486,9 +486,13 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Череп</span>
             </button>
-            <button class="tile" role="option" data-idx="16" data-color="#ff9eb8" data-game="musicbox" aria-label="Music Box">
+            <button class="tile" role="option" data-idx="16" data-color="#ff9eb8" data-game="music-box.html" aria-label="Music Box">
               <canvas width="120" height="120"></canvas>
               <span class="label">Music Box</span>
+            </button>
+            <button class="tile" role="option" data-idx="17" data-color="#00d9b8" data-game="pixel-snake.html" aria-label="Pixel Snake">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Pixel Snake</span>
             </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
@@ -619,7 +623,7 @@
       })();
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull','music'];
+      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull','music','snake'];
 
       /* ---------- Аватар ---------- */
       const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none', hatColor:'#ff595e'};
@@ -926,6 +930,7 @@
       }
 
       function openGame(tile){
+        const gameSrc = tile.dataset.game;
         const rect = tile.getBoundingClientRect();
         const srect = screenEl.getBoundingClientRect();
         const canvas = tile.querySelector('canvas');
@@ -942,7 +947,7 @@
         requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
         gameOverlay.addEventListener('transitionend', function handler(){
           gameOverlay.removeEventListener('transitionend', handler);
-          gameOverlay.innerHTML='<iframe src="music-box.html"></iframe><button class="pbtn close" id="gameClose">×</button>';
+          gameOverlay.innerHTML=`<iframe src="${gameSrc}"></iframe><button class="pbtn close" id="gameClose">×</button>`;
           $('#gameClose').addEventListener('click', closeGame);
         }, {once:true});
       }

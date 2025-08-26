@@ -678,6 +678,14 @@ XXXXX
 .XX..
 `, {X:'#ff9eb8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [music1,music2,music3,music4,music5] = musicFrames;
+  const snakeFrames = makeFrames(`
+XXXXX
+X....
+XXXXX
+....X
+XXXXX
+`, {X:'#00d9b8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [snake1,snake2,snake3,snake4,snake5] = snakeFrames;
   const skullFrames = makeFrames(`
   .XXX.
   XOXOX
@@ -704,7 +712,8 @@ XXXXX
     crown:[crown1,crown2,crown3,crown4,crown5],
     tree:[tree1,tree2,tree3,tree4,tree5],
     skull:[skull1,skull2,skull3,skull4,skull5],
-    music:[music1,music2,music3,music4,music5]
+    music:[music1,music2,music3,music4,music5],
+    snake:[snake1,snake2,snake3,snake4,snake5]
   };
   Object.keys(frames).forEach(name=>{
     cache[name]=frames[name].map(data=>{
