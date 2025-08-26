@@ -49,7 +49,15 @@ if(!/--slotBlur/.test(html)){
   throw new Error('Blur variable missing');
 }
 
-if(!/mask-image:linear-gradient\(to bottom, transparent 0%, black 15%, black 85%, transparent 100%\)/.test(html)){
+if(!/rgba\(255,255,255,.10\)/.test(html)){
+  throw new Error('Mobile scanline gradient missing');
+}
+
+if(!/blur\(.5px\)/.test(html)){
+  throw new Error('Inactive tile blur missing');
+}
+
+if(!/mask-image:linear-gradient\(to bottom, transparent 0%, rgba\(0,0,0,.85\) 10%, rgba\(0,0,0,1\) 90%, transparent 100%\)/.test(html)){
   throw new Error('Reel mask missing');
 }
 if(!/perspective:var\(--persp\)/.test(html)){
