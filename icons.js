@@ -663,20 +663,28 @@ XXXXX
 `, {X:'#ffdd00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [crown1,crown2,crown3,crown4,crown5] = crownFrames;
   const treeFrames = makeFrames(`
-..X..
-.XXX.
-XXXXX
-..X..
-..T..
-`, {X:'#00d97e',T:'#7b3f00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  ..X..
+  .XXX.
+  XXXXX
+  ..X..
+  ..T..
+  `, {X:'#00d97e',T:'#7b3f00'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [tree1,tree2,tree3,tree4,tree5] = treeFrames;
-  const skullFrames = makeFrames(`
+  const musicFrames = makeFrames(`
+..X..
+..X..
+..X..
 .XXX.
-XOXOX
-XXXXX
-.X.X.
-.X.X.
-`, {X:'#ffcf86',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+.XX..
+`, {X:'#ff9eb8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [music1,music2,music3,music4,music5] = musicFrames;
+  const skullFrames = makeFrames(`
+  .XXX.
+  XOXOX
+  XXXXX
+  .X.X.
+  .X.X.
+  `, {X:'#ffcf86',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [skull1,skull2,skull3,skull4,skull5] = skullFrames;
 
   const frames={
@@ -695,7 +703,8 @@ XXXXX
     potion:[potion1,potion2,potion3,potion4,potion5],
     crown:[crown1,crown2,crown3,crown4,crown5],
     tree:[tree1,tree2,tree3,tree4,tree5],
-    skull:[skull1,skull2,skull3,skull4,skull5]
+    skull:[skull1,skull2,skull3,skull4,skull5],
+    music:[music1,music2,music3,music4,music5]
   };
   Object.keys(frames).forEach(name=>{
     cache[name]=frames[name].map(data=>{
