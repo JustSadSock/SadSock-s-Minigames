@@ -3,60 +3,75 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Arcade — Pastel Pixel</title>
+  <title>SadSock’s playground</title>
   <!-- необязательно: пиксельный шрифт; оффлайн будет fallback -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
     :root{
       /* Пастельная ретро-палитра (без неона) */
-      --bg0:#0b0b10;     /* тёмный фон вокруг автомата */
-      --bg1:#101219;     /* тёмный для корпуса */
-      --bg2:#0d1017;     /* тёмный для экрана */
-      --ink:#f6f3ee;     /* «молочный» текст */
-      --dim:#cfc8bb;     /* приглушённый */
-      --pastel-pink:#ffd1dc;
-      --pastel-lav:#d9d0ff;
-      --pastel-mint:#c9f4e4;
-      --pastel-blue:#cde6ff;
-      --pastel-peach:#ffe3c6;
-      --accent:#ffd88a;  /* мёд */
-      --accent2:#8fe4c0; /* мята */
-      --accent3:#bcd5ff; /* голубой подсвет */
-      --bezel-hi:#1a1c25;
-      --bezel:#141821;
-      --bezel-lo:#0a0c12;
+      --bg0:#fff6e5;     /* светлый фон вокруг автомата */
+      --bg1:#ffd9a3;     /* яркий корпус */
+      --bg2:#fff1cc;     /* светлый экран */
+      --ink:#2d1600;     /* тёмный текст */
+      --dim:#714f34;     /* приглушённый */
+      --pastel-pink:#ff5f9c;
+      --pastel-lav:#ff8cc6;
+      --pastel-mint:#00d9b8;
+      --pastel-blue:#46a0ff;
+      --pastel-peach:#ffca3a;
+      --accent:#ff595e;  /* коралл */
+      --accent2:#00bbf9; /* ярко-голубой */
+      --accent3:#ffca3a; /* тёплая подсветка */
+      --bezel-hi:#fff2d4;
+      --bezel:#ffe0b3;
+      --bezel-lo:#ffce91;
+
+      --tile-bg:#fff6d8;
+      --tile-bg-dim:#d9c7a5;
+      --tile-shadow:0 10px 22px rgba(0,0,0,.35);
+      --tile-shadow-active:0 18px 36px rgba(0,0,0,.45);
 
       --scan:0.06;        /* сканлайны мягче */
       --crt-curve:24px;   /* скругление «стекла» */
-      --tile:132px;       /* базовый размер иконок (CSS) — крупнее */
+      --tile:220px;       /* базовый размер иконок (CSS) — ещё крупнее */
       --px:1px;
       --gap: clamp(16px, 3.8vmin, 28px);
+      --persp:1200px;     /* перспектива барабана */
+      --radius:180px;     /* базовый радиус цилиндра */
+      --dur:280ms;        /* длительность прокрутки быстрее */
+      --ease:cubic-bezier(.2,.9,.1,1.15);
     }
     *{box-sizing:border-box}
     html,body{
       height:100%; margin:0; color:var(--ink);
       background:
-        radial-gradient(1600px 900px at 15% -10%, #14131b 0%, transparent 60%),
-        radial-gradient(1400px 800px at 110% 10%, #151420 0%, transparent 60%),
-        linear-gradient(#0b0b10,#0c0d13 40%, #0b0b10 100%);
+        radial-gradient(1600px 900px at 15% -10%, #fff1d6 0%, transparent 60%),
+        radial-gradient(1400px 800px at 110% 10%, #ffe6f2 0%, transparent 60%),
+        linear-gradient(#fff6e5,#ffe0f0 40%, #fff6e5 100%);
       font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
       letter-spacing:.45px;
       overflow:hidden;
+      touch-action:manipulation;
+      -webkit-user-select:none;
+      user-select:none;
     }
 
     /* мелкий пастельный «пиксельный» узор на фоне */
     body::before{
       content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
       background:
-        radial-gradient(var(--pastel-blue) 1px, transparent 1px) 0 0/6px 6px,
-        radial-gradient(var(--pastel-lav) 1px, transparent 1px) 3px 3px/6px 6px;
-      opacity:.05;
+        radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
+        radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
+      opacity:.25;
     }
+
+    #bgCanvas{ position:fixed; inset:0; width:100%; height:100%; image-rendering:pixelated; z-index:0; }
 
     /* центрируем «кабинет», растягиваем почти на весь экран */
     .cabinet{
-      position:fixed; inset:0; display:grid; place-items:center;
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
       padding:min(2.5vw,18px);
       z-index:1;
     }
@@ -65,57 +80,135 @@
     .shell{
       width:min(1760px, 98vw);
       height:min(980px, 98svh);
-      display:grid; place-items:center;
+      display:flex; flex-direction:column; align-items:center;
       border-radius:26px;
-      background: linear-gradient(180deg, var(--bg1), #0e1016 55%, #0b0c12);
+      background: linear-gradient(180deg, var(--bg1), #ffc777 55%, #ffb347);
       box-shadow:
-        0 20px 46px rgba(0,0,0,.62),
-        inset 0 0 0 2px #07080c,
-        inset 0 0 0 8px #0f1118,
-        inset 0 0 120px rgba(0,0,0,.55);
+        0 20px 46px rgba(0,0,0,.22),
+        inset 0 0 0 2px #ffd59e,
+        inset 0 0 0 8px #ffbd69,
+        inset 0 0 120px rgba(255,205,110,.55);
       padding:12px;   /* было 26px -> экран вырос */
     }
 
     /* внутренний обод (bezel) — пастельные отблески */
     .bezel{
-      width:100%; height:100%;
+      width:100%; flex:1;
       border-radius:22px;
       background:
         linear-gradient(180deg, var(--bezel-hi), var(--bezel)),
-        radial-gradient(150% 120% at 50% -20%, rgba(255,255,255,.06), transparent 55%),
-        radial-gradient(140% 140% at 50% 120%, rgba(0,0,0,.35), transparent 50%);
+        radial-gradient(150% 120% at 50% -20%, rgba(255,255,255,.25), transparent 55%),
+        radial-gradient(140% 140% at 50% 120%, rgba(255,175,110,.35), transparent 50%);
       box-shadow:
-        inset 0 0 0 2px #070a0f,
-        inset 0 0 0 8px #121725,
-        inset 0 32px 120px rgba(0,0,0,.55),
-        inset 0 -26px 70px rgba(0,0,0,.6),
-        inset 0 0 120px rgba(188,213,255,.07); /* мягкий голубой подсвет */
+        inset 0 0 0 2px #ffd59e,
+        inset 0 0 0 8px #ffbd69,
+        inset 0 6px 8px rgba(255,255,255,.65),
+        inset 0 -6px 8px rgba(0,0,0,.25),
+        inset 0 32px 120px rgba(255,200,110,.55),
+        inset 0 -26px 70px rgba(255,180,80,.6),
+        inset 0 0 120px rgba(255,227,198,.37); /* мягкий тёплый подсвет */
       padding:10px;  /* было 22px -> ещё больше экран */
       display:grid; place-items:center;
     }
 
-    /* сам «экран» — максимально крупный, пастельные блики */
+    /* «дисплей» с внутренним светом и верхним бликом */
     .screen{
       position:relative;
       width:100%; height:100%;
       border-radius:var(--crt-curve);
-      background:
-        radial-gradient(160% 130% at 50% 18%, rgba(255,255,255,.04), transparent 55%),
-        radial-gradient(120% 120% at 50% 118%, rgba(0,0,0,.28), transparent 50%),
-        linear-gradient(180deg, #0a0f16, var(--bg2));
+      background:radial-gradient(120% 140% at 50% -20%, #3b2a12 0%, #1c1711 60%, #14110e 100%);
       box-shadow:
-        inset 0 0 0 2px #05070c,
-        inset 0 0 0 6px #0f121c,
-        inset 0 0 80px rgba(0,0,0,.58),
-        inset 0 0 320px rgba(0,0,0,.28);
+        0 20px 60px rgba(0,0,0,.45),
+        inset 0 10px 22px rgba(255,220,160,.14),
+        inset 0 -8px 18px rgba(0,0,0,.35);
       overflow:hidden;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: var(--gap);
-      padding: calc(var(--gap) + 6px);
-      align-content:center; justify-items:center;
+      display:flex;
+      flex-direction:column;
     }
+
+    .screen::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(to bottom, rgba(255,255,255,.06), transparent 22%);
+      mix-blend-mode:overlay;
+    }
+
+    .topbar{ 
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:4px 12px;
+      background:linear-gradient(180deg,#ffe9b6,#ffd6a6);
+    }
+    .topbar .title{ flex:1; text-align:center; font-size:12px; }
+    .topright{ display:flex; align-items:center; gap:8px; }
+    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:48px; height:48px; }
+    .avatar canvas{ width:48px; height:48px; image-rendering:pixelated; display:block; }
+    .avatar{ position:relative; transition:transform .2s ease, filter .2s ease; }
+    .avatar::after{
+      content:""; position:absolute; inset:-2px; border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.8), transparent 60%);
+      mix-blend-mode:overlay; opacity:0; transition:opacity .3s ease;
+    }
+    .avatar:hover{ transform:scale(1.06); filter:brightness(1.1); }
+    .avatar:hover::after{ opacity:.9; }
+    .avatar:active{ transform:scale(.94); }
+    #nickDisplay{ font-size:10px; }
+    #settingsBtn{ width:32px; height:32px; }
+    #settingsBtn canvas{ width:32px; height:32px; }
+
+    /* барабан со значками — цилиндр с маской и бликами */
+    .reel{
+      flex:1;
+      position:relative;
+      overflow:hidden;
+      padding:calc(var(--gap) + 6px);
+      perspective:var(--persp);
+      perspective-origin:50% 50%;
+      transform-style:preserve-3d;
+      -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 10%, rgba(0,0,0,1) 90%, transparent 100%);
+              mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 10%, rgba(0,0,0,1) 90%, transparent 100%);
+    }
+    .reel::before,
+    .reel::after{
+      content:""; position:absolute; top:0; bottom:0; width:40px; pointer-events:none;
+      background:radial-gradient(closest-side, rgba(255,255,255,.15), transparent);
+    }
+    .reel::before{ left:0; }
+    .reel::after{ right:0; }
+
+    .pbtn{
+      font-size:12px; letter-spacing:1px; color:var(--ink);
+      padding:12px 26px; cursor:pointer; user-select:none;
+      border:4px solid var(--ink); border-radius:10px;
+      background:linear-gradient(180deg,#ffe2f0,#ffd0e0);
+      box-shadow:0 4px 0 var(--ink), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.25);
+      position:relative;
+      transition:transform .1s steps(2), filter .2s ease;
+    }
+    .pbtn::before{
+      content:""; position:absolute; inset:0; border-radius:6px;
+      background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,0));
+      pointer-events:none;
+    }
+    .pbtn:hover{ filter:brightness(1.1); }
+    .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink), inset 0 1px 0 rgba(0,0,0,.35); }
+
+    .menu{
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:var(--bg2);
+      border:4px solid var(--ink);
+      border-radius:8px; padding:20px; font-size:12px;
+      display:none; z-index:10; width:320px; max-width:95vw;
+    }
+    .menu.show{ display:block; }
+    .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .menu .row.ar{ display:grid; grid-template-columns:80px 24px 1fr 24px; align-items:center; }
+    .menu .value{ text-align:center; }
+    .menu .row.wide input[type=range]{ flex:1; }
+    .menu .swatch{ width:20px; height:20px; border:2px solid var(--ink); border-radius:4px; }
+    .menu .arrow{ width:24px; height:24px; border:2px solid var(--ink); background:var(--bg1); cursor:pointer; font-size:12px; line-height:18px; }
 
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
@@ -130,6 +223,14 @@
         transparent 4px
       );
       mix-blend-mode:multiply;
+      animation:scanMove 6s linear infinite;
+    }
+    @media (max-width:560px){
+      .scanlines{
+        opacity:.25;
+        background-image:repeating-linear-gradient(to bottom, rgba(255,255,255,.10), rgba(255,255,255,.10) 1px, transparent 1px, transparent 3px);
+        mix-blend-mode:overlay;
+      }
     }
     .vignette{
       background: radial-gradient(120% 100% at 50% 50%, transparent 62%, rgba(0,0,0,.55) 100%);
@@ -139,7 +240,12 @@
         linear-gradient(110deg, rgba(255,255,255,.055) 0 22%, transparent 22% 80%, rgba(255,255,255,.03) 80% 100%),
         radial-gradient(120% 140% at 0% 0%, rgba(255,209,220,.06), transparent 45%),
         radial-gradient(120% 140% at 100% 0%, rgba(205,230,255,.05), transparent 40%);
-      filter: blur(.3px);
+      filter: blur(.3px); overflow:hidden; position:relative;
+    }
+    .glass::after{
+      content:""; position:absolute; top:0; left:-60%; width:50%; height:100%;
+      background:linear-gradient(90deg, rgba(255,255,255,.25), rgba(255,255,255,0));
+      transform:skewX(-20deg); animation:glare 8s linear infinite;
     }
     .phosphor{
       background:
@@ -147,324 +253,653 @@
         radial-gradient(80% 60% at 50% 48%, rgba(201,244,228,.035), transparent 55%);
       mix-blend-mode:screen;
     }
+    .static{
+      background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12P4//8/Az7w+PHjY2BgAACh1A9TJS3BMgAAAABJRU5ErkJggg==');
+      image-rendering:pixelated;
+      opacity:.08;
+      mix-blend-mode:overlay;
+      animation:staticShift .2s steps(2) infinite;
+      pointer-events:none;
+    }
+
+    @keyframes scanMove{ from{background-position:0 0;} to{background-position:0 4px;} }
+    @keyframes tileFlash{ 0%{opacity:1;} 100%{opacity:0;} }
+    @keyframes staticShift{ from{background-position:0 0;} to{background-position:4px 4px;} }
+    .tile.flash::after{ opacity:.8; animation:tileFlash .3s steps(1) forwards; }
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
     .tile{
-      --size: clamp(90px, 13.6vmin, var(--tile)); /* больше, чтобы заполнить экран */
-      width: calc(var(--size) * 1.6);
-      height: calc(var(--size) * 1.6);
+      --size: clamp(80px, 12vmin, var(--tile));
+      --slotY:0px;      /* вертикальная позиция барабана */
+      --slotX:0px;      /* горизонтальная позиция */
+      --slotZ:0px;      /* глубина для объёма */
+      --slotRot:0rad;   /* угол поворота по дуге */
+      --slotScale:1;    /* масштаб при удалении */
+      --slotBright:1;   /* яркость для эффекта глубины */
+      --slotBlur:0px;   /* размытие для уходящих */
+      width: var(--size);
+      height: var(--size);
       border-radius:18px;
-      background: linear-gradient(180deg,#0e121a,#0c1016);
-      border:2px solid #0a0c12;
+      background: var(--tile-bg);
+      border:2px solid #ffbd69;
       box-shadow:
-        inset 0 0 0 2px #151a26,
-        0 12px 26px rgba(0,0,0,.42);
-      display:grid; grid-template-rows: 1fr auto; place-items:center;
-      gap:12px;
+        inset 0 0 0 2px #ffe0b3,
+        var(--tile-shadow),
+        0 4px 0 #c99742,
+        0 8px 0 #a87332; /* дополнительный объём */
+      display:grid; place-items:center;
       cursor:pointer; outline:none;
-      transition:transform .08s ease, filter .08s ease, box-shadow .08s ease;
+      position:absolute; top:50%; left:50%;
+      transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY))) translateZ(var(--slotZ)) rotateX(var(--slotRot)) scale(var(--slotScale));
+      transform-style:preserve-3d;
+      filter:blur(var(--slotBlur)) brightness(var(--slotBright));
+      will-change:transform,opacity,filter;
+      transition:transform var(--dur) var(--ease), filter .22s linear, opacity .22s linear;
     }
-    .tile:hover{ filter:brightness(1.07); }
-    .tile:active{ transform:translateY(1px) scale(.996); }
-    .tile[data-focus="true"]{
+    .tile::before{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      box-shadow: inset 0 6px 0 rgba(255,255,255,.55), inset 0 -6px 0 rgba(0,0,0,.3);
+      pointer-events:none;
+    }
+    .tile::after{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      background:linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 60%);
+      mix-blend-mode:overlay; opacity:0; transition:opacity .2s ease;
+    }
+    .tile:hover::after{ opacity:.55; }
+    .tile:active{ transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
+    .tile[data-active="1"]{
       box-shadow:
-        inset 0 0 0 2px #1b2130,
-        0 0 0 3px rgba(255,232,204,.42),
-        0 18px 34px rgba(0,0,0,.55),
-        0 0 28px rgba(205,230,255,.18); /* мягкое пастельное свечение */
-      border-color:#252c3f;
+        inset 0 0 0 2px #ffbd69,
+        var(--tile-shadow-active),
+        0 0 0 3px rgba(255,154,0,.42),
+        0 0 28px rgba(255,200,90,.38);
+      border-color:#ffae55;
+    }
+    .tile[data-active="0"]{
+      background:var(--tile-bg-dim);
+      filter:blur(.5px) brightness(.9) contrast(.95);
     }
     .tile canvas{
       width: calc(var(--size));
       height: calc(var(--size));
       image-rendering: pixelated;
-      background:#0b0f16;
+      background:#ffe9b6;
       border-radius:12px;
-      border:2px solid #131a24;
-      box-shadow: inset 0 0 0 2px #0c111a, 0 0 0 1px rgba(0,0,0,.22);
+      border:2px solid #ffbd69;
+      box-shadow: inset 0 0 0 2px #ffd59e, 0 0 0 1px rgba(0,0,0,.12);
     }
-    .tile span{
-      font-size:11px; color:var(--dim);
-      text-shadow:0 1px 0 rgba(0,0,0,.6);
-      letter-spacing:.8px; user-select:none; margin-bottom:6px;
-    }
-    .label-pink { color: var(--pastel-pink); }
-    .label-mint { color: var(--pastel-mint); }
-    .label-blue { color: var(--pastel-blue); }
-    .label-peach{ color: var(--pastel-peach); }
 
-    /* HUD-подсказка */
-    .hud{
-      position:absolute; left:0; right:0; top:10px;
-      display:grid; place-items:center; pointer-events:none;
-      font-size:11px; color:var(--accent);
-      text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 10px rgba(255,236,188,.22);
-      opacity:0; transform: translateY(-6px);
-      transition:opacity .18s ease, transform .18s ease;
-    }
-    .hud.show{ opacity:1; transform: translateY(0); }
-
-    /* подсказка снизу */
-    .hint{
-      position:absolute; bottom:12px; left:0; right:0;
-      text-align:center; font-size:10px; color:#d6d0c4;
-      opacity:.75; text-shadow:0 1px 0 rgba(0,0,0,.7);
+    .tile .label{
+      position:absolute; left:10px; right:10px; bottom:8px;
+      height:28px; display:flex; align-items:center; justify-content:center;
+      font-weight:600; font-size:14px; letter-spacing:.2px;
+      color:#3b2a12;
+      background:rgba(255,255,255,.72);
+      backdrop-filter:blur(2px);
+      border-radius:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,.12);
       pointer-events:none;
     }
 
-    /* адаптив — сохраняем 2×2, уменьшаем внутренние отступы */
+    .indicator{
+      position:absolute; right:10px; top:50%; translate:0 -50%;
+      display:grid; gap:6px; pointer-events:none;
+    }
+    .indicator i{
+      width:6px; height:6px; border-radius:50%;
+      background:#494949; box-shadow:0 0 8px rgba(0,0,0,.5) inset; opacity:.5;
+    }
+    .indicator i.active{
+      background:#ffb74d; opacity:1; box-shadow:0 0 6px #ffb74d; animation:ledBreathe 1.8s ease-in-out infinite;
+    }
+    @keyframes ledBreathe{0%,100%{box-shadow:0 0 6px #ffb74d;}50%{box-shadow:0 0 12px #ffb74d;}}
+
+    /* адаптивные отступы для барабана */
     @media (max-width: 560px){
       :root{ --gap:18px; }
       .shell{ padding:10px; }
       .bezel{ padding:8px; }
-      .screen{ padding:18px; }
+      .reel{ padding:18px; }
       .tile{ border-radius:14px; }
+    }
+
+    @media (max-height:480px){
+      .reel{ padding:12px; }
+    }
+
+    /* небольшие pixel-анимации */
+    @keyframes tileBounce{
+      0%,100%{ transform:translateY(0); }
+      50%{ transform:translateY(-2px); }
+    }
+    /* анимации при наведении отключены, чтобы не мешать барабану */
+    @keyframes focusPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.2);}}
+    .tile[data-active="1"]{ animation:focusPulse .8s steps(2) infinite; }
+    @keyframes glare{ from{left:-60%;} to{left:120%;} }
+    @keyframes screenGlow{0%,100%{opacity:.85;}50%{opacity:.65;}}
+
+    @media (prefers-reduced-motion: reduce){
+      :root{ --dur:0ms; }
+      .tile{ transition:none !important; filter:brightness(1); }
     }
   </style>
 </head>
 <body>
+  <canvas id="bgCanvas"></canvas>
   <div class="cabinet" role="application" aria-label="Ретро-аркадный автомат (пастель)">
     <div class="shell">
       <div class="bezel">
-        <div class="screen" role="grid" aria-label="Меню">
-          <button class="tile" role="gridcell" data-idx="0" aria-label="Космос">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-blue">SPACE</span>
-          </button>
-          <button class="tile" role="gridcell" data-idx="1" aria-label="Сердце">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-pink">HEART</span>
-          </button>
-          <button class="tile" role="gridcell" data-idx="2" aria-label="Ключ">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-peach">KEY</span>
-          </button>
-          <button class="tile" role="gridcell" data-idx="3" aria-label="Бомба">
-            <canvas width="120" height="120"></canvas>
-            <span class="label-mint">BOMB</span>
-          </button>
-
+        <div class="screen">
+      <header class="topbar">
+            <button class="avatar" id="avatarBtn" aria-label="Профиль">
+              <canvas id="avatarCanvas" width="48" height="48"></canvas>
+            </button>
+            <h2 class="title">SadSock’s playground</h2>
+            <div class="topright">
+              <span id="nickDisplay">Player</span>
+              <button class="avatar" id="settingsBtn" aria-label="Настройки">
+                <canvas id="settingsCanvas" width="32" height="32"></canvas>
+              </button>
+            </div>
+          </header>
+          <div class="reel" role="listbox" aria-label="Меню">
+            <button class="tile" role="option" data-idx="0" data-color="#46a0ff" aria-label="Космос">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Космос</span>
+            </button>
+            <button class="tile" role="option" data-idx="1" data-color="#ff9eb8" aria-label="Сердце">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Сердце</span>
+            </button>
+            <button class="tile" role="option" data-idx="2" data-color="#ffcf86" aria-label="Ключ">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Ключ</span>
+            </button>
+            <button class="tile" role="option" data-idx="3" data-color="#00d9b8" aria-label="Бомба">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Бомба</span>
+            </button>
+            <button class="tile" role="option" data-idx="4" data-color="#ffca3a" aria-label="Звезда">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Звезда</span>
+            </button>
+            <button class="tile" role="option" data-idx="5" data-color="#46a0ff" aria-label="Корабль">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Корабль</span>
+            </button>
+            <button class="tile" role="option" data-idx="6" data-color="#46a0ff" aria-label="Призрак">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Призрак</span>
+            </button>
+            <button class="tile" role="option" data-idx="7" data-color="#ff595e" aria-label="Яблоко">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Яблоко</span>
+            </button>
+            <button class="tile" role="option" data-idx="8" data-color="#ff6b6b" aria-label="Машина">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Машина</span>
+            </button>
+            <button class="tile" role="option" data-idx="9" data-color="#c0c0c0" aria-label="Меч">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Меч</span>
+            </button>
+            <button class="tile" role="option" data-idx="10" data-color="#46a0ff" aria-label="Щит">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Щит</span>
+            </button>
+            <button class="tile" role="option" data-idx="11" data-color="#ffdd00" aria-label="Монета">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Монета</span>
+            </button>
+            <button class="tile" role="option" data-idx="12" data-color="#00bbf9" aria-label="Зелье">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Зелье</span>
+            </button>
+            <button class="tile" role="option" data-idx="13" data-color="#ffdd00" aria-label="Корона">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Корона</span>
+            </button>
+            <button class="tile" role="option" data-idx="14" data-color="#00d97e" aria-label="Дерево">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Дерево</span>
+            </button>
+            <button class="tile" role="option" data-idx="15" data-color="#ffcf86" aria-label="Череп">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Череп</span>
+            </button>
+            <div class="indicator" aria-hidden="true"></div>
+          </div>
+          <div id="avatarMenu" class="menu">
+            <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
+            <div class="row ar">
+              <span>Кожа:</span>
+              <button class="arrow" data-part="skin" data-dir="-1">◀</button>
+              <div id="skinSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="skin" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Волосы:</span>
+              <button class="arrow" data-part="hair" data-dir="-1">◀</button>
+              <div id="hairSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="hair" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Стиль:</span>
+              <button class="arrow" data-part="style" data-dir="-1">◀</button>
+              <span id="styleName" class="value">Короткая</span>
+              <button class="arrow" data-part="style" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Глаза:</span>
+              <button class="arrow" data-part="eyes" data-dir="-1">◀</button>
+              <div id="eyeSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="eyes" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Рубашка:</span>
+              <button class="arrow" data-part="shirt" data-dir="-1">◀</button>
+              <div id="shirtSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="shirt" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Головной убор:</span>
+              <button class="arrow" data-part="hat" data-dir="-1">◀</button>
+              <span id="hatName" class="value">Нет</span>
+              <button class="arrow" data-part="hat" data-dir="1">▶</button>
+            </div>
+            <div class="row ar">
+              <span>Цвет убора:</span>
+              <button class="arrow" data-part="hatColor" data-dir="-1">◀</button>
+              <div id="hatSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="hatColor" data-dir="1">▶</button>
+            </div>
+            <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
+          </div>
+          <div id="settingsMenu" class="menu">
+            <div class="row wide">
+              <span>Громкость:</span>
+              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" />
+            </div>
+            <div class="row wide">
+              <span>Экран:</span>
+              <button id="fullscreenBtn" class="pbtn">Полноэкранно</button>
+            </div>
+            <div style="text-align:center"><button id="settingsOk" class="pbtn">OK</button></div>
+          </div>
           <div class="scanlines" aria-hidden="true"></div>
+          <div class="static" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
           <div class="glass" aria-hidden="true"></div>
           <div class="phosphor" aria-hidden="true"></div>
-          <div class="hud" id="hud">СТРЕЛКИ • ENTER • МЫШЬ</div>
         </div>
       </div>
-      <div class="hint">↑↓←→ — перемещение • Enter — выбрать • Esc — снять выделение</div>
     </div>
   </div>
 
+  <script src="audio.js"></script>
+  <script src="icons.js"></script>
   <script>
     (function(){
       'use strict';
       const $ = (s,p=document)=>p.querySelector(s);
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
-      const hud = $('#hud');
+      const nickDisplay = $('#nickDisplay');
+      const avatarCanvas = $('#avatarCanvas');
+      const avatarBtn = $('#avatarBtn');
+      const avatarMenu = $('#avatarMenu');
+      const settingsBtn = $('#settingsBtn');
+      const settingsMenu = $('#settingsMenu');
+      const volumeSlider = $('#volume');
+      const fullscreenBtn = $('#fullscreenBtn');
+      const settingsOk = $('#settingsOk');
+      const nickInput = $('#nick');
+      const skinSwatch = $('#skinSwatch');
+      const hairSwatch = $('#hairSwatch');
+      const eyeSwatch = $('#eyeSwatch');
+      const shirtSwatch = $('#shirtSwatch');
+      const hatSwatch = $('#hatSwatch');
+      const styleName = $('#styleName');
+      const hatName = $('#hatName');
+      const arrows = $$('.arrow');
+      const avatarOk = $('#avatarOk');
+      const reel = $('.reel');
+      const tiles = $$('.reel .tile');
+      const indicator = $('.indicator');
+      const DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
-      /* ---------- WebAudio (разрешается по жесту) ---------- */
-      let actx, gain, unlocked=false;
-      function ensureAudio(){
-        if (actx) return;
-        actx = new (window.AudioContext||window.webkitAudioContext)();
-        gain = actx.createGain(); gain.gain.value = .14;
-        gain.connect(actx.destination);
-      }
-      function unlock(){
-        if (unlocked) return;
-        ensureAudio();
-        actx.resume().then(()=>{ unlocked=true; });
-      }
-      function beep(freq=620,dur=.06){
-        if(!unlocked) return;
-        const o = actx.createOscillator(), g = actx.createGain();
-        o.type='square'; o.frequency.value=freq;
-        g.gain.value=0.0001; o.connect(g).connect(gain);
-        const t=actx.currentTime;
-        o.start(t);
-        g.gain.exponentialRampToValueAtTime(.16,t+.01);
-        g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-        o.stop(t+dur+.02);
-      }
-      addEventListener('pointerdown', unlock, {once:true,passive:true});
-      addEventListener('keydown', unlock, {once:true});
+      // блокируем двойные касания и прокрутку страницы
+      addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
+      let lastTouch=0;
+      addEventListener('touchend', e=>{
+        const now=Date.now();
+        if(now-lastTouch<400){ e.preventDefault(); }
+        lastTouch=now;
+      }, {passive:false});
+      addEventListener('touchmove', e=> e.preventDefault(), {passive:false});
+      addEventListener('scroll', ()=> window.scrollTo(0,0));
 
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
+      const gearCtx = $('#settingsCanvas').getContext('2d',{alpha:false});
+      gearCtx.imageSmoothingEnabled=false;
+      (function drawGear(){
+        const S=2; clear(gearCtx); gearCtx.fillStyle='#2d1600';
+        const g=[[3,0],[4,0],[5,0],[6,0],[7,1],[8,2],[9,3],[9,4],[9,5],[8,6],[7,7],[6,8],[5,8],[4,9],[3,9],[2,8],[1,7],[0,6],[0,5],[0,4],[0,3],[1,2],[2,1]];
+        g.forEach(([x,y])=>px(gearCtx,x,y,S,'#2d1600'));
+        ['#ffca3a'].forEach(c=>{
+          px(gearCtx,4,4,S,c); px(gearCtx,5,4,S,c); px(gearCtx,4,5,S,c); px(gearCtx,5,5,S,c);
+        });
+      })();
 
-      const C = {
-        star:'#ffffff',
-        star2:'#ffe8cc',
-        ship:'#8fe4c0',  // mint
-        spark:'#ffd88a', // honey
-        heart:'#ff9eb8', // pink
-        heartHi:'#ffe4ef',
-        ring:'#ffd6a6',  // peach-gold
-        stem:'#ffe0b8',
-        bomb:'#394057',
-        fuse:'#d7c0ff',
-        flame1:'#ffd88a',
-        flame2:'#ffeedd',
-        sky:'#bcd5ff'
-      };
+      // Значки отрисовываются из набора кадров в icons.js
+      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull'];
 
-      function drawSpace(ctx){
-        clear(ctx);
-        const S=2, W=ctx.canvas.width/S, H=ctx.canvas.height/S;
-        // фон-звёзды (пастель)
-        for(let i=0;i<84;i++){
-          const x=(Math.random()*W)|0, y=(Math.random()*H)|0;
-          px(ctx,x,y,S, (i%7===0)?C.star2:C.star);
+      /* ---------- Аватар ---------- */
+      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none', hatColor:'#ff595e'};
+      const skinColors=['#ffcf9c','#f1c27d','#e0ac69','#c68642'];
+      const hairColors=['#7b3f00','#ff595e','#2e2e2e','#ffa726','#c0c0c0'];
+      const hairStyles=['short','mohawk','long'];
+      const hairNames={short:'Короткая',mohawk:'Ирокез',long:'Длинная'};
+      const eyeColors=['#000','#1a1a1a','#004bff','#00d9b8','#ff595e'];
+      const shirtColors=['#ff9eb8','#ffca3a','#46a0ff','#00d9b8','#ffffff','#ffd6a6'];
+      const hatStyles=['none','cap','crown','bandana'];
+      const hatNames={none:'Нет',cap:'Кепка',crown:'Корона',bandana:'Бандана'};
+      const hatColors=['#ff595e','#ffca3a','#46a0ff','#00d9b8','#714f34','#ffffff'];
+      let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0, hatColorIdx=0;
+      const avCtx = avatarCanvas.getContext('2d',{alpha:false});
+      avCtx.imageSmoothingEnabled=false;
+      function drawAvatar(){
+        clear(avCtx);
+        const S=2;
+        for(let y=7;y<23;y++){
+          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.skin);
         }
-        // ореол «неба» внизу
-        for(let x=0;x<W;x+=2){ px(ctx,x,H-2,S,C.sky); }
-        // кораблик
-        const cx=(W/2)|0, cy=(H/2)|0;
-        const ship=[
-          "0010000",
-          "0111000",
-          "1111100",
-          "1111110",
-          "0111111",
-          "0111111",
-          "1111111",
-          "0100010",
-          "0011100"
-        ];
-        for(let y=0;y<ship.length;y++){
-          for(let x=0;x<ship[0].length;x++){
-            if(ship[y][x]==='1') px(ctx, cx-3+x, cy-5+y, S, C.ship);
+        for(let y=23;y<31;y++){
+          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.shirt);
+        }
+        if(avatar.style==='short'){
+          for(let y=5;y<11;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+        } else if(avatar.style==='mohawk'){
+          for(let y=3;y<15;y++){
+            for(let x=15;x<17;x++) px(avCtx,x,y,S,avatar.hair);
+          }
+        } else if(avatar.style==='long'){
+          for(let y=3;y<17;y++){
+            for(let x=6;x<26;x++) px(avCtx,x,y,S,avatar.hair);
           }
         }
-        // выхлоп
-        px(ctx,cx-1,cy+5,S,C.spark); px(ctx,cx,cy+6,S,C.flame2);
-      }
-
-      function drawHeart(ctx){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        const data=[
-          "00110110",
-          "01111111",
-          "11111111",
-          "11111111",
-          "11111111",
-          "01111111",
-          "00111111",
-          "00011111",
-          "00001111",
-          "00000111"
-        ];
-        for(let y=0;y<data.length;y++){
-          for(let x=0;x<data[0].length;x++){
-            if(data[y][x]==='1') px(ctx, cx-4+x, cy-7+y, S, C.heart);
+        px(avCtx,12,15,S,avatar.eyes);
+        px(avCtx,20,15,S,avatar.eyes);
+        for(let x=12;x<=20;x++) px(avCtx,x,21,S,'#000');
+        if(avatar.hat==='cap'){
+          for(let y=1;y<5;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
           }
-        }
-        // блик
-        px(ctx,cx-1,cy-4,S,C.heartHi); px(ctx,cx,cy-5,S,C.heartHi);
-      }
-
-      function drawKey(ctx){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        // кольцо
-        for(let a=0;a<360;a+=6){
-          const r=8;
-          const x=(cx + Math.cos(a*Math.PI/180)*r)|0;
-          const y=(cy + Math.sin(a*Math.PI/180)*r)|0;
-          px(ctx,x,y,S,C.ring);
-        }
-        // стержень
-        for(let i=0;i<10;i++) px(ctx,cx+8+i,cy,S,C.stem);
-        // зубцы
-        px(ctx,cx+15,cy+1,S,C.stem);
-        px(ctx,cx+17,cy+2,S,C.stem);
-        px(ctx,cx+19,cy+1,S,C.stem);
-      }
-
-      function drawBomb(ctx){
-        clear(ctx);
-        const S=2, cx=24, cy=26;
-        // корпус
-        for(let y=-6;y<=6;y++){
-          for(let x=-6;x<=6;x++){
-            if(x*x + y*y <= 36) px(ctx,cx+x,cy+y,S,C.bomb);
+          for(let x=8;x<24;x++) px(avCtx,x,5,S,avatar.hatColor);
+        }else if(avatar.hat==='crown'){
+          for(let x=10;x<22;x++) px(avCtx,x,1,S,'#ffd700');
+          for(let i=0;i<3;i++){
+            px(avCtx,11+i*4,0,S,'#ffd700');
+            px(avCtx,12+i*4,-1,S,'#ffd700');
+            px(avCtx,13+i*4,0,S,'#ffd700');
           }
+        }else if(avatar.hat==='bandana'){
+          for(let y=3;y<7;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
+          }
+          for(let x=20;x<26;x++) px(avCtx,x,5,S,avatar.hatColor);
         }
-        // фитиль
-        for(let i=0;i<6;i++) px(ctx,cx+5+i,cy-10+i,S,C.fuse);
-        // искра
-        px(ctx,cx+12,cy-4,S,C.flame1);
-        px(ctx,cx+13,cy-3,S,C.flame2);
-        px(ctx,cx+12,cy-2,S,C.flame1);
       }
-
-      const drawers=[drawSpace, drawHeart, drawKey, drawBomb];
+      function updateAvatarControls(){
+        skinSwatch.style.background = avatar.skin;
+        hairSwatch.style.background = avatar.hair;
+        eyeSwatch.style.background = avatar.eyes;
+        shirtSwatch.style.background = avatar.shirt;
+        hatSwatch.style.background = avatar.hatColor;
+        styleName.textContent = hairNames[avatar.style];
+        hatName.textContent = hatNames[avatar.hat];
+      }
+      drawAvatar();
+      updateAvatarControls();
+      avatarBtn.addEventListener('click',()=>{
+        const show = avatarMenu.classList.toggle('show');
+        Sound.fx(show?'open':'close');
+      });
+      settingsBtn.addEventListener('click',()=>{
+        const show = settingsMenu.classList.toggle('show');
+        if(show){ volumeSlider.value = Sound.getVolume(); }
+        Sound.fx(show?'open':'close');
+      });
+      settingsOk.addEventListener('click',()=>{
+        settingsMenu.classList.remove('show');
+        Sound.fx('select');
+      });
+      volumeSlider.addEventListener('input',e=>{
+        Sound.setVolume(parseFloat(e.target.value));
+      });
+      fullscreenBtn.addEventListener('click',()=>{
+        if(!document.fullscreenElement){
+          document.documentElement.requestFullscreen();
+        }else{
+          document.exitFullscreen();
+        }
+        Sound.fx('option');
+      });
+      arrows.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const part=btn.dataset.part;
+          const dir=parseInt(btn.dataset.dir,10);
+          if(part==='skin'){
+            skinIdx=(skinIdx+dir+skinColors.length)%skinColors.length;
+            avatar.skin=skinColors[skinIdx];
+          }else if(part==='hair'){
+            hairIdx=(hairIdx+dir+hairColors.length)%hairColors.length;
+            avatar.hair=hairColors[hairIdx];
+          }else if(part==='style'){
+            styleIdx=(styleIdx+dir+hairStyles.length)%hairStyles.length;
+            avatar.style=hairStyles[styleIdx];
+          }else if(part==='eyes'){
+            eyeIdx=(eyeIdx+dir+eyeColors.length)%eyeColors.length;
+            avatar.eyes=eyeColors[eyeIdx];
+          }else if(part==='shirt'){
+            shirtIdx=(shirtIdx+dir+shirtColors.length)%shirtColors.length;
+            avatar.shirt=shirtColors[shirtIdx];
+          }else if(part==='hat'){
+            hatIdx=(hatIdx+dir+hatStyles.length)%hatStyles.length;
+            avatar.hat=hatStyles[hatIdx];
+          }else if(part==='hatColor'){
+            hatColorIdx=(hatColorIdx+dir+hatColors.length)%hatColors.length;
+            avatar.hatColor=hatColors[hatColorIdx];
+          }
+          updateAvatarControls();
+          drawAvatar();
+        });
+      });
+      avatarOk.addEventListener('click',e=>{
+        e.preventDefault();
+        avatar.nick = nickInput.value||'Player';
+        nickDisplay.textContent = avatar.nick;
+        drawAvatar();
+        avatarMenu.classList.remove('show');
+        Sound.fx('select');
+      });
 
       // инициализация 4 значков
-      $$('.tile').forEach((tile, i)=>{
+      const items=[];
+      tiles.forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
         const ctx = cv.getContext('2d',{alpha:false});
         ctx.imageSmoothingEnabled = false;
-        drawers[i%drawers.length](ctx);
+        items.push({ctx, name: drawers[i%drawers.length]});
       });
-
-      /* ---------- Фокус/навигация ---------- */
-      let idx=0, cols=2, total=$$('.tile').length;
-      function setFocus(i, withScroll=true){
-        idx = Math.max(0, Math.min(total-1, i));
-        $$('.tile').forEach((t, j)=> t.dataset.focus = (j===idx));
-        $$('.tile')[idx].focus({preventScroll:!withScroll});
+      let frame=0;
+      function animateIcons(){
+        frame++;
+        items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
+        requestAnimationFrame(animateIcons);
       }
-      setFocus(0,false);
+      animateIcons();
 
-      function move(dir){
-        const row = Math.floor(idx/cols), col = idx%cols;
-        let r=row, c=col;
-        if(dir==='up') r=Math.max(0,row-1);
-        if(dir==='down') r=Math.min(Math.ceil(total/cols)-1,row+1);
-        if(dir==='left') c=Math.max(0,col-1);
-        if(dir==='right') c=Math.min(cols-1,col+1);
-        setFocus(r*cols + c);
-        beep(580,.035);
-      }
+      /* ---------- Барабан и навигация ---------- */
+      const total = tiles.length;
+      const cols = 2;
+      const rows = Math.ceil(total/cols);
+      indicator.innerHTML = '<i></i>'.repeat(rows);
+      const dots = [...indicator.children];
+      let colIdx = 0;
+      let index = 0; // верхний видимый ряд
+      let frac = 0;  // прогресс анимации
+      let stepX, STEP, R;
 
-      addEventListener('keydown', (e)=>{
-        if(e.key==='ArrowUp'){ e.preventDefault(); move('up'); }
-        else if(e.key==='ArrowDown'){ e.preventDefault(); move('down'); }
-        else if(e.key==='ArrowLeft'){ e.preventDefault(); move('left'); }
-        else if(e.key==='ArrowRight'){ e.preventDefault(); move('right'); }
-        else if(e.key==='Enter'){ selectCurrent(); }
-        else if(e.key==='Escape'){
-          $$('.tile').forEach(t=> t.dataset.focus='false');
-          hudOff();
+      function recalcSteps(){
+        const r = reel.getBoundingClientRect();
+        const gap = 14;
+        const size = Math.min((r.width - gap*(cols+1))/cols, (r.height - gap*3)/2);
+        const overlap = size*0.2;                 // перекрытие плиток ~20%
+        stepX = size + gap;
+        STEP = size - overlap;                    // шаг меньше размера => перекрытие
+        R = STEP * 1.4;
+        for(let i=0;i<tiles.length;i++){
+          tiles[i].style.setProperty('--size', size + 'px');
         }
+        render();
+      }
+
+      function render(){
+        const center = index + frac;
+        for(let i=0;i<tiles.length;i++){
+          const t = tiles[i];
+          const col = i % cols;
+          const row = Math.floor(i/cols);
+          let delta = row - center;
+          delta = ((delta % rows) + rows) % rows;
+          if(delta > rows/2) delta -= rows;
+          const theta = delta * (STEP / R);
+          const y = R * Math.sin(theta);
+          const z = R * (1 - Math.cos(theta));
+          const x = (col - (cols-1)/2) * stepX;
+          const scale = 1 - Math.min(Math.abs(delta)*0.06, 0.18);
+          const blur = Math.min(Math.abs(delta)*0.8, 1.2);
+          const bright = 1 - Math.min(Math.abs(delta)*0.25, .35);
+          t.style.setProperty('--slotX', x+'px');
+          t.style.setProperty('--slotY', y+'px');
+          t.style.setProperty('--slotZ', (-z)+'px');
+          t.style.setProperty('--slotScale', scale);
+          t.style.setProperty('--slotBright', bright);
+          t.style.setProperty('--slotBlur', blur+'px');
+          t.style.setProperty('--slotRot', theta+'rad');
+          t.style.zIndex = (1000 - z) | 0;         // корректный порядок перекрытия
+          t.dataset.active = (Math.abs(delta)<0.51 && col===colIdx)?'1':'0';
+        }
+        const active = Math.round((center % rows + rows) % rows);
+        for(let i=0;i<dots.length;i++){
+          dots[i].classList.toggle('active', i===active);
+        }
+      }
+
+      function snap(dist){
+        const start = frac;
+        const end = start + dist;
+        const t0 = performance.now();
+        const dur = DUR * Math.max(1, Math.abs(dist));
+        function step(t){
+          const p = Math.min(1,(t - t0)/dur);
+          const e = (p<1) ? (1.15*p - 0.15*Math.sin(Math.PI*p)) : 1;
+          frac = start + (end-start)*e;
+          render();
+          if(p<1) requestAnimationFrame(step); else{
+            index = (Math.round(index + dist) % rows + rows) % rows;
+            frac = 0;
+            render();
+          }
+        }
+        requestAnimationFrame(step);
+        Sound.fx('move');
+        if(navigator.vibrate) navigator.vibrate(10);
+      }
+
+      function moveH(dir){
+        colIdx = dir === 'right' ? (colIdx + 1) % cols : (colIdx - 1 + cols) % cols;
+        render();
+        Sound.fx('move');
+      }
+
+      addEventListener('keydown', e=>{
+        if(e.key === 'ArrowUp'){ e.preventDefault(); snap(-1); }
+        else if(e.key === 'ArrowDown'){ e.preventDefault(); snap(1); }
+        else if(e.key === 'ArrowLeft'){ e.preventDefault(); moveH('left'); }
+        else if(e.key === 'ArrowRight'){ e.preventDefault(); moveH('right'); }
+        else if(e.key === 'Enter'){ selectCurrent(); }
       });
 
-      $$('.tile').forEach((t, i)=>{
-        t.addEventListener('pointerenter', ()=>{ setFocus(i); });
-        t.addEventListener('click', selectCurrent);
+      reel.addEventListener('wheel', e=>{
+        e.preventDefault();
+        snap(e.deltaY>0?-1:1);
+      }, {passive:false});
+
+      let touchStartX=0, touchStartY=0, touchStartT=0;
+      reel.addEventListener('touchstart',e=>{
+        const t=e.touches[0];
+        touchStartX=t.clientX; touchStartY=t.clientY; touchStartT=performance.now();
+      },{passive:true});
+      reel.addEventListener('touchmove',e=>{
+        const t=e.touches[0];
+        const dx=t.clientX-touchStartX;
+        const dy=t.clientY-touchStartY;
+        const dt=performance.now()-touchStartT;
+        if(Math.abs(dy)>Math.abs(dx) && Math.abs(dy)>20){
+          let steps=Math.round(Math.abs(dy)/STEP + Math.abs(dy)/dt*0.3);
+          steps=Math.max(1,Math.min(steps,5));
+          snap(dy<0?steps:-steps);
+          touchStartY=t.clientY; touchStartT=performance.now();
+        }else if(Math.abs(dx)>20){
+          moveH(dx>0?'right':'left');
+          touchStartX=t.clientX; touchStartT=performance.now();
+        }
+        e.preventDefault();
+      },{passive:false});
+
+      tiles.forEach((t,i)=>{
+        t.addEventListener('click',()=>{
+          const row = Math.floor(i/cols);
+          colIdx = i % cols;
+          const diff = row - index;
+          snap(diff);
+          selectCurrent();
+        });
       });
 
-      function hudOn(text){ hud.textContent=text; hud.classList.add('show'); }
-      function hudOff(){ hud.classList.remove('show'); }
+      recalcSteps();
+      addEventListener('resize', ()=> requestAnimationFrame(recalcSteps));
+
       function selectCurrent(){
-        const tile = $$('.tile')[idx];
-        const label = tile?.querySelector('span')?.textContent || 'ITEM';
-        hudOn('SELECT: '+label);
-        beep(480,.07);
-        setTimeout(hudOff, 800);
+        const idx = (Math.round(index)%rows)*cols + colIdx;
+        const tile = tiles[idx];
+        const rect = tile.getBoundingClientRect();
+        const color = tile.dataset.color || '#ffca3a';
+        for(let i=0;i<8;i++){
+          RetroFX.spawn(
+            rect.left + rect.width/2 + (Math.random()*40-20),
+            rect.top + rect.height/2 + (Math.random()*40-20),
+            color
+          );
+        }
+        tile.classList.add('flash');
+        setTimeout(()=>tile.classList.remove('flash'),300);
+        Sound.fx("select");
       }
 
       // стартовая подсказка
-      setTimeout(()=>hud.classList.add('show'), 220);
-      setTimeout(hudOff, 1900);
 
       // DPI-фикс для чёткого пикселя
       function fixDPR(){
         const dpr = Math.max(1, window.devicePixelRatio||1);
-        $$('.tile canvas').forEach(cv=>{
+        const cvs = [...tiles.map(t=>t.querySelector('canvas')), avatarCanvas];
+        cvs.forEach(cv=>{
           const cssW = Math.max(1, parseInt(getComputedStyle(cv).width,10));
           const cssH = Math.max(1, parseInt(getComputedStyle(cv).height,10));
           if(cv.width !== cssW*dpr || cv.height !== cssH*dpr){
@@ -473,10 +908,10 @@
           }
         });
         // перерисовать
-        $$('.tile').forEach((tile, i)=>{
-          const ctx = tile.querySelector('canvas').getContext('2d');
-          drawers[i%drawers.length](ctx);
-        });
+          items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
+          drawAvatar();
+          recalcSteps();
+          render();
       }
       addEventListener('resize', fixDPR, {passive:true});
       // чуть позже, чтобы успели примениться CSS-размеры
@@ -484,5 +919,6 @@
       setTimeout(fixDPR, 60);
     })();
   </script>
+  <script src="retrofx.js"></script>
 </body>
 </html>
