@@ -127,9 +127,11 @@
         startBtn.disabled=false;
         resetBtn.disabled=false;
         resetGame();
+        running=true;
+        requestAnimationFrame(update);
       };
     }
-    exitBtn.onclick=()=>{window.location.href='index.html';};
+    exitBtn.onclick=()=>{window.top.location.href='index.html';};
 
     function resize(){
       const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
@@ -165,8 +167,8 @@
     }
     function update(){
       if(!running) return;
-      if(left) movePlayerTo(player.x-2);
-      if(right) movePlayerTo(player.x+2);
+      if(left) player.x=Math.max(0,player.x-2);
+      if(right) player.x=Math.min(canvas.width-player.w,player.x+2);
       spawnTimer++;
       if(spawnTimer>20){
         spawnObject();
@@ -215,13 +217,13 @@
     },{passive:false});
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a') left=true;
-      else if(k==='arrowright' || k==='d') right=true;
+      if(k==='arrowleft' || k==='a'){ left=true; e.preventDefault(); }
+      else if(k==='arrowright' || k==='d'){ right=true; e.preventDefault(); }
     });
     document.addEventListener('keyup',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a') left=false;
-      else if(k==='arrowright' || k==='d') right=false;
+      if(k==='arrowleft' || k==='a'){ left=false; e.preventDefault(); }
+      else if(k==='arrowright' || k==='d'){ right=false; e.preventDefault(); }
     });
     startBtn.addEventListener('click',()=>{
       if(!running){

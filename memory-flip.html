@@ -22,10 +22,11 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
+      justify-content:flex-start;
       background:var(--bg0);
       height:100svh;
       overflow:hidden;
+      padding-top:12px;
       font-family:'Press Start 2P',ui-monospace,monospace;
       color:var(--ink);
       gap:12px;
@@ -72,23 +73,25 @@
       border-radius:8px;
       font-size:30px;
       backface-visibility:hidden;
+      box-shadow:0 4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.5);
     }
-    .front{background:var(--pastel-blue);}
-    .back{background:var(--pastel-peach);transform:rotateY(180deg);}
-    .card.matched .back{background:var(--pastel-mint);}
+    .front{background:linear-gradient(180deg,var(--pastel-blue),#3a94ef);}
+    .back{background:linear-gradient(180deg,var(--pastel-peach),#e3a228);transform:rotateY(180deg);}
+    .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
     #score{margin:0;font-size:14px;text-align:center;}
     #timer{margin:0;font-size:14px;text-align:center;}
     #controls{display:flex;gap:12px;margin:0;justify-content:center;}
     button{
       padding:8px 12px;
       font-size:14px;
-      background:var(--pastel-pink);
+      background:linear-gradient(180deg,var(--pastel-pink),var(--accent));
       border:2px solid var(--accent);
       border-radius:8px;
       color:var(--ink);
       cursor:pointer;
+      box-shadow:0 4px 0 var(--accent);
     }
-    button:active{transform:translateY(2px);}
+    button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent);}
 
     .overlay{
       position:absolute;
@@ -147,6 +150,7 @@
   'use strict';
   const icons=['🍎','🚗','🍀','👻','🗝️','💣','⭐','🛡️'];
   let cards=[], firstCard=null, secondCard=null, matchedCount=0;
+  let gameActive=false;
   const grid=document.getElementById('grid');
   const scoreEl=document.getElementById('score');
   const startBtn=document.getElementById('startBtn');
@@ -177,14 +181,15 @@
     overlay.style.display='flex';
     startBtn.disabled=true;
     resetBtn.disabled=true;
+    gameActive=false;
     againBtn.onclick=()=>{
       overlay.style.display='none';
       startBtn.disabled=false;
       resetBtn.disabled=false;
-      resetGame();
+      startGame();
     };
   }
-  exitBtn.onclick=()=>{window.location.href='index.html';};
+  exitBtn.onclick=()=>{window.top.location.href='index.html';};
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -211,10 +216,19 @@
       cards.push(card);
     });
     firstCard=secondCard=null;
+    stopTimer();
+    timerEl.textContent='Время: 0.0с';
+    gameActive=false;
+  }
+
+  function startGame(){
+    resetGame();
+    startBtn.disabled=true;
+    gameActive=true;
     startTimer();
   }
   function handleCard(card){
-    if(card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
+    if(!gameActive || card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
     reveal(card);
     if(!firstCard){
       firstCard=card;
@@ -247,20 +261,21 @@
   function hide(card){
     card.classList.remove('open');
   }
-  startBtn.addEventListener('click',resetGame);
+  startBtn.addEventListener('click',startGame);
   resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
-    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - controls.offsetHeight - 36;
+    const GAP=6, cols=4;
+    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - controls.offsetHeight - 48;
     const availableWidth=play.clientWidth;
-    const size=Math.min(availableWidth, availableHeight);
+    const base=Math.min(availableWidth, availableHeight);
+    const card=Math.floor((base - GAP*(cols-1))/cols);
+    const size=card*cols + GAP*(cols-1);
     grid.style.width=size+'px';
     grid.style.height=size+'px';
   }
   window.addEventListener('resize',adjustGrid);
   adjustGrid();
   resetGame();
-  stopTimer();
-  timerEl.textContent='Время: 0.0с';
 })();
 </script>
 </body>

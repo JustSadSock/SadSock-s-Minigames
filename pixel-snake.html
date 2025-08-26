@@ -133,7 +133,7 @@
         draw();
       };
     }
-    exitBtn.onclick=()=>{window.location.href='index.html';};
+    exitBtn.onclick=()=>{window.top.location.href='index.html';};
 
     function resize(){
       const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
