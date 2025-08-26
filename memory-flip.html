@@ -28,8 +28,14 @@
       color:var(--ink);
     }
     h1{margin:16px 0;font-size:18px;}
-    #grid{
+    .play{
       flex:1;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #grid{
       width:100%;
       max-width:400px;
       aspect-ratio:1/1;
@@ -73,7 +79,9 @@
     <button id="startBtn">Старт</button>
     <button id="resetBtn">Сброс</button>
   </div>
-  <div id="grid"></div>
+  <div class="play">
+    <div id="grid"></div>
+  </div>
 <script>
 (function(){
   'use strict';
@@ -83,8 +91,7 @@
   const scoreEl=document.getElementById('score');
   const startBtn=document.getElementById('startBtn');
   const resetBtn=document.getElementById('resetBtn');
-  const controls=document.getElementById('controls');
-  const header=document.querySelector('h1');
+  const play=document.querySelector('.play');
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -144,12 +151,11 @@
   startBtn.addEventListener('click',resetGame);
   resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
-    const availH=window.innerHeight - header.offsetHeight - controls.offsetHeight - scoreEl.offsetHeight - 32;
-    const size=Math.min(window.innerWidth, availH);
+    const size=Math.min(play.clientWidth, play.clientHeight);
     grid.style.width=size+'px';
     grid.style.height=size+'px';
   }
-  addEventListener('resize',adjustGrid,{passive:true});
+  new ResizeObserver(adjustGrid).observe(play);
   adjustGrid();
   resetGame();
 })();

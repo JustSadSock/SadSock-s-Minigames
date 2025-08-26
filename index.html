@@ -649,6 +649,17 @@
       const hatNames={none:'Нет',cap:'Кепка',crown:'Корона',bandana:'Бандана'};
       const hatColors=['#ff595e','#ffca3a','#46a0ff','#00d9b8','#714f34','#ffffff'];
       let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0, hatColorIdx=0;
+      const savedAvatar = JSON.parse(localStorage.getItem('avatar')||'null');
+      if(savedAvatar){
+        Object.assign(avatar, savedAvatar);
+        skinIdx = Math.max(0, skinColors.indexOf(avatar.skin));
+        hairIdx = Math.max(0, hairColors.indexOf(avatar.hair));
+        styleIdx = Math.max(0, hairStyles.indexOf(avatar.style));
+        eyeIdx = Math.max(0, eyeColors.indexOf(avatar.eyes));
+        shirtIdx = Math.max(0, shirtColors.indexOf(avatar.shirt));
+        hatIdx = Math.max(0, hatStyles.indexOf(avatar.hat));
+        hatColorIdx = Math.max(0, hatColors.indexOf(avatar.hatColor));
+      }
       const avCtx = avatarCanvas.getContext('2d',{alpha:false});
       avCtx.imageSmoothingEnabled=false;
       function drawAvatar(){
@@ -704,8 +715,13 @@
         styleName.textContent = hairNames[avatar.style];
         hatName.textContent = hatNames[avatar.hat];
       }
+      function saveAvatar(){
+        localStorage.setItem('avatar', JSON.stringify(avatar));
+      }
       drawAvatar();
       updateAvatarControls();
+      nickInput.value = avatar.nick;
+      nickDisplay.textContent = avatar.nick;
       avatarBtn.addEventListener('click',()=>{
         const show = avatarMenu.classList.toggle('show');
         Sound.fx(show?'open':'close');
@@ -719,8 +735,12 @@
         settingsMenu.classList.remove('show');
         Sound.fx('select');
       });
+      const savedVolume = localStorage.getItem('volume');
+      if(savedVolume!==null){ Sound.setVolume(parseFloat(savedVolume)); }
+      volumeSlider.value = Sound.getVolume();
       volumeSlider.addEventListener('input',e=>{
         Sound.setVolume(parseFloat(e.target.value));
+        localStorage.setItem('volume', e.target.value);
       });
       fullscreenBtn.addEventListener('click',()=>{
         if(!document.fullscreenElement){
@@ -758,6 +778,7 @@
           }
           updateAvatarControls();
           drawAvatar();
+          saveAvatar();
         });
       });
       avatarOk.addEventListener('click',e=>{
@@ -766,6 +787,7 @@
         nickDisplay.textContent = avatar.nick;
         drawAvatar();
         avatarMenu.classList.remove('show');
+        saveAvatar();
         Sound.fx('select');
       });
 
