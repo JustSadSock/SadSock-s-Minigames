@@ -379,6 +379,24 @@
     @keyframes glare{ from{left:-60%;} to{left:120%;} }
     @keyframes screenGlow{0%,100%{opacity:.85;}50%{opacity:.65;}}
 
+    .game-overlay{
+      position:absolute;
+      inset:0;
+      background:#000;
+      display:none;
+      z-index:10;
+      transform-origin:0 0;
+      transition:transform var(--dur) var(--ease);
+    }
+    .game-overlay iframe{
+      width:100%; height:100%; border:0;
+    }
+    .game-overlay .close{
+      position:absolute;
+      top:10px;
+      right:10px;
+    }
+
     @media (prefers-reduced-motion: reduce){
       :root{ --dur:0ms; }
       .tile{ transition:none !important; filter:brightness(1); }
@@ -468,6 +486,10 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Череп</span>
             </button>
+            <button class="tile" role="option" data-idx="16" data-color="#ff9eb8" data-game="musicbox" aria-label="Music Box">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Music Box</span>
+            </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
           <div id="avatarMenu" class="menu">
@@ -525,8 +547,9 @@
               <span>Экран:</span>
               <button id="fullscreenBtn" class="pbtn">Полноэкранно</button>
             </div>
-            <div style="text-align:center"><button id="settingsOk" class="pbtn">OK</button></div>
+          <div style="text-align:center"><button id="settingsOk" class="pbtn">OK</button></div>
           </div>
+          <div id="gameOverlay" class="game-overlay"></div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="static" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
@@ -566,6 +589,8 @@
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const indicator = $('.indicator');
+      const gameOverlay = $('#gameOverlay');
+      const screenEl = $('.screen');
       const DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
@@ -594,7 +619,7 @@
       })();
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull'];
+      const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull','music'];
 
       /* ---------- Аватар ---------- */
       const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none', hatColor:'#ff595e'};
@@ -870,6 +895,7 @@
           const diff = row - index;
           snap(diff);
           selectCurrent();
+          if(t.dataset.game){ openGame(t); }
         });
       });
 
@@ -891,6 +917,34 @@
         tile.classList.add('flash');
         setTimeout(()=>tile.classList.remove('flash'),300);
         Sound.fx("select");
+      }
+
+      function openGame(tile){
+        const rect = tile.getBoundingClientRect();
+        const srect = screenEl.getBoundingClientRect();
+        const canvas = tile.querySelector('canvas');
+        const clone = canvas.cloneNode(true);
+        clone.getContext('2d').drawImage(canvas,0,0);
+        gameOverlay.innerHTML='';
+        gameOverlay.appendChild(clone);
+        gameOverlay.style.display='block';
+        const scaleX = rect.width/srect.width;
+        const scaleY = rect.height/srect.height;
+        const offsetX = rect.left - srect.left;
+        const offsetY = rect.top - srect.top;
+        gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
+        requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
+        gameOverlay.addEventListener('transitionend', function handler(){
+          gameOverlay.removeEventListener('transitionend', handler);
+          gameOverlay.innerHTML='<iframe src="music-box.html"></iframe><button class="pbtn close" id="gameClose">×</button>';
+          $('#gameClose').addEventListener('click', closeGame);
+        }, {once:true});
+      }
+
+      function closeGame(){
+        gameOverlay.style.display='none';
+        gameOverlay.innerHTML='';
+        gameOverlay.style.transform='';
       }
 
       // стартовая подсказка
