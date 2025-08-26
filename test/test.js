@@ -128,8 +128,8 @@ if(!/drawImage/.test(icons)){
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 19){
-  throw new Error('Expected 19 tiles');
+if(tileCount !== 21){
+  throw new Error('Expected 21 tiles');
 }
 
 console.log('All tests passed');
