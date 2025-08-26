@@ -10,7 +10,7 @@ if(!/class="reel"/.test(html)){
 if(!/function render\(\)/.test(html)){
   throw new Error('Missing render logic');
 }
-if(!/function snap\(dir\)/.test(html)){
+if(!/function snap\(dist\)/.test(html)){
   throw new Error('Missing snap function');
 }
 
@@ -95,6 +95,18 @@ if(!/grid-template-columns:80px 24px 1fr 24px/.test(html)){
 
 if(!/setVolume\(v\)/.test(audio)){
   throw new Error('setVolume not implemented');
+}
+
+if(!/data-part="hatColor"/.test(html)){
+  throw new Error('Hat color controls missing');
+}
+
+if(!/hatColors\s*=\s*\[/.test(html)){
+  throw new Error('Hat color array missing');
+}
+
+if(!/touchStartT/.test(html)){
+  throw new Error('Touch inertia timing missing');
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;

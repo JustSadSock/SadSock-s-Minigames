@@ -509,6 +509,12 @@
               <span id="hatName" class="value">Нет</span>
               <button class="arrow" data-part="hat" data-dir="1">▶</button>
             </div>
+            <div class="row ar">
+              <span>Цвет убора:</span>
+              <button class="arrow" data-part="hatColor" data-dir="-1">◀</button>
+              <div id="hatSwatch" class="swatch value"></div>
+              <button class="arrow" data-part="hatColor" data-dir="1">▶</button>
+            </div>
             <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
           </div>
           <div id="settingsMenu" class="menu">
@@ -553,6 +559,7 @@
       const hairSwatch = $('#hairSwatch');
       const eyeSwatch = $('#eyeSwatch');
       const shirtSwatch = $('#shirtSwatch');
+      const hatSwatch = $('#hatSwatch');
       const styleName = $('#styleName');
       const hatName = $('#hatName');
       const arrows = $$('.arrow');
@@ -591,7 +598,7 @@
       const drawers=['space','heart','key','bomb','star','ship','ghost','apple','car','sword','shield','coin','potion','crown','tree','skull'];
 
       /* ---------- Аватар ---------- */
-      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none'};
+      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none', hatColor:'#ff595e'};
       const skinColors=['#ffcf9c','#f1c27d','#e0ac69','#c68642'];
       const hairColors=['#7b3f00','#ff595e','#2e2e2e','#ffa726','#c0c0c0'];
       const hairStyles=['short','mohawk','long'];
@@ -600,51 +607,52 @@
       const shirtColors=['#ff9eb8','#ffca3a','#46a0ff','#00d9b8','#ffffff','#ffd6a6'];
       const hatStyles=['none','cap','crown','bandana'];
       const hatNames={none:'Нет',cap:'Кепка',crown:'Корона',bandana:'Бандана'};
-      let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0;
+      const hatColors=['#ff595e','#ffca3a','#46a0ff','#00d9b8','#714f34','#ffffff'];
+      let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0, hatColorIdx=0;
       const avCtx = avatarCanvas.getContext('2d',{alpha:false});
       avCtx.imageSmoothingEnabled=false;
       function drawAvatar(){
         clear(avCtx);
         const S=2;
-        for(let y=8;y<24;y++){
+        for(let y=7;y<23;y++){
           for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.skin);
         }
-        for(let y=24;y<32;y++){
+        for(let y=23;y<31;y++){
           for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.shirt);
         }
         if(avatar.style==='short'){
-          for(let y=6;y<12;y++){
+          for(let y=5;y<11;y++){
             for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
           }
         } else if(avatar.style==='mohawk'){
-          for(let y=4;y<16;y++){
+          for(let y=3;y<15;y++){
             for(let x=15;x<17;x++) px(avCtx,x,y,S,avatar.hair);
           }
         } else if(avatar.style==='long'){
-          for(let y=4;y<18;y++){
+          for(let y=3;y<17;y++){
             for(let x=6;x<26;x++) px(avCtx,x,y,S,avatar.hair);
           }
         }
-        px(avCtx,12,16,S,avatar.eyes);
-        px(avCtx,20,16,S,avatar.eyes);
-        for(let x=12;x<=20;x++) px(avCtx,x,22,S,'#000');
+        px(avCtx,12,15,S,avatar.eyes);
+        px(avCtx,20,15,S,avatar.eyes);
+        for(let x=12;x<=20;x++) px(avCtx,x,21,S,'#000');
         if(avatar.hat==='cap'){
-          for(let y=2;y<6;y++){
-            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          for(let y=1;y<5;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
           }
-          for(let x=8;x<24;x++) px(avCtx,x,6,S,avatar.hair);
+          for(let x=8;x<24;x++) px(avCtx,x,5,S,avatar.hatColor);
         }else if(avatar.hat==='crown'){
-          for(let x=10;x<22;x++) px(avCtx,x,2,S,'#ffd700');
+          for(let x=10;x<22;x++) px(avCtx,x,1,S,'#ffd700');
           for(let i=0;i<3;i++){
-            px(avCtx,11+i*4,1,S,'#ffd700');
-            px(avCtx,12+i*4,0,S,'#ffd700');
-            px(avCtx,13+i*4,1,S,'#ffd700');
+            px(avCtx,11+i*4,0,S,'#ffd700');
+            px(avCtx,12+i*4,-1,S,'#ffd700');
+            px(avCtx,13+i*4,0,S,'#ffd700');
           }
         }else if(avatar.hat==='bandana'){
-          for(let y=4;y<8;y++){
-            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
+          for(let y=3;y<7;y++){
+            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
           }
-          for(let x=20;x<26;x++) px(avCtx,x,6,S,avatar.hair);
+          for(let x=20;x<26;x++) px(avCtx,x,5,S,avatar.hatColor);
         }
       }
       function updateAvatarControls(){
@@ -652,6 +660,7 @@
         hairSwatch.style.background = avatar.hair;
         eyeSwatch.style.background = avatar.eyes;
         shirtSwatch.style.background = avatar.shirt;
+        hatSwatch.style.background = avatar.hatColor;
         styleName.textContent = hairNames[avatar.style];
         hatName.textContent = hatNames[avatar.hat];
       }
@@ -703,6 +712,9 @@
           }else if(part==='hat'){
             hatIdx=(hatIdx+dir+hatStyles.length)%hatStyles.length;
             avatar.hat=hatStyles[hatIdx];
+          }else if(part==='hatColor'){
+            hatColorIdx=(hatColorIdx+dir+hatColors.length)%hatColors.length;
+            avatar.hatColor=hatColors[hatColorIdx];
           }
           updateAvatarControls();
           drawAvatar();
@@ -788,18 +800,18 @@
         }
       }
 
-      function snap(dir){
+      function snap(dist){
         const start = frac;
-        const end = start + dir;
+        const end = start + dist;
         const t0 = performance.now();
-        const dur = DUR;
+        const dur = DUR * Math.max(1, Math.abs(dist));
         function step(t){
           const p = Math.min(1,(t - t0)/dur);
           const e = (p<1) ? (1.15*p - 0.15*Math.sin(Math.PI*p)) : 1;
           frac = start + (end-start)*e;
           render();
           if(p<1) requestAnimationFrame(step); else{
-            index = Math.round(index + dir);
+            index = Math.round(index + dist);
             frac = 0;
             render();
           }
@@ -825,21 +837,24 @@
 
       reel.addEventListener('wheel', e=>{
         e.preventDefault();
-        snap(e.deltaY>0?1:-1);
+        snap(e.deltaY>0?-1:1);
       }, {passive:false});
 
-      let touchStartX=0, touchStartY=0;
+      let touchStartX=0, touchStartY=0, touchStartT=0;
       reel.addEventListener('touchstart',e=>{
         const t=e.touches[0];
-        touchStartX=t.clientX; touchStartY=t.clientY;
+        touchStartX=t.clientX; touchStartY=t.clientY; touchStartT=performance.now();
       },{passive:true});
       reel.addEventListener('touchend',e=>{
         const t=e.changedTouches[0];
         const dx=t.clientX-touchStartX;
         const dy=t.clientY-touchStartY;
-        if(Math.abs(dy)>Math.abs(dx) && Math.abs(dy)>30){
-          snap(dy>0?1:-1);
-        }else if(Math.abs(dx)>30){
+        const dt=performance.now()-touchStartT;
+        if(Math.abs(dy)>Math.abs(dx) && Math.abs(dy)>20){
+          let steps=Math.round(Math.abs(dy)/STEP + Math.abs(dy)/dt*0.3);
+          steps=Math.max(1,Math.min(steps,5));
+          snap(dy<0?steps:-steps);
+        }else if(Math.abs(dx)>20){
           moveH(dx>0?'right':'left');
         }
       },{passive:true});
