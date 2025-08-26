@@ -821,8 +821,10 @@
   ];
   // particle system for sparkles
   const particles=[];
+  const MAX_PARTICLES=100;
   function spawn(x,y,color){
     particles.push({x,y,vy:-0.5+Math.random(),life:60,color});
+    if(particles.length>MAX_PARTICLES) particles.splice(0,particles.length-MAX_PARTICLES);
   }
   function updateParticles(){
     for(let i=particles.length-1;i>=0;i--){
@@ -832,26 +834,32 @@
     }
   }
   function drawParticles(){
-    particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.fillRect(p.x|0,p.y|0,1,1); });
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      ctx.fillStyle=p.color;
+      ctx.fillRect(p.x|0,p.y|0,1,1);
+    }
   }
   // create animations for each sprite drifting down with bounce
   const animations=[];
-  Object.keys(SPRITES).forEach((key)=>{
+  Object.keys(SPRITES).forEach(key=>{
     const base=SPRITES[key];
     animations.push({key,frame:base,x:Math.random()*cvs.width,y:Math.random()*cvs.height,t:0,vy:0.3+Math.random()*0.7});
   });
-  function loop(){
+  let last=0;
+  function loop(now){
+    const dt = (now-last)/16.67; last=now;
     ctx.clearRect(0,0,cvs.width,cvs.height);
-    animations.forEach(s=>{
-      s.t+=0.05; s.y+=s.vy; if(s.y>cvs.height) s.y=0;
-      const wob=1+Math.sin(s.t)*0.2;
+    for(let i=0;i<animations.length;i++){
+      const s = animations[i];
+      s.t+=0.05*dt; s.y+=s.vy*dt; if(s.y>cvs.height) s.y=0;
       drawSprite(s.x,s.y,s.frame);
       if(Math.random()<0.01) spawn(s.x+4,s.y+4,palette[Math.floor(Math.random()*palette.length)]);
-    });
+    }
     updateParticles();
     drawParticles();
     requestAnimationFrame(loop);
   }
-  loop();
+  requestAnimationFrame(loop);
   window.RetroFX = {spawn};
 })();

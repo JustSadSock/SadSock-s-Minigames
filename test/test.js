@@ -1,6 +1,7 @@
 const fs = require('fs');
 const html = fs.readFileSync('index.html', 'utf8');
 const audio = fs.readFileSync('audio.js', 'utf8');
+const retro = fs.readFileSync('retrofx.js','utf8');
 
 if(!/class="reel"/.test(html)){
   throw new Error('Reel container missing');
@@ -78,6 +79,14 @@ if(!/id="volume"/.test(html)){
 
 if(!/id="fullscreenBtn"/.test(html)){
   throw new Error('Fullscreen button missing');
+}
+
+if(!/width:320px/.test(html)){
+  throw new Error('Menu width not expanded');
+}
+
+if(!/MAX_PARTICLES=100/.test(retro)){
+  throw new Error('Particle cap missing');
 }
 
 if(!/grid-template-columns:80px 24px 1fr 24px/.test(html)){

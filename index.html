@@ -39,7 +39,7 @@
       --gap: clamp(16px, 3.8vmin, 28px);
       --persp:1200px;     /* перспектива барабана */
       --radius:180px;     /* базовый радиус цилиндра */
-      --dur:420ms;        /* длительность прокрутки */
+      --dur:480ms;        /* длительность прокрутки чуть плавнее */
       --ease:cubic-bezier(.2,.9,.1,1.15);
     }
     *{box-sizing:border-box}
@@ -199,8 +199,8 @@
       transform:translate(-50%,-50%);
       background:var(--bg2);
       border:4px solid var(--ink);
-      border-radius:8px; padding:16px; font-size:12px;
-      display:none; z-index:10; width:260px; max-width:90vw;
+      border-radius:8px; padding:20px; font-size:12px;
+      display:none; z-index:10; width:320px; max-width:95vw;
     }
     .menu.show{ display:block; }
     .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
@@ -560,6 +560,7 @@
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const indicator = $('.indicator');
+      const DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
       addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
@@ -750,13 +751,16 @@
         stepX = size + gap;
         STEP = size + gap;
         R = STEP * 1.4;
-        tiles.forEach(t=> t.style.setProperty('--size', size + 'px'));
+        for(let i=0;i<tiles.length;i++){
+          tiles[i].style.setProperty('--size', size + 'px');
+        }
         render();
       }
 
       function render(){
         const center = index + frac;
-        tiles.forEach((t,i)=>{
+        for(let i=0;i<tiles.length;i++){
+          const t = tiles[i];
           const col = i % cols;
           const row = Math.floor(i/cols);
           const delta = row - center;
@@ -777,16 +781,18 @@
           t.style.setProperty('--slotRot', theta+'rad');
           t.style.opacity = alpha;
           t.dataset.active = (Math.abs(delta)<0.51 && col===colIdx)?'1':'0';
-        });
+        }
         const active = Math.round((center % rows + rows) % rows);
-        dots.forEach((d,i)=> d.classList.toggle('active', i===active));
+        for(let i=0;i<dots.length;i++){
+          dots[i].classList.toggle('active', i===active);
+        }
       }
 
       function snap(dir){
         const start = frac;
         const end = start + dir;
         const t0 = performance.now();
-        const dur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
+        const dur = DUR;
         function step(t){
           const p = Math.min(1,(t - t0)/dur);
           const e = (p<1) ? (1.15*p - 0.15*Math.sin(Math.PI*p)) : 1;
@@ -849,6 +855,7 @@
       });
 
       recalcSteps();
+      addEventListener('resize', ()=> requestAnimationFrame(recalcSteps));
 
       function selectCurrent(){
         const idx = (Math.round(index)%rows)*cols + colIdx;
