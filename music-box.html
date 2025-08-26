@@ -105,6 +105,23 @@
   @media (min-width:900px){
     .panel.two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   }
+
+  #msg{
+    position:fixed;
+    top:16px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--cell-on);
+    border:2px solid var(--gold-2);
+    border-radius:8px;
+    padding:8px 12px;
+    font-family:'Press Start 2P',ui-monospace,monospace;
+    font-size:14px;
+    color:var(--ink);
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    display:none;
+    z-index:1000;
+  }
 </style>
 </head>
 <body>
@@ -213,10 +230,11 @@
           <p style="margin:6px 0 0">Вкладки вверху: <b>Melody & Bass</b> — редактирование; <b>Import / Export</b> — код; <b>Info</b> — помощь.  
           Все элементы крупные и рассчитаны на палец.</p>
         </div>
-      </div>
-    </div>
+  </div>
+  </div>
   </div>
 
+<div id="msg" aria-live="polite"></div>
 <script>
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -472,11 +490,18 @@ $('exportJSON').onclick=()=>{$('out').value=JSON.stringify(toSongData(),null,2);
 $('exportCode').onclick=()=>{$('out').value=buildSnippet(toSongData());};
 $('copyOut').onclick=()=>{navigator.clipboard.writeText($('out').value||'').catch(()=>{});};
 
+const msg=$('msg');
+function notify(text){
+  msg.textContent=text;
+  msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none';},2000);
+}
+
 function parseImported(txt){
   txt=(txt||"").trim(); if(!txt) return null;
   try{const obj=JSON.parse(txt); if(obj&&obj.bpm) return obj;}catch(e){}
   const m=txt.match(/SONG_DATA\s*=\s*({[\s\S]*?});/); if(m){try{return JSON.parse(m[1]);}catch(e){}}
-  alert("Не смог распарсить. Вставь JSON SONG_DATA или JS-сниппет."); return null;
+  notify("Не смог распарсить. Вставь JSON SONG_DATA или JS-сниппет."); return null;
 }
 function loadSongDataIntoState(data){
   state.bpm=data.bpm??state.bpm; $('bpm').value=state.bpm; $('bpmv').textContent=state.bpm;
@@ -489,8 +514,8 @@ function loadSongDataIntoState(data){
   refreshAllGrids();
 }
 $('importPlay').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); start();};
-$('loadIntoEditor').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); alert('Загружено в редактор.');};
-$('pasteBtn').onclick=async()=>{ try{$('inp').value=await navigator.clipboard.readText();}catch(e){alert('Clipboard недоступен');} };
+$('loadIntoEditor').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); notify('Загружено в редактор.');};
+$('pasteBtn').onclick=async()=>{ try{$('inp').value=await navigator.clipboard.readText();}catch(e){notify('Clipboard недоступен');} };
 
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;

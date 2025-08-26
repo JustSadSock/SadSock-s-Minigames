@@ -72,6 +72,21 @@
       cursor:pointer;
     }
     button:active{transform:translateY(2px);}
+
+    #msg{
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      background:var(--pastel-pink);
+      border:2px solid var(--accent);
+      border-radius:8px;
+      padding:8px 12px;
+      font-size:14px;
+      color:var(--ink);
+      box-shadow:0 4px 8px rgba(0,0,0,0.2);
+      display:none;
+    }
   </style>
 </head>
 <body>
@@ -84,6 +99,7 @@
   <div class="play">
     <div id="grid"></div>
   </div>
+  <div id="msg" aria-live="polite"></div>
 <script>
 (function(){
   'use strict';
@@ -95,6 +111,13 @@
   const resetBtn=document.getElementById('resetBtn');
   const header=document.querySelector('h1');
   const controls=document.getElementById('controls');
+  const msg=document.getElementById('msg');
+
+  function notify(text){
+    msg.textContent=text;
+    msg.style.display='block';
+    setTimeout(()=>{msg.style.display='none';},2000);
+  }
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -132,7 +155,7 @@
         scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
         firstCard=secondCard=null;
         if(matchedCount===icons.length){
-          alert('Поздравляем! Вы нашли все пары.');
+          notify('Поздравляем! Вы нашли все пары.');
         }
       }else{
         setTimeout(()=>{
