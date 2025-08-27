@@ -727,6 +727,39 @@ BBBBB
   `, {X:'#ffcf86',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [skull1,skull2,skull3,skull4,skull5] = skullFrames;
 
+  const rogueFrames = makeFrames(`
+.X.X.
+XXXXX
+X.X.X
+XXXXX
+.X.X.
+`, {X:'#d4635b'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [rogue1,rogue2,rogue3,rogue4,rogue5] = rogueFrames;
+  const pongFrames = makeFrames(`
+P...P
+P...P
+P.B.P
+P...P
+P...P
+`, {P:'#46a0ff',B:'#d4635b'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [pong1,pong2,pong3,pong4,pong5] = pongFrames;
+  const rhythmFrames = makeFrames(`
+..X..
+..X..
+XXXXX
+XX...
+XX...
+`, {X:'#ff9eb8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [rhythm1,rhythm2,rhythm3,rhythm4,rhythm5] = rhythmFrames;
+  const towerFrames = makeFrames(`
+..X..
+.XXX.
+.XXX.
+.XXX.
+XXXXX
+`, {X:'#e6a64c'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [tower1,tower2,tower3,tower4,tower5] = towerFrames;
+
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
     bomb:[bomb1,bomb2,bomb3,bomb4,bomb5],
@@ -749,7 +782,11 @@ BBBBB
     cards:[cards1,cards2,cards3,cards4,cards5],
     rain:[rain1,rain2,rain3,rain4,rain5],
     breakout:[breakout1,breakout2,breakout3,breakout4,breakout5],
-    anim:[anim1,anim2,anim3,anim4,anim5]
+    anim:[anim1,anim2,anim3,anim4,anim5],
+    rogue:[rogue1,rogue2,rogue3,rogue4,rogue5],
+    pong:[pong1,pong2,pong3,pong4,pong5],
+    rhythm:[rhythm1,rhythm2,rhythm3,rhythm4,rhythm5],
+    tower:[tower1,tower2,tower3,tower4,tower5]
   };
   Object.keys(frames).forEach(name=>{
     cache[name]=frames[name].map(data=>{

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Mini‑Rogue — SadSock’s playground</title>
+<style>
+
+  :root{
+    --bg:#f4e7c8; --bg2:#f2deb8; --panel:#f5e9cf; --ink:#3a2a18;
+    --accent:#e6a64c; --accent2:#d18f3f; --hi:#3fbf75; --warn:#d4635b;
+    --shadow:rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:radial-gradient(circle at 50% -10%, #ffeecf, #f3dfbd 60%, #f0d6aa);
+    color:var(--ink);font-family:ui-rounded, ui-sans-serif, system-ui, -apple-system, "SF Pro Rounded", "Segoe UI", Roboto, "Helvetica Neue", Arial}
+  .cabinet{
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;
+  }
+  .frame{
+    width:min(520px,94vw); height:min(84vh, 86svh);
+    background:linear-gradient(180deg, #f7ebd1, #f3debb 60%, #f1d8ad);
+    border-radius:22px; position:relative; padding:12px; box-shadow:
+      inset 0 2px 0 #fff7e7,
+      inset 0 -4px 0 #e0caa1,
+      0 10px 30px var(--shadow);
+    border:2px solid #e3cda3;
+  }
+  .inner{
+    position:absolute; inset:16px 16px 110px 16px; border-radius:16px;
+    background:
+      linear-gradient(180deg, #f9efd7, #f4e3c1);
+    box-shadow: inset 0 2px 0 #fff6e2, inset 0 -4px 0 #e9d3ac;
+    overflow:hidden;
+  }
+  .scanlines{ position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, #0000 0 3px, rgba(0,0,0,.05) 3px 4px); mix-blend-mode:multiply; opacity:.35 }
+  canvas{width:100%; height:100%; display:block; image-rendering:pixelated}
+  .hud{ position:absolute; left:0; right:0; top:0; display:flex; justify-content:space-between; gap:8px; padding:8px; font-weight:700; }
+  .pill{ background:#ffe9c9; border:2px solid #e8cda0; border-radius:999px; padding:6px 10px; box-shadow:0 2px 0 #e2c395 }
+  .pad{
+    position:absolute; left:16px; right:16px; bottom:18px; display:flex; justify-content:space-between; gap:18px;
+  }
+  .dpad{
+    width:40vw; max-width:260px; aspect-ratio:1; display:grid; grid-template-areas:
+      ". up ."
+      "left mid right"
+      ". down .";
+    gap:8px; padding:10px; border-radius:16px;
+    background:#f4e5c2; border:2px solid #e8cda0; box-shadow:inset 0 2px 0 #fff3da, inset 0 -3px 0 #e1c79c;
+  }
+  .ab{ width:40vw; max-width:260px; display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  .k{
+    background:#ffefcf; border:2px solid #e7c999; border-radius:12px; box-shadow:0 3px 0 #dcb985; height:24vw; max-height:120px;
+  }
+  .dpad .k{height:100%}
+  .k:active{ transform:translateY(1px) }
+  .label{ position:absolute; left:20px; top:8px; font-family:monospace; font-weight:800; letter-spacing:.6px }
+  .hint{ position:absolute; right:20px; top:8px; opacity:.7; font-size:12px }
+  .footer{ color:#7a5a36; font-weight:700; text-shadow:0 1px #fff4de; }
+
+</style>
+</head>
+<body>
+<div class="cabinet">
+  <div class="frame">
+    <div class="inner">
+      <div class="hud">
+        <div class="pill" id="score">Score: 0</div>
+        <div class="pill" id="status">—</div>
+      </div>
+      <canvas id="cv"></canvas>
+      <div class="scanlines"></div>
+    </div>
+    <div class="pad" id="pad">
+      <div class="dpad">
+        <div class="k" data-btn="up" style="grid-area:up"></div>
+        <div class="k" data-btn="left" style="grid-area:left"></div>
+        <div class="k" style="grid-area:mid; opacity:.35"></div>
+        <div class="k" data-btn="right" style="grid-area:right"></div>
+        <div class="k" data-btn="down" style="grid-area:down"></div>
+      </div>
+      <div class="ab">
+        <div class="k" data-btn="a"></div>
+        <div class="k" data-btn="b"></div>
+      </div>
+    </div>
+    <div class="label">Mini‑Rogue</div>
+    <div class="hint">Пошагово: D‑pad ходит. Сундуки, враги, выход.</div>
+  </div>
+  <div class="footer">D‑pad + A/B • Клавиатура: стрелки/WSAD, A=Space, B=Enter</div>
+</div>
+
+<script>
+(() => {
+  const SETTINGS = { W:360, H:640, sfx:0.6 };
+  const d = (s)=>document.querySelector(s);
+  const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const ctx=cv.getContext('2d');
+  function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
+    const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
+  }
+  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
+    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
+    ctx.restore();
+  }
+  window.addEventListener('resize',resize);
+
+  // Input
+  const Input = (()=>{
+    const st={left:false,right:false,up:false,down:false,a:false,b:false};
+    const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'a',Enter:'b',a:'a',A:'a',z:'b',Z:'b',w:'up',W:'up',s:'down',S:'down',d:'right',D:'right'};
+    addEventListener('keydown',e=>{const b=map[e.key]; if(b){st[b]=true; e.preventDefault();}});
+    addEventListener('keyup',e=>{const b=map[e.key]; if(b){st[b]=false; e.preventDefault();}});
+    pad.querySelectorAll('[data-btn]').forEach(el=>{
+      const btn=el.dataset.btn;
+      const on=(e)=>{st[btn]=true; el.style.filter='brightness(1.08)'; e.preventDefault();};
+      const off=(e)=>{st[btn]=false; el.style.filter=''; e.preventDefault();};
+      el.addEventListener('touchstart',on,{passive:false});
+      el.addEventListener('touchend',off,{passive:false});
+      el.addEventListener('touchcancel',off,{passive:false});
+      el.addEventListener('mousedown',on); addEventListener('mouseup',off);
+      el.addEventListener('mouseleave',off);
+    });
+    return {st};
+  })();
+
+  // Helpers
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const irnd=(a,b)=>Math.floor(rnd(a,b+1));
+
+  // ===== Game specific code =====
+  
+  const game = {
+    score:0, started:true, over:false,
+    init(){ this.reset(); loop(); },
+    reset(){ this.score=0; this.over=false;
+      this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
+      this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
+      this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
+      this.exit=this.randUnique();
+      addEventListener('keydown',e=>{ if(this.over) return;
+        if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
+        if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
+        if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
+        if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
+      });
+    },
+    cell(x,y){ return this.map[y]?.[x]; },
+    gen(){ const N=this.N, m=Array.from({length:N},()=>Array(N).fill('#'));
+      let x=irnd(1,N-2), y=irnd(1,N-2), open=0, target=Math.floor(N*N*.42);
+      const carve=(x,y)=>{ if(m[y][x]==='#'){ m[y][x]='.'; open++; } };
+      carve(x,y); let tries=0;
+      while(open<target && tries<5000){ const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; x=clamp(x+d[0],1,N-2); y=clamp(y+d[1],1,N-2); carve(x,y); tries++; }
+      for(let i=0;i<N;i++){ m[0][i]='#'; m[N-1][i]='#'; m[i][0]='#'; m[i][N-1]='#'; }
+      return m;
+    },
+    find(sym){ for(let y=0;y<this.N;y++) for(let x=0;x<this.N;x++) if(this.map[y][x]===sym) return {x,y}; return {x:1,y:1}; },
+    randWalk(){ let p; do{ p={x:irnd(1,this.N-2),y:irnd(1,this.N-2)} }while(this.cell(p.x,p.y)!=='.'); return p; },
+    randUnique(){ let p; do{ p=this.randWalk(); }while((this.p && p.x===this.p.x&&p.y===this.p.y)||this.ch?.some(c=>c.x===p.x&&c.y===p.y)||this.en?.some(e=>e.x===p.x&&e.y===p.y)||(this.exit && p.x===this.exit.x&&p.y===this.exit.y)); return p; },
+    move(dx,dy){ const nx=this.p.x+dx, ny=this.p.y+dy; if(this.cell(nx,ny)!=='.') return; this.p.x=nx; this.p.y=ny;
+      const i=this.ch.findIndex(c=>c.x===nx&&c.y===ny); if(i>=0){ this.ch.splice(i,1); this.score+=50; }
+      if(this.exit.x===nx&&this.exit.y===ny){ this.lvl++; this.map=this.gen(); this.p=this.find('.'); this.en=[]; for(let i=0;i<3+Math.min(3,this.lvl);i++) this.en.push(this.randWalk()); this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique()); this.exit=this.randUnique(); this.score+=100; }
+      for(const e of this.en){ let ex=e.x, ey=e.y; if(Math.random()<.6){ const ddx=Math.sign(this.p.x-ex), ddy=Math.sign(this.p.y-ey);
+          if(Math.random()<.5 && this.cell(ex+ddx,ey)==='.') ex+=ddx; else if(this.cell(ex,ey+ddy)==='.') ey+=ddy;
+        } else { const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; if(this.cell(ex+d[0],ey+d[1])==='.'){{ ex+=d[0]; ey+=d[1]; }}}
+        e.x=ex; e.y=ey; if(e.x===this.p.x && e.y===this.p.y){ this.hp--; if(this.hp<=0) this.over=true; }
+      }
+    },
+    step(dt){},
+    draw(){
+      ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
+      const N=this.N, tile=Math.floor(Math.min(SETTINGS.W,SETTINGS.H)*.8/N);
+      const ox=Math.floor((SETTINGS.W-tile*N)/2), oy=Math.floor((SETTINGS.H-tile*N)/2);
+      for(let y=0;y<N;y++) for(let x=0;x<N;x++){ ctx.fillStyle=(this.map[y][x]==='#')?'#edd7b0':'#faedd3'; ctx.fillRect(ox+x*tile, oy+y*tile, tile-1, tile-1); }
+      ctx.fillStyle='#e6a64c'; for(const c of this.ch) ctx.fillRect(ox+c.x*tile+3, oy+c.y*tile+3, tile-6, tile-6);
+      ctx.fillStyle='#3fbf75'; ctx.fillRect(ox+this.exit.x*tile+5, oy+this.exit.y*tile+5, tile-10, tile-10);
+      ctx.fillStyle='#a8d7ff'; for(const e of this.en) ctx.fillRect(ox+e.x*tile+4, oy+e.y*tile+4, tile-8, tile-8);
+      ctx.fillStyle='#3a2a18'; ctx.fillRect(ox+this.p.x*tile+4, oy+this.p.y*tile+4, tile-8, tile-8);
+      ctx.fillStyle='#bf8a3d'; ctx.font='14px monospace'; ctx.textAlign='center';
+      ctx.fillText(`HP:${this.hp}  Lvl:${this.lvl}`, SETTINGS.W/2, oy-12);
+      if(this.over) ctx.fillText('Ты пал. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5);
+      ctx.restore();
+    }
+  };
+  let last=performance.now();
+  function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
+    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+  game.init();
+
+
+})();
+</script>
+</body>
+</html>
