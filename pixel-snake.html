@@ -44,18 +44,6 @@
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
     }
     #score{margin:0;font-size:14px;}
-    #controls{display:flex;gap:12px;}
-    button{
-      padding:8px 12px;
-      font-size:14px;
-      background:var(--pastel-peach);
-      border:1px solid var(--accent);
-      border-radius:8px;
-      color:var(--ink);
-      cursor:pointer;
-      box-shadow:0 2px 0 rgba(255,255,255,0.6) inset;
-    }
-    button:active{transform:translateY(1px);}
 
     .toast{
       position:absolute;
@@ -70,34 +58,26 @@
       display:none;
       color:var(--ink);
     }
-    .pad{
-      position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
-      display:none; grid-template-columns:repeat(3,40px); grid-template-rows:repeat(3,40px); gap:6px;
-    }
-    .pad button{width:40px;height:40px;padding:0;}
-    .pad button[data-dir="up"]{grid-column:2;}
-    .pad button[data-dir="left"]{grid-row:2;grid-column:1;}
-    .pad button[data-dir="down"]{grid-row:3;grid-column:2;}
-    .pad button[data-dir="right"]{grid-row:2;grid-column:3;}
-    @media (hover:none){.pad{display:grid;}}
+    
   </style>
 </head>
 <body>
   <h1>Pixel Snake</h1>
   <div id="score">Счёт: 0</div>
-  <div id="controls">
-    <button id="startBtn">Старт</button>
-    <button id="resetBtn">Сброс</button>
-    <button id="exitBtn">Выход</button>
-  </div>
   <div class="play">
     <canvas id="gameCanvas" width="120" height="160"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
-      <button data-dir="up">▲</button>
-      <button data-dir="left">◄</button>
-      <button data-dir="down">▼</button>
-      <button data-dir="right">►</button>
+      <div class="dpad">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid; opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
+      <div class="ab">
+        <div class="k" id="startBtn">START</div>
+      </div>
     </div>
   </div>
   <script>
@@ -113,11 +93,8 @@
     let snake, dir, nextDir, apple, score;
     const scoreEl=document.getElementById('score');
     const startBtn=document.getElementById('startBtn');
-    const resetBtn=document.getElementById('resetBtn');
     const header=document.querySelector('h1');
-    const controls=document.getElementById('controls');
     const toastEl=document.getElementById('toast');
-    const exitBtn=document.getElementById('exitBtn');
     const pad=document.getElementById('pad');
 
     function toast(text){
@@ -125,11 +102,10 @@
       toastEl.style.display='block';
       setTimeout(()=> toastEl.style.display='none',2000);
     }
-    exitBtn.onclick=()=>{window.top.location.href='index.html';};
 
     function resize(){
       const padH=pad.offsetHeight?pad.offsetHeight+16:0;
-      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - padH - 36;
+      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - padH - 24;
       const availableWidth=window.innerWidth;
       const ratio=canvas.width/canvas.height;
       let w=availableWidth;
@@ -227,10 +203,6 @@
       }
     },{passive:true});
     startBtn.addEventListener('click',startGame);
-    resetBtn.addEventListener('click',()=>{
-      resetGame();
-      draw();
-    });
     resize();
     resetGame();
     draw();

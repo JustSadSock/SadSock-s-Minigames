@@ -77,18 +77,6 @@
     .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
     #score{margin:0;font-size:14px;text-align:center;}
     #timer{margin:0;font-size:14px;text-align:center;}
-    #controls{display:flex;gap:12px;margin:0;justify-content:center;}
-    button{
-      padding:8px 12px;
-      font-size:14px;
-      background:var(--pastel-peach);
-      border:1px solid var(--accent);
-      border-radius:8px;
-      color:var(--ink);
-      cursor:pointer;
-      box-shadow:0 2px 0 rgba(255,255,255,0.6) inset;
-    }
-    button:active{transform:translateY(1px);}
 
     .toast{
       position:absolute;
@@ -109,14 +97,10 @@
   <h1>Memory Flip</h1>
   <div id="score">Найдено пар: 0/8</div>
   <div id="timer">Время: 0.0с</div>
-  <div id="controls">
-    <button id="startBtn">Старт</button>
-    <button id="resetBtn">Сброс</button>
-    <button id="exitBtn">Выход</button>
-  </div>
   <div class="play">
     <div id="grid"></div>
     <div id="toast" class="toast"></div>
+    <div id="pad" class="pad"><div class="k" id="startBtn">START</div></div>
   </div>
 <script>
 (function(){
@@ -127,12 +111,9 @@
   const grid=document.getElementById('grid');
   const scoreEl=document.getElementById('score');
   const startBtn=document.getElementById('startBtn');
-  const resetBtn=document.getElementById('resetBtn');
   const header=document.querySelector('h1');
-  const controls=document.getElementById('controls');
   const play=document.querySelector('.play');
   const toastEl=document.getElementById('toast');
-  const exitBtn=document.getElementById('exitBtn');
   const timerEl=document.getElementById('timer');
   let startTime=0, penalty=0, timerId=null;
 
@@ -152,7 +133,6 @@
     toastEl.style.display='block';
     setTimeout(()=> toastEl.style.display='none',2000);
   }
-  exitBtn.onclick=()=>{window.top.location.href='index.html';};
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -162,7 +142,6 @@
   }
   function resetGame(){
     startBtn.disabled=false;
-    resetBtn.disabled=false;
     grid.innerHTML='';
     const values=shuffle(icons.concat(icons));
     cards=[];
@@ -225,10 +204,9 @@
     card.classList.remove('open');
   }
   startBtn.addEventListener('click',startGame);
-  resetBtn.addEventListener('click',resetGame);
   function adjustGrid(){
     const GAP=6, cols=4;
-    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - controls.offsetHeight - 48;
+    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - 48;
     const availableWidth=play.clientWidth;
     const base=Math.min(availableWidth, availableHeight);
     const card=Math.floor((base - GAP*(cols-1))/cols);

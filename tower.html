@@ -104,8 +104,8 @@
       const drawB=(b,col)=>{ ctx.fillStyle=col; ctx.fillRect(b.x,b.y,b.w,20); ctx.strokeStyle='#deb780'; ctx.lineWidth=2; ctx.strokeRect(b.x+1,b.y+1,b.w-2,18); };
       this.layers.forEach(L=>drawB(L,'#cbe7aa'));
       drawB(this.prev,'#ffd88a'); drawB(this.active,'#9be0c0');
-      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px monospace'; ctx.textAlign='center'; ctx.fillText('A — ронять блок', SETTINGS.W/2, SETTINGS.H*0.5); }
-      if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px monospace'; ctx.textAlign='center'; ctx.fillText('Промах. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A — ронять блок', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Промах. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };

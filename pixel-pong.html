@@ -112,7 +112,7 @@
       ctx.fillStyle='#e6c28a'; for(let y=10;y<SETTINGS.H;y+=18) ctx.fillRect(SETTINGS.W/2-2,y,4,10);
       ctx.fillStyle='#3fbf75'; ctx.fillRect(this.p1.x,this.p1.y,this.pw,this.ph); ctx.fillRect(this.p2.x,this.p2.y,this.pw,this.ph);
       ctx.beginPath(); ctx.arc(this.b.x,this.b.y,this.b.r,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#d18f3f'; ctx.font='16px monospace'; ctx.textAlign='center';
+      ctx.fillStyle='#d18f3f'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center';
       ctx.fillText(`${this.s1} : ${this.s2}`, SETTINGS.W/2, 24);
       if(!this.started) ctx.fillText(this.over?'A — снова':'A — старт', SETTINGS.W/2, SETTINGS.H*0.5);
       ctx.restore();

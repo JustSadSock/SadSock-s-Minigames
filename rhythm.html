@@ -99,8 +99,8 @@
       ctx.fillStyle='#e6a64c'; ctx.fillRect(0,this.barY,SETTINGS.W,4);
       ctx.fillStyle='#3fbf75';
       for(const n of this.notes){ if(n.hit) continue; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
-      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px monospace'; ctx.textAlign='center'; ctx.fillText('A/S/K/L или тач по дорожкам', SETTINGS.W/2, SETTINGS.H*0.5); }
-      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px monospace'; ctx.textAlign='center'; ctx.fillText('Трек окончен. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A/S/K/L или тач по дорожкам', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Трек окончен. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };

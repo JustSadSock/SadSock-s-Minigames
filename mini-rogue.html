@@ -120,7 +120,7 @@
       ctx.fillStyle='#3fbf75'; ctx.fillRect(ox+this.exit.x*tile+5, oy+this.exit.y*tile+5, tile-10, tile-10);
       ctx.fillStyle='#a8d7ff'; for(const e of this.en) ctx.fillRect(ox+e.x*tile+4, oy+e.y*tile+4, tile-8, tile-8);
       ctx.fillStyle='#3a2a18'; ctx.fillRect(ox+this.p.x*tile+4, oy+this.p.y*tile+4, tile-8, tile-8);
-      ctx.fillStyle='#bf8a3d'; ctx.font='14px monospace'; ctx.textAlign='center';
+      ctx.fillStyle='#bf8a3d'; ctx.font='14px "Press Start 2P"'; ctx.textAlign='center';
       ctx.fillText(`HP:${this.hp}  Lvl:${this.lvl}`, SETTINGS.W/2, oy-12);
       if(this.over) ctx.fillText('Ты пал. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5);
       ctx.restore();
