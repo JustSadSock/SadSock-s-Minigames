@@ -856,7 +856,7 @@
         }
         requestAnimationFrame(step);
         Sound.fx('move');
-        if(navigator.vibrate) navigator.vibrate(10);
+        if(navigator.userActivation?.isActive) navigator.vibrate?.(10);
       }
 
       function moveH(dir){
