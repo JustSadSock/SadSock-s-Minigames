@@ -4,53 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Башня — SadSock’s playground</title>
-<style>
-
-  :root{
-    --bg:#f4e7c8; --bg2:#f2deb8; --panel:#f5e9cf; --ink:#3a2a18;
-    --accent:#e6a64c; --accent2:#d18f3f; --hi:#3fbf75; --warn:#d4635b;
-    --shadow:rgba(0,0,0,.25);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:radial-gradient(circle at 50% -10%, #ffeecf, #f3dfbd 60%, #f0d6aa);
-    color:var(--ink);font-family:ui-rounded, ui-sans-serif, system-ui, -apple-system, "SF Pro Rounded", "Segoe UI", Roboto, "Helvetica Neue", Arial}
-  .cabinet{
-    min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;
-  }
-  .frame{
-    width:min(520px,94vw); height:min(84vh, 86svh);
-    background:linear-gradient(180deg, #f7ebd1, #f3debb 60%, #f1d8ad);
-    border-radius:22px; position:relative; padding:12px; box-shadow:
-      inset 0 2px 0 #fff7e7,
-      inset 0 -4px 0 #e0caa1,
-      0 10px 30px var(--shadow);
-    border:2px solid #e3cda3;
-  }
-  .inner{
-    position:absolute; inset:16px 16px 110px 16px; border-radius:16px;
-    background:
-      linear-gradient(180deg, #f9efd7, #f4e3c1);
-    box-shadow: inset 0 2px 0 #fff6e2, inset 0 -4px 0 #e9d3ac;
-    overflow:hidden;
-  }
-  .scanlines{ position:absolute; inset:0; pointer-events:none;
-    background:repeating-linear-gradient(0deg, #0000 0 3px, rgba(0,0,0,.05) 3px 4px); mix-blend-mode:multiply; opacity:.35 }
-  canvas{width:100%; height:100%; display:block; image-rendering:pixelated}
-  .hud{ position:absolute; left:0; right:0; top:0; display:flex; justify-content:space-between; gap:8px; padding:8px; font-weight:700; }
-  .pill{ background:#ffe9c9; border:2px solid #e8cda0; border-radius:999px; padding:6px 10px; box-shadow:0 2px 0 #e2c395 }
-  .pad{
-    position:absolute; left:16px; right:16px; bottom:18px; display:none; justify-content:center;
-  }
-  .k{
-    background:#ffefcf; border:2px solid #e7c999; border-radius:12px; box-shadow:0 3px 0 #dcb985; height:24vw; max-height:120px;
-  }
-  .k:active{ transform:translateY(1px) }
-  @media (hover:none){ .pad{display:flex;} }
-  .label{ position:absolute; left:20px; top:8px; font-family:monospace; font-weight:800; letter-spacing:.6px }
-  .hint{ position:absolute; right:20px; top:8px; opacity:.7; font-size:12px }
-  .footer{ color:#7a5a36; font-weight:700; text-shadow:0 1px #fff4de; }
-
-</style>
+<link rel="stylesheet" href="shell.css">
 </head>
 <body>
 <div class="cabinet">

@@ -4,19 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Pixel Snake</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shell.css">
   <style>
     :root{
-      /* палитра как у music box */
-      --bg0:#fff4cf;
-      --bg1:#f6e7c0;
-      --bg2:#f2dba9;
-      --ink:#3a2c1b;
-      --pastel-pink:#e6a84a;
-      --pastel-blue:#d79031;
-      --pastel-mint:#e7c888;
-      --pastel-peach:#ffe6a6;
-      --accent:#d79031;
+      --bg0:var(--bg);
+      --bg1:var(--bg2);
+      --bg2:var(--panel);
+      --ink:var(--ink);
+      --pastel-pink:var(--accent);
+      --pastel-blue:var(--accent2);
+      --pastel-mint:var(--hi);
+      --pastel-peach:var(--panel);
+      --accent:var(--accent2);
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
@@ -26,9 +25,7 @@
       justify-content:flex-start;
       height:100svh;
       overflow:hidden;
-      background:var(--bg0);
       gap:12px;
-      font-family:'Press Start 2P',ui-monospace,monospace;
       color:var(--ink);
     }
     h1{margin:0;font-size:18px;}
