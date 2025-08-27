@@ -277,6 +277,7 @@
       --slotScale:1;    /* масштаб при удалении */
       --slotBright:1;   /* яркость для эффекта глубины */
       --slotBlur:0px;   /* размытие для уходящих */
+      --glow:0;         /* интенсивность подсветки */
       width: var(--size);
       height: var(--size);
       border-radius:18px;
@@ -304,16 +305,18 @@
     .tile::after{
       content:""; position:absolute; inset:6px; border-radius:12px;
       background:linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 60%);
-      mix-blend-mode:overlay; opacity:0; transition:opacity .2s ease;
+      mix-blend-mode:overlay; opacity:calc(.3 * var(--glow)); transition:opacity .2s linear;
+      pointer-events:none;
     }
-    .tile:hover::after{ opacity:.55; }
     .tile:active{ transform:translate(calc(-50% + var(--slotX)), calc(-50% + var(--slotY) + 1px)) scale(calc(var(--slotScale)*.996)); }
     .tile[data-active="1"]{
       box-shadow:
         inset 0 0 0 2px #ffbd69,
         var(--tile-shadow-active),
-        0 0 0 3px rgba(255,154,0,.42),
-        0 0 28px rgba(255,200,90,.38);
+        0 4px 0 #c99742,
+        0 8px 0 #a87332,
+        0 0 0 calc(3px * var(--glow)) rgba(255,154,0,.42),
+        0 0 calc(28px * var(--glow)) rgba(255,200,90,.38);
       border-color:#ffae55;
     }
     .tile[data-active="0"]{
@@ -321,6 +324,7 @@
       filter:blur(.5px) brightness(.9) contrast(.95);
     }
     .tile canvas{
+      position:relative; overflow:hidden;
       box-sizing:border-box;
       width:calc(100% - 12px);
       height:calc(100% - 12px);
@@ -329,6 +333,12 @@
       border-radius:12px;
       border:2px solid #ffbd69;
       box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
+    }
+    .tile canvas::after{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      background:linear-gradient(145deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%);
+      mix-blend-mode:screen; opacity:.4;
+      pointer-events:none;
     }
 
     .tile .label{
@@ -773,6 +783,7 @@
       let index = 0; // верхний видимый ряд
       let frac = 0;  // прогресс анимации
       let stepX, STEP, R, isSmall;
+      let activeRow = 0; // подсвечиваемый ряд
 
       function recalcSteps(){
         const r = reel.getBoundingClientRect();
@@ -816,7 +827,9 @@
           t.style.setProperty('--slotBlur', blur+'px');
           t.style.setProperty('--slotRot', theta+'rad');
           t.style.zIndex = (1000 - z) | 0;         // корректный порядок перекрытия
-          t.dataset.active = (Math.abs(delta)<0.51 && col===colIdx)?'1':'0';
+          const glow = (row === activeRow) ? 1 - Math.min(Math.abs(delta),1) : 0;
+          t.style.setProperty('--glow', glow);
+          t.dataset.active = glow>0 ? '1':'0';
         }
         const active = Math.round((center % rows + rows) % rows);
         for(let i=0;i<dots.length;i++){
@@ -839,6 +852,8 @@
       function snap(dist){
         if(snapping) return;
         snapping = true;
+        activeRow = (index + dist + rows) % rows;
+        render();
         const start = frac;
         const end = start + dist;
         const t0 = performance.now();
@@ -867,11 +882,7 @@
       }
 
       addEventListener('keydown', e=>{
-        if(e.key === 'ArrowUp'){ e.preventDefault(); snap(-1); }
-        else if(e.key === 'ArrowDown'){ e.preventDefault(); snap(1); }
-        else if(e.key === 'ArrowLeft'){ e.preventDefault(); moveH('left'); }
-        else if(e.key === 'ArrowRight'){ e.preventDefault(); moveH('right'); }
-        else if(e.key === 'Enter'){ selectCurrent(); }
+        if(e.key === 'Enter'){ selectCurrent(); }
       });
 
       reel.addEventListener('wheel', e=>{
