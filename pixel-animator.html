@@ -31,15 +31,16 @@
   .tabBtn{background:linear-gradient(180deg,#fff4df,#f6e2bd);border:2px solid #e9c38e;color:var(--ink);padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #d4b07f;transform:translateY(0);transition:transform .05s;}
   .tabBtn:active{transform:translateY(2px);box-shadow:0 1px 0 #d4b07f}
   .tabBtn.active{outline:2px solid var(--amber);}
-  .workspace{flex:1;min-height:0;display:grid;grid-template-columns:1fr;grid-template-rows:1fr auto;gap:10px}
+  .workspace{flex:1;min-height:0;display:grid;grid-template-columns:1fr;grid-template-rows:1fr auto;gap:10px;overflow:hidden}
   @media (min-width:940px){.workspace{grid-template-columns:minmax(320px,1fr) 420px;grid-template-rows:1fr}}
+  @media (max-width:600px){.workspace{grid-template-rows:1fr 220px;}}
   .panel{position:relative;background:var(--panel);border-radius:14px;padding:10px;box-shadow:0 6px 0 var(--panel-deep),inset 0 0 0 2px #edd0a5;min-height:0}
   .panel::after{content:"";position:absolute;right:8px;bottom:8px;width:18px;height:18px;border:4px solid #e3c595;border-top:0;border-left:0;border-radius:0 0 14px 0;opacity:.8}
-  .screen{position:relative;display:grid;place-items:center;height:100%;}
-  .canvasWrap{position:relative;width:100%;height:100%;display:grid;place-items:center;}
-  .square{position:relative}
+  .screen{position:relative;display:grid;place-items:center;height:100%;overflow:hidden;}
+  .canvasWrap{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;}
+  .square{position:relative;max-width:100%;max-height:100%;}
   #paint{display:block;image-rendering:pixelated;background:#000;border-radius:8px;box-shadow:0 6px 16px #0002;width:100%;height:100%}
-  .tools{display:flex;flex-direction:column;gap:10px;min-height:0}
+  .tools{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto}
   .tools .panel{overflow:auto}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .chip{width:26px;height:26px;border:2px solid #543;border-radius:6px;box-shadow:inset 0 0 0 2px #fff6;cursor:pointer}

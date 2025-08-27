@@ -809,6 +809,17 @@
       }
 
       let snapping = false;
+      let pending=0, scheduled=false;
+      function enqueue(delta){
+        pending+=delta;
+        if(!scheduled){
+          scheduled=true;
+          requestAnimationFrame(()=>{
+            const d=pending; pending=0; scheduled=false;
+            if(d) snap(d);
+          });
+        }
+      }
       function snap(dist){
         if(snapping) return;
         snapping = true;
@@ -849,7 +860,7 @@
 
       reel.addEventListener('wheel', e=>{
         e.preventDefault();
-        snap(e.deltaY>0?-1:1);
+        enqueue(e.deltaY>0?-1:1);
       }, {passive:false});
 
       let touchStartX=0, touchStartY=0, touchStartT=0;
@@ -865,7 +876,7 @@
         if(Math.abs(dy)>Math.abs(dx) && Math.abs(dy)>20){
           let steps=Math.round(Math.abs(dy)/STEP + Math.abs(dy)/dt*0.3);
           steps=Math.max(1,Math.min(steps,5));
-          snap(dy<0?steps:-steps);
+          enqueue(dy<0?steps:-steps);
           touchStartY=t.clientY; touchStartT=performance.now();
         }else if(Math.abs(dx)>20){
           moveH(dx>0?'right':'left');

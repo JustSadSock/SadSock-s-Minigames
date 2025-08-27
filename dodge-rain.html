@@ -59,24 +59,19 @@
     }
     button:active{transform:translateY(1px);}
 
-    .overlay{
+    .toast{
       position:absolute;
-      inset:0;
-      background:rgba(0,0,0,0.6);
-      display:none;
-      align-items:center;
-      justify-content:center;
-    }
-    .overlay .panel{
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
       background:var(--pastel-pink);
       border:1px solid var(--accent);
       border-radius:8px;
-      padding:16px;
-      text-align:center;
+      padding:12px 16px;
+      font-size:14px;
+      display:none;
       color:var(--ink);
     }
-    .overlay .panel p{margin:0 0 12px;font-size:14px;}
-    .overlay .panel button{margin-top:8px;}
     .pad{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:12px;}
     .pad button{width:50px;height:50px;padding:0;}
     @media (min-width:600px){.pad{display:none;}}
@@ -88,16 +83,11 @@
   <div id="controls">
     <button id="startBtn">Старт</button>
     <button id="resetBtn">Сброс</button>
+    <button id="exitBtn">Выход</button>
   </div>
   <div class="play">
     <canvas id="gameCanvas" width="160" height="120"></canvas>
-    <div id="overlay" class="overlay">
-      <div class="panel">
-        <p id="msg"></p>
-        <button id="againBtn">Сыграть ещё</button>
-        <button id="exitBtn">Выход</button>
-      </div>
-    </div>
+    <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
       <button data-dir="left">◄</button>
       <button data-dir="right">►</button>
@@ -116,26 +106,15 @@
     const resetBtn=document.getElementById('resetBtn');
     const header=document.querySelector('h1');
     const controls=document.getElementById('controls');
-    const overlay=document.getElementById('overlay');
-    const msg=document.getElementById('msg');
-    const againBtn=document.getElementById('againBtn');
+    const toastEl=document.getElementById('toast');
     const exitBtn=document.getElementById('exitBtn');
     const pad=document.getElementById('pad');
     let left=false,right=false;
 
-    function notify(text){
-      msg.textContent=text;
-      overlay.style.display='flex';
-      startBtn.disabled=true;
-      resetBtn.disabled=true;
-      againBtn.onclick=()=>{
-        overlay.style.display='none';
-        startBtn.disabled=false;
-        resetBtn.disabled=false;
-        resetGame();
-        running=true;
-        requestAnimationFrame(update);
-      };
+    function toast(text){
+      toastEl.textContent=text;
+      toastEl.style.display='block';
+      setTimeout(()=> toastEl.style.display='none',2000);
     }
     exitBtn.onclick=()=>{window.top.location.href='index.html';};
 
@@ -151,9 +130,6 @@
     }
     window.addEventListener('resize',resize);
     function resetGame(){
-      overlay.style.display='none';
-      startBtn.disabled=false;
-      resetBtn.disabled=false;
       running=false;
       player={x:canvas.width/2-5,y:canvas.height-10,w:10,h:5};
       objects=[];
@@ -190,7 +166,8 @@
       for(const o of objects){
         if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){
           running=false;
-          notify('Столкновение! Счёт: '+score);
+          toast('Счёт: '+score);
+          resetGame();
           break;
         }
       }
