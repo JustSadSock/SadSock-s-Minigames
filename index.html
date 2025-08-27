@@ -473,6 +473,10 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Tower</span>
             </button>
+            <button class="tile" role="option" data-idx="10" data-color="#ddb65a" data-game="avatar-editor.html" aria-label="Avatar Editor">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Avatar Editor</span>
+            </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
           <div id="avatarOverlay" class="avatar-overlay"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
@@ -547,7 +551,7 @@
       })();
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower'];
+      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower','avatar'];
 
       /* ---------- Профиль ---------- */
       function loadProfile(){

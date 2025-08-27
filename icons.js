@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const S=3;
+  const S=1;                   // базовый пиксель для 16×16 иконок
   const cache={};              // кэш готовых кадров для оптимизации
 
   function baseFromPattern(pattern,palette){
@@ -761,6 +761,23 @@ XXXXX
 `, {X:'#e6a64c'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [tower1,tower2,tower3,tower4,tower5] = towerFrames;
 
+  function makeAvatarFrames(){
+    const frames=[];
+    for(let i=0;i<10;i++){
+      const data=[];
+      for(let y=4;y<12;y++) for(let x=4;x<12;x++) data.push({c:'#ddb65a',x:x,y:y});
+      data.push({c:'#3b2a1b',x:6,y:7});
+      data.push({c:'#3b2a1b',x:9,y:7});
+      data.push({c:'#3b2a1b',x:7,y:10});
+      data.push({c:'#3b2a1b',x:8,y:10});
+      data.push({c:'#ffeec0',x:4+(i%8),y:4});
+      frames.push(data);
+    }
+    return frames;
+  }
+
+  const avatar = makeAvatarFrames();
+
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
     bomb:[bomb1,bomb2,bomb3,bomb4,bomb5],
@@ -788,15 +805,26 @@ XXXXX
     rogue:[rogue1,rogue2,rogue3,rogue4,rogue5],
     pong:[pong1,pong2,pong3,pong4,pong5],
     rhythm:[rhythm1,rhythm2,rhythm3,rhythm4,rhythm5],
-    tower:[tower1,tower2,tower3,tower4,tower5]
+    tower:[tower1,tower2,tower3,tower4,tower5],
+    avatar:avatar
   };
+
   Object.keys(frames).forEach(name=>{
+    const f=frames[name];
+    if(f.length<10) frames[name]=f.concat(f.slice().reverse());
     cache[name]=frames[name].map(data=>{
       const cv=document.createElement('canvas');
-      cv.width=120; cv.height=120;
+      cv.width=16; cv.height=16;
       const ctx=cv.getContext('2d',{alpha:false});
       ctx.imageSmoothingEnabled=false;
-      data.forEach(p=>{ ctx.fillStyle=p.c; ctx.fillRect(p.x*S,p.y*S,S,S); });
+      let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+      data.forEach(p=>{ if(p.x<minX) minX=p.x; if(p.y<minY) minY=p.y; if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y; });
+      const w=maxX-minX+1, h=maxY-minY+1;
+      const offX=Math.floor((16-w)/2), offY=Math.floor((16-h)/2);
+      data.forEach(p=>{
+        ctx.fillStyle=p.c;
+        ctx.fillRect((p.x-minX+offX)*S,(p.y-minY+offY)*S,S,S);
+      });
       return cv;
     });
   });
@@ -804,8 +832,9 @@ XXXXX
   function draw(ctx,name,frame){
     const set=cache[name];
     if(!set) return;
+    const img=set[frame%set.length];
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.drawImage(set[frame%set.length],0,0);
+    ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
   }
 
   window.Icons={draw};
