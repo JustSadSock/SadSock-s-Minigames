@@ -46,16 +46,18 @@
   const Input = (()=>{
     const st={left:false,right:false,up:false,down:false,a:false,b:false};
     const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'a',Enter:'b',a:'a',A:'a',z:'b',Z:'b',w:'up',W:'up',s:'down',S:'down',d:'right',D:'right'};
-    addEventListener('keydown',e=>{const b=map[e.key]; if(b){st[b]=true; e.preventDefault();}});
-    addEventListener('keyup',e=>{const b=map[e.key]; if(b){st[b]=false; e.preventDefault();}});
+    const set=(btn,val)=>{ st[btn]=val; const el=pad.querySelector(`[data-btn="${btn}"]`); if(el) el.classList.toggle('down',val); };
+    addEventListener('keydown',e=>{const b=map[e.key]; if(b){set(b,true); e.preventDefault();}});
+    addEventListener('keyup',e=>{const b=map[e.key]; if(b){set(b,false); e.preventDefault();}});
     pad.querySelectorAll('[data-btn]').forEach(el=>{
       const btn=el.dataset.btn;
-      const on=(e)=>{st[btn]=true; el.style.filter='brightness(1.08)'; e.preventDefault();};
-      const off=(e)=>{st[btn]=false; el.style.filter=''; e.preventDefault();};
+      const on=(e)=>{set(btn,true); e.preventDefault();};
+      const off=(e)=>{set(btn,false); e.preventDefault();};
       el.addEventListener('touchstart',on,{passive:false});
       el.addEventListener('touchend',off,{passive:false});
       el.addEventListener('touchcancel',off,{passive:false});
-      el.addEventListener('mousedown',on); addEventListener('mouseup',off);
+      el.addEventListener('mousedown',on);
+      addEventListener('mouseup',off);
       el.addEventListener('mouseleave',off);
     });
     return {st};

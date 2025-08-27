@@ -175,25 +175,27 @@
       movePlayerTo(t.clientX-rect.left);
       e.preventDefault();
     },{passive:false});
+    const setBtn=(dir,val)=>{ const el=pad.querySelector(`[data-dir="${dir}"]`); if(el) el.classList.toggle('down',val); };
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=true; e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=true; e.preventDefault(); }
+      if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); e.preventDefault(); }
+      else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); e.preventDefault(); }
     });
     document.addEventListener('keyup',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=false; e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=false; e.preventDefault(); }
+      if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); e.preventDefault(); }
+      else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); e.preventDefault(); }
     });
     pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      btn.addEventListener('touchstart',e=>{
-        e.preventDefault();
-        if(btn.dataset.dir==='left') left=true; else right=true;
-      },{passive:false});
-      btn.addEventListener('touchend',e=>{
-        e.preventDefault();
-        if(btn.dataset.dir==='left') left=false; else right=false;
-      },{passive:false});
+      const dir=btn.dataset.dir;
+      const on=e=>{ e.preventDefault(); setBtn(dir,true); if(dir==='left') left=true; else right=true; };
+      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false; };
+      btn.addEventListener('touchstart',on,{passive:false});
+      btn.addEventListener('touchend',off,{passive:false});
+      btn.addEventListener('touchcancel',off,{passive:false});
+      btn.addEventListener('mousedown',on);
+      addEventListener('mouseup',off);
+      btn.addEventListener('mouseleave',off);
     });
     startBtn.addEventListener('click',()=>{
       resetGame();
