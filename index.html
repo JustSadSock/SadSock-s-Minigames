@@ -756,17 +756,17 @@
       let colIdx = 0;
       let index = 0; // верхний видимый ряд
       let frac = 0;  // прогресс анимации
-      let stepX, STEP, R;
+      let stepX, STEP, R, isSmall;
 
       function recalcSteps(){
         const r = reel.getBoundingClientRect();
         const gap = 14;
         const size = Math.min((r.width - gap*(cols+1))/cols, (r.height - gap*3)/2);
-        const small = window.innerWidth <= 600;
-        const overlap = size * (small ? 0.1 : 0.2); // меньше перекрытие на телефонах
+        isSmall = window.innerWidth <= 600;
+        const overlap = size * (isSmall ? 0.05 : 0.2); // ещё меньше перекрытие на телефонах
         stepX = size + gap;
         STEP = size - overlap;                    // шаг меньше размера => перекрытие
-        R = STEP * (small ? 1.2 : 1.4);           // радиус цилиндра; меньше на мобилках -> больше глубина
+        R = STEP * (isSmall ? 1.3 : 1.4);         // чуть глубже, но легче
         for(let i=0;i<tiles.length;i++){
           tiles[i].style.setProperty('--size', size + 'px');
         }
@@ -787,7 +787,10 @@
           const z = R * (1 - Math.cos(theta));
           const x = (col - (cols-1)/2) * stepX;
           const scale = 1 - Math.min(Math.abs(delta)*0.06, 0.18);
-          const blur = Math.min(Math.abs(delta)*0.8, 1.2);
+          const blur = Math.min(
+            Math.abs(delta) * (isSmall ? 0.5 : 0.8),
+            isSmall ? 0.8 : 1.2
+          );
           const bright = 1 - Math.min(Math.abs(delta)*0.25, .35);
           t.style.setProperty('--slotX', x+'px');
           t.style.setProperty('--slotY', y+'px');
