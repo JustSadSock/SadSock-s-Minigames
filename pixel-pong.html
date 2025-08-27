@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Pixel Pong — SadSock’s playground</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body>
+<div class="cabinet">
+  <div class="frame">
+    <div class="inner">
+      <div class="hud">
+        <div class="pill" id="score">Score: 0</div>
+        <div class="pill" id="status">—</div>
+      </div>
+      <canvas id="cv"></canvas>
+      <div class="scanlines"></div>
+    </div>
+    <div class="pad" id="pad">
+      <div class="vpad">
+        <div class="k" data-btn="up"></div>
+        <div class="k" data-btn="down"></div>
+      </div>
+    </div>
+    <div class="label">Pixel Pong</div>
+    <div class="hint">Pong: ↑/↓. Space — рывок.</div>
+  </div>
+  <div class="footer">Мобильные стрелки • Клавиатура: ↑/↓, Space — рывок</div>
+</div>
+
+<script>
+(() => {
+  const SETTINGS = { W:360, H:640, sfx:0.6 };
+  const d = (s)=>document.querySelector(s);
+  const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const ctx=cv.getContext('2d');
+  function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
+    const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
+  }
+  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
+    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
+    ctx.restore();
+  }
+  window.addEventListener('resize',resize);
+
+  // Input
+  const Input = (()=>{
+    const st={left:false,right:false,up:false,down:false,a:false,b:false};
+    const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'a',Enter:'b',a:'a',A:'a',z:'b',Z:'b',w:'up',W:'up',s:'down',S:'down',d:'right',D:'right'};
+    const set=(btn,val)=>{ st[btn]=val; const el=pad.querySelector(`[data-btn="${btn}"]`); if(el) el.classList.toggle('down',val); };
+    addEventListener('keydown',e=>{const b=map[e.key]; if(b){set(b,true); e.preventDefault();}});
+    addEventListener('keyup',e=>{const b=map[e.key]; if(b){set(b,false); e.preventDefault();}});
+    pad.querySelectorAll('[data-btn]').forEach(el=>{
+      const btn=el.dataset.btn;
+      const on=(e)=>{set(btn,true); e.preventDefault();};
+      const off=(e)=>{set(btn,false); e.preventDefault();};
+      el.addEventListener('touchstart',on,{passive:false});
+      el.addEventListener('touchend',off,{passive:false});
+      el.addEventListener('touchcancel',off,{passive:false});
+      el.addEventListener('mousedown',on);
+      addEventListener('mouseup',off);
+      el.addEventListener('mouseleave',off);
+    });
+    return {st};
+  })();
+
+  // Helpers
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const irnd=(a,b)=>Math.floor(rnd(a,b+1));
+
+  // ===== Game specific code =====
+  
+  const game = {
+    name:'Pong', score:0, over:false, started:false,
+    init(){ this.pw=10; this.ph=80; this.reset(); loop(); },
+    reset(){ this.score=0; this.over=false; this.started=false;
+      this.b={x:SETTINGS.W/2,y:SETTINGS.H/2,vx:180*(Math.random()<.5?1:-1),vy:rnd(-140,140),r:6};
+      this.p1={x:18,y:SETTINGS.H/2-this.ph/2,s:260};
+      this.p2={x:SETTINGS.W-18-this.pw,y:SETTINGS.H/2-this.ph/2,s:240};
+      this.s1=0; this.s2=0;
+    },
+    step(dt){
+      const I=Input.st;
+      if(!this.started){ if(I.a||I.b||I.up||I.down||I.left||I.right) this.started=true; else return; }
+      if(I.up) this.p1.y-=this.p1.s*dt;
+      if(I.down) this.p1.y+=this.p1.s*dt;
+      this.p1.y=clamp(this.p1.y,10,SETTINGS.H-10-this.ph);
+      const target=this.b.y - this.ph/2;
+      this.p2.y += clamp(target - this.p2.y, -this.p2.s*dt, this.p2.s*dt);
+      this.p2.y=clamp(this.p2.y,10,SETTINGS.H-10-this.ph);
+      const b=this.b; b.x+=b.vx*dt; b.y+=b.vy*dt;
+      if(b.y-b.r<6){ b.y=6+b.r; b.vy*=-1; }
+      if(b.y+b.r>SETTINGS.H-6){ b.y=SETTINGS.H-6-b.r; b.vy*=-1; }
+      const hit=(px,py,pw,ph,sgn)=>{
+        if(b.x-b.r<px+pw && b.x+b.r>px && b.y+b.r>py && b.y-b.r<py+ph){
+          b.x = sgn>0? px+pw+b.r : px-b.r;
+          b.vx = Math.sign(sgn)*Math.max(160, Math.abs(b.vx)+20);
+          const off=(b.y-(py+ph/2))/(ph/2); b.vy=clamp(b.vy+off*180,-260,260);
+        }
+      };
+      hit(this.p1.x,this.p1.y,this.pw,this.ph,+1);
+      hit(this.p2.x,this.p2.y,this.pw,this.ph,-1);
+      if(b.x<-20){ this.s2++; this.resetBall(-1); }
+      if(b.x>SETTINGS.W+20){ this.s1++; this.resetBall(+1); }
+      this.score=Math.max(this.s1,this.s2);
+      if(this.s1>=7||this.s2>=7){ this.over=true; this.started=false; }
+    },
+    resetBall(dir){ const b=this.b; b.x=SETTINGS.W/2; b.y=SETTINGS.H/2; b.vx=dir*180; b.vy=rnd(-140,140); },
+    draw(){
+      ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
+      ctx.fillStyle='#e6c28a'; for(let y=10;y<SETTINGS.H;y+=18) ctx.fillRect(SETTINGS.W/2-2,y,4,10);
+      ctx.fillStyle='#3fbf75'; ctx.fillRect(this.p1.x,this.p1.y,this.pw,this.ph); ctx.fillRect(this.p2.x,this.p2.y,this.pw,this.ph);
+      ctx.beginPath(); ctx.arc(this.b.x,this.b.y,this.b.r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#d18f3f'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center';
+      ctx.fillText(`${this.s1} : ${this.s2}`, SETTINGS.W/2, 24);
+      if(!this.started) ctx.fillText(this.over?'A — снова':'A — старт', SETTINGS.W/2, SETTINGS.H*0.5);
+      ctx.restore();
+    }
+  };
+  let last=performance.now();
+  function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
+    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+  game.init();
+
+
+})();
+</script>
+</body>
+</html>

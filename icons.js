@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const S=3;
+  const S=1;                   // базовый пиксель для 16×16 иконок
   const cache={};              // кэш готовых кадров для оптимизации
 
   function baseFromPattern(pattern,palette){
@@ -710,6 +710,7 @@ X...X
 XXXXX
 `, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [anim1,anim2,anim3,anim4,anim5] = animFrames;
+
   const breakoutFrames = makeFrames(`
 BBBBB
 .....
@@ -726,6 +727,48 @@ BBBBB
   .X.X.
   `, {X:'#ffcf86',O:'#000'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [skull1,skull2,skull3,skull4,skull5] = skullFrames;
+
+  const rogueFrames = makeFrames(`
+.X.X.
+XXXXX
+X.X.X
+XXXXX
+.X.X.
+`, {X:'#d4635b'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [rogue1,rogue2,rogue3,rogue4,rogue5] = rogueFrames;
+  const pongFrames = makeFrames(`
+P...P
+P...P
+P.B.P
+P...P
+P...P
+`, {P:'#46a0ff',B:'#d4635b'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [pong1,pong2,pong3,pong4,pong5] = pongFrames;
+  const rhythmFrames = makeFrames(`
+..X..
+..X..
+XXXXX
+XX...
+XX...
+`, {X:'#ff9eb8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [rhythm1,rhythm2,rhythm3,rhythm4,rhythm5] = rhythmFrames;
+  const towerFrames = makeFrames(`
+..X..
+.XXX.
+.XXX.
+.XXX.
+XXXXX
+`, {X:'#e6a64c'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [tower1,tower2,tower3,tower4,tower5] = towerFrames;
+
+  const arenaFrames = makeFrames(`
+OOOOO
+OA.BO
+O...O
+O.BAO
+OOOOO
+`, {O:'#e6a64c',A:'#4A90E2',B:'#E46472'}, '#81C784', [[2,1],[3,2],[2,3],[1,2],[2,2]]);
+  const [arena1,arena2,arena3,arena4,arena5] = arenaFrames;
 
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
@@ -749,15 +792,31 @@ BBBBB
     cards:[cards1,cards2,cards3,cards4,cards5],
     rain:[rain1,rain2,rain3,rain4,rain5],
     breakout:[breakout1,breakout2,breakout3,breakout4,breakout5],
-    anim:[anim1,anim2,anim3,anim4,anim5]
+    anim:[anim1,anim2,anim3,anim4,anim5],
+
+    rogue:[rogue1,rogue2,rogue3,rogue4,rogue5],
+    pong:[pong1,pong2,pong3,pong4,pong5],
+    rhythm:[rhythm1,rhythm2,rhythm3,rhythm4,rhythm5],
+    tower:[tower1,tower2,tower3,tower4,tower5],
+    arena:[arena1,arena2,arena3,arena4,arena5]
   };
+
   Object.keys(frames).forEach(name=>{
+    const f=frames[name];
+    if(f.length<10) frames[name]=f.concat(f.slice().reverse());
     cache[name]=frames[name].map(data=>{
       const cv=document.createElement('canvas');
-      cv.width=120; cv.height=120;
+      cv.width=16; cv.height=16;
       const ctx=cv.getContext('2d',{alpha:false});
       ctx.imageSmoothingEnabled=false;
-      data.forEach(p=>{ ctx.fillStyle=p.c; ctx.fillRect(p.x*S,p.y*S,S,S); });
+      let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+      data.forEach(p=>{ if(p.x<minX) minX=p.x; if(p.y<minY) minY=p.y; if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y; });
+      const w=maxX-minX+1, h=maxY-minY+1;
+      const offX=Math.floor((16-w)/2), offY=Math.floor((16-h)/2);
+      data.forEach(p=>{
+        ctx.fillStyle=p.c;
+        ctx.fillRect((p.x-minX+offX)*S,(p.y-minY+offY)*S,S,S);
+      });
       return cv;
     });
   });
@@ -765,8 +824,9 @@ BBBBB
   function draw(ctx,name,frame){
     const set=cache[name];
     if(!set) return;
+    const img=set[frame%set.length];
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.drawImage(set[frame%set.length],0,0);
+    ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
   }
 
   window.Icons={draw};

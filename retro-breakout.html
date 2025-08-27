@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Retro Breakout</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shell.css">
   <style>
     :root{
-      --bg0:#fff6e5;
-      --bg1:#ffd9a3;
-      --bg2:#fff1cc;
-      --ink:#2d1600;
-      --pastel-pink:#ff5f9c;
-      --pastel-blue:#46a0ff;
-      --pastel-mint:#00d9b8;
-      --pastel-peach:#ffca3a;
-      --accent:#ff595e;
+      --bg0:var(--bg);
+      --bg1:var(--bg2);
+      --bg2:var(--panel);
+      --ink:var(--ink);
+      --pastel-pink:var(--accent);
+      --pastel-blue:var(--accent2);
+      --pastel-mint:var(--hi);
+      --pastel-peach:var(--panel);
+      --accent:var(--accent2);
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
@@ -25,9 +25,7 @@
       justify-content:flex-start;
       height:100svh;
       overflow:hidden;
-      background:var(--bg0);
       gap:12px;
-      font-family:'Press Start 2P',ui-monospace,monospace;
       color:var(--ink);
     }
     h1{margin:0;font-size:18px;}
@@ -35,6 +33,7 @@
       flex:1;
       width:100%;
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
       position:relative;
@@ -46,56 +45,35 @@
       image-rendering:pixelated;
     }
     #score{margin:0;font-size:14px;}
-    #controls{display:flex;gap:12px;}
-    button{
-      padding:8px 12px;
-      font-size:14px;
-      background:var(--pastel-pink);
-      border:2px solid var(--accent);
-      border-radius:8px;
-      color:var(--ink);
-      cursor:pointer;
-    }
-    button:active{transform:translateY(2px);}
 
-    .overlay{
+    .toast{
       position:absolute;
-      inset:0;
-      background:rgba(0,0,0,0.6);
-      display:none;
-      align-items:center;
-      justify-content:center;
-    }
-    .overlay .panel{
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
       background:var(--pastel-pink);
-      border:2px solid var(--accent);
+      border:1px solid var(--accent);
       border-radius:8px;
-      padding:16px;
-      text-align:center;
+      padding:12px 16px;
+      font-size:14px;
+      display:none;
       color:var(--ink);
     }
-    .overlay .panel p{
-      margin:0 0 12px;
-      font-size:14px;
-    }
-    .overlay .panel button{margin-top:8px;}
+
+    .pad{position:static;margin-top:8px;}
+
   </style>
 </head>
 <body>
   <h1>Retro Breakout</h1>
   <div id="score">Счёт: 0</div>
-  <div id="controls">
-    <button id="startBtn">Старт</button>
-    <button id="resetBtn">Сброс</button>
-  </div>
   <div class="play">
-    <canvas id="gameCanvas" width="160" height="120"></canvas>
-    <div id="overlay" class="overlay">
-      <div class="panel">
-        <p id="msg"></p>
-        <button id="againBtn">Сыграть ещё</button>
-        <button id="exitBtn">Выход</button>
-      </div>
+    <canvas id="gameCanvas" width="120" height="160"></canvas>
+    <div id="toast" class="toast"></div>
+    <div id="pad" class="pad">
+      <button class="k" data-dir="left">◄</button>
+      <button class="k" id="startBtn">START</button>
+      <button class="k" data-dir="right">►</button>
     </div>
   </div>
   <script>
@@ -109,32 +87,20 @@
     let score=0;
     const scoreEl=document.getElementById('score');
     const startBtn=document.getElementById('startBtn');
-    const resetBtn=document.getElementById('resetBtn');
     const paddleWidth=30;
     const header=document.querySelector('h1');
-    const controls=document.getElementById('controls');
-    const overlay=document.getElementById('overlay');
-    const msg=document.getElementById('msg');
-    const againBtn=document.getElementById('againBtn');
-    const exitBtn=document.getElementById('exitBtn');
+    const toastEl=document.getElementById('toast');
+    const pad=document.getElementById('pad');
     let left=false,right=false;
 
-    function notify(text){
-      msg.textContent=text;
-      overlay.style.display='flex';
-      startBtn.disabled=true;
-      resetBtn.disabled=true;
-      againBtn.onclick=()=>{
-        overlay.style.display='none';
-        startBtn.disabled=false;
-        resetBtn.disabled=false;
-        resetGame();
-      };
+    function toast(text){
+      toastEl.textContent=text;
+      toastEl.style.display='block';
+      setTimeout(()=> toastEl.style.display='none',2000);
     }
-    exitBtn.onclick=()=>{window.top.location.href='index.html';};
-
     function resize(){
-      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
+      const padH=pad.offsetHeight?pad.offsetHeight+16:0;
+      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - padH - 24;
       const availableWidth=window.innerWidth;
       const ratio=canvas.width/canvas.height;
       let w=availableWidth;
@@ -145,9 +111,6 @@
     }
     window.addEventListener('resize',resize);
     function resetGame(){
-      overlay.style.display='none';
-      startBtn.disabled=false;
-      resetBtn.disabled=false;
       gameRunning=false;
       score=0;
       updateScore();
@@ -192,7 +155,8 @@
       if(ball.y<ball.r) ball.dy*=-1;
       if(ball.y>canvas.height-ball.r){
         gameRunning=false;
-        notify('Проиграл! Счёт: '+score);
+        toast('Счёт: '+score);
+        resetGame();
       }
       if(ball.y+ball.r>=paddle.y && ball.x>=paddle.x && ball.x<=paddle.x+paddle.w){
         ball.dy=-Math.abs(ball.dy);
@@ -211,37 +175,46 @@
       draw();
       requestAnimationFrame(loop);
     }
-    function setPaddle(x){
-      const newX=Math.min(Math.max(x-paddle.w/2,0),canvas.width-paddle.w);
-      paddle.x=newX;
+    function setPaddle(left){
+      paddle.x=Math.min(Math.max(left,0),canvas.width-paddle.w);
     }
     canvas.addEventListener('mousemove',e=>{
       const rect=canvas.getBoundingClientRect();
-      setPaddle(e.clientX-rect.left);
+      setPaddle(e.clientX-rect.left - paddle.w/2);
     });
     canvas.addEventListener('touchmove',e=>{
       const rect=canvas.getBoundingClientRect();
       const t=e.touches[0];
-      setPaddle(t.clientX-rect.left);
+      setPaddle(t.clientX-rect.left - paddle.w/2);
       e.preventDefault();
     },{passive:false});
+    const setBtn=(dir,val)=>{ const el=pad.querySelector(`[data-dir="${dir}"]`); if(el) el.classList.toggle('down',val); };
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a') left=true;
-      else if(k==='arrowright' || k==='d') right=true;
+      if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); }
+      else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); }
     });
     document.addEventListener('keyup',e=>{
       const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a') left=false;
-      else if(k==='arrowright' || k==='d') right=false;
+      if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); }
+      else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); }
+    });
+    pad.querySelectorAll('[data-dir]').forEach(btn=>{
+      const dir=btn.dataset.dir;
+      const on=e=>{ e.preventDefault(); setBtn(dir,true); if(dir==='left') left=true; else right=true; };
+      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false; };
+      btn.addEventListener('touchstart',on,{passive:false});
+      btn.addEventListener('touchend',off,{passive:false});
+      btn.addEventListener('touchcancel',off,{passive:false});
+      btn.addEventListener('mousedown',on);
+      addEventListener('mouseup',off);
+      btn.addEventListener('mouseleave',off);
     });
     startBtn.addEventListener('click',()=>{
-      if(!gameRunning){
-        gameRunning=true;
-        requestAnimationFrame(loop);
-      }
+      resetGame();
+      gameRunning=true;
+      requestAnimationFrame(loop);
     });
-    resetBtn.addEventListener('click',resetGame);
     resize();
     resetGame();
   })();

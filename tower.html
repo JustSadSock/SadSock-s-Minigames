@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Башня — SadSock’s playground</title>
+<link rel="stylesheet" href="shell.css">
+</head>
+<body>
+<div class="cabinet">
+  <div class="frame">
+    <div class="inner">
+      <div class="hud">
+        <div class="pill" id="score">Score: 0</div>
+        <div class="pill" id="status">—</div>
+      </div>
+      <canvas id="cv"></canvas>
+      <div class="scanlines"></div>
+    </div>
+    <div class="pad" id="pad">
+      <div class="k" data-btn="a" style="width:40vw;max-width:160px;"></div>
+    </div>
+    <div class="label">Башня</div>
+    <div class="hint">Жми A, чтобы уронить блок.</div>
+  </div>
+  <div class="footer">Кнопка A • Клавиатура: пробел</div>
+</div>
+
+<script>
+(() => {
+  const SETTINGS = { W:360, H:640, sfx:0.6 };
+  const d = (s)=>document.querySelector(s);
+  const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const ctx=cv.getContext('2d');
+  function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
+    const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
+  }
+  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
+    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
+    ctx.restore();
+  }
+  window.addEventListener('resize',resize);
+
+  // Input
+  const Input = (()=>{
+    const st={left:false,right:false,up:false,down:false,a:false,b:false};
+    const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',' ':'a',Enter:'b',a:'a',A:'a',z:'b',Z:'b',w:'up',W:'up',s:'down',S:'down',d:'right',D:'right'};
+    const set=(btn,val)=>{ st[btn]=val; const el=pad.querySelector(`[data-btn="${btn}"]`); if(el) el.classList.toggle('down',val); };
+    addEventListener('keydown',e=>{const b=map[e.key]; if(b){set(b,true); e.preventDefault();}});
+    addEventListener('keyup',e=>{const b=map[e.key]; if(b){set(b,false); e.preventDefault();}});
+    pad.querySelectorAll('[data-btn]').forEach(el=>{
+      const btn=el.dataset.btn;
+      const on=(e)=>{set(btn,true); e.preventDefault();};
+      const off=(e)=>{set(btn,false); e.preventDefault();};
+      el.addEventListener('touchstart',on,{passive:false});
+      el.addEventListener('touchend',off,{passive:false});
+      el.addEventListener('touchcancel',off,{passive:false});
+      el.addEventListener('mousedown',on);
+      addEventListener('mouseup',off);
+      el.addEventListener('mouseleave',off);
+    });
+    return {st};
+  })();
+
+  // Helpers
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const irnd=(a,b)=>Math.floor(rnd(a,b+1));
+
+  // ===== Game specific code =====
+  
+  const game = {
+    score:0, started:false, over:false,
+    init(){ this.reset(); loop(); },
+    reset(){
+      this.score=0; this.started=false; this.over=false;
+      this.baseY=SETTINGS.H-60; this.speed=120; this.g=900;
+      this.active={x:SETTINGS.W*0.2,w:SETTINGS.W*0.6,y:this.baseY-20,dir:+1,vy:0,falling:false};
+      this.prev={x:SETTINGS.W*0.2,w:SETTINGS.W*0.6,y:this.baseY,fixed:true};
+      this.layers=[];
+    },
+    step(dt){
+      const I=Input.st; if(!this.started){ if(I.a||I.b) this.started=true; else return; }
+      const a=this.active;
+      if(!a.falling){
+        a.x+=a.dir*this.speed*dt;
+        if(a.x<8){a.x=8;a.dir=+1}
+        if(a.x+a.w>SETTINGS.W-8){a.x=SETTINGS.W-8-a.w;a.dir=-1}
+        if(I.a){ a.falling=true; a.vy=0; }
+      } else {
+        a.vy+=this.g*dt; a.y+=a.vy*dt;
+        if(a.y>=this.prev.y-20){
+          const L=Math.max(a.x,this.prev.x), R=Math.min(a.x+a.w,this.prev.x+this.prev.w), ov=R-L;
+          if(ov<=2){ this.over=true; return; }
+          this.layers.push({...this.prev});
+          this.prev={x:L,w:ov,y:a.y+20,fixed:true};
+          this.active={x:this.prev.x-60,w:this.prev.w,y:this.prev.y-20,dir:+1,vy:0,falling:false};
+          this.baseY-=10; this.speed+=4; this.score=this.layers.length;
+        }
+      }
+    },
+    draw(){
+      ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
+      ctx.fillStyle='#e9d3b0'; ctx.fillRect(0,this.baseY+24,SETTINGS.W,4);
+      const drawB=(b,col)=>{ ctx.fillStyle=col; ctx.fillRect(b.x,b.y,b.w,20); ctx.strokeStyle='#deb780'; ctx.lineWidth=2; ctx.strokeRect(b.x+1,b.y+1,b.w-2,18); };
+      this.layers.forEach(L=>drawB(L,'#cbe7aa'));
+      drawB(this.prev,'#ffd88a'); drawB(this.active,'#9be0c0');
+      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A — ронять блок', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Промах. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
+      ctx.restore();
+    }
+  };
+  let last=performance.now();
+  function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
+    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+  game.init();
+
+
+})();
+</script>
+</body>
+</html>
