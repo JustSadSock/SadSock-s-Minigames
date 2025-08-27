@@ -207,6 +207,10 @@
     .menu .value{ text-align:center; }
     .menu .row.wide input[type=range]{ flex:1; }
 
+    .avatar-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:12;}
+    .avatar-overlay.show{display:flex;}
+    .avatar-overlay iframe{width:100%; max-width:420px; height:90vh; border:none; background:transparent;}
+
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
       pointer-events:none; position:absolute; inset:0; border-radius:var(--crt-curve);
@@ -449,24 +453,30 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Retro Breakout</span>
             </button>
-            <button class="tile" role="option" data-idx="5" data-color="#d4635b" data-game="mini-rogue.html" aria-label="Mini-Rogue">
+            <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" aria-label="Pixel Animator">
+              <canvas width="120" height="120"></canvas>
+              <span class="label">Pixel Animator</span>
+            </button>
+            <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" aria-label="Mini-Rogue">
               <canvas width="120" height="120"></canvas>
               <span class="label">Mini-Rogue</span>
             </button>
-            <button class="tile" role="option" data-idx="6" data-color="#3fbf75" data-game="pixel-pong.html" aria-label="Pixel Pong">
+            <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" aria-label="Pixel Pong">
               <canvas width="120" height="120"></canvas>
               <span class="label">Pixel Pong</span>
             </button>
-            <button class="tile" role="option" data-idx="7" data-color="#00bbf9" data-game="rhythm.html" aria-label="Rhythm">
+            <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" aria-label="Rhythm">
               <canvas width="120" height="120"></canvas>
               <span class="label">Rhythm</span>
             </button>
-            <button class="tile" role="option" data-idx="8" data-color="#e6a64c" data-game="tower.html" aria-label="Tower">
+            <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" aria-label="Tower">
               <canvas width="120" height="120"></canvas>
               <span class="label">Tower</span>
             </button>
             <div class="indicator" aria-hidden="true"></div>
-          </div><div id="settingsMenu" class="menu">
+          </div>
+          <div id="avatarOverlay" class="avatar-overlay"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
+          <div id="settingsMenu" class="menu">
             <div class="row wide">
               <span>Громкость:</span>
               <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" />
@@ -500,6 +510,7 @@
       const avatarBtn = $('#avatarBtn');
       const settingsBtn = $('#settingsBtn');
       const settingsMenu = $('#settingsMenu');
+      const avatarOverlay = $('#avatarOverlay');
       const volumeSlider = $('#volume');
       const fullscreenBtn = $('#fullscreenBtn');
       const settingsOk = $('#settingsOk');
@@ -536,7 +547,7 @@
       })();
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['music','snake','cards','rain','breakout','rogue','pong','rhythm','tower'];
+      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower'];
 
       /* ---------- Профиль ---------- */
       function loadProfile(){
@@ -552,8 +563,10 @@
         }
         nickDisplay.textContent = localStorage.getItem('profileNick') || 'Player';
       }
-      avatarBtn.addEventListener('click',()=>{ location.href='pixel-animator.html'; });
+      avatarBtn.addEventListener('click',()=>{ avatarOverlay.classList.add('show'); });
       loadProfile();
+      avatarOverlay.addEventListener('click', e=>{ if(e.target===avatarOverlay) avatarOverlay.classList.remove('show'); });
+      window.addEventListener('message', e=>{ if(e.data && e.data.type==='avatarSaved'){ avatarOverlay.classList.remove('show'); loadProfile(); } });
 
       settingsBtn.addEventListener('click',()=>{
         const show = settingsMenu.classList.toggle('show');

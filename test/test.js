@@ -118,8 +118,8 @@ if(!/drawImage/.test(icons)){
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 9){
-  throw new Error('Expected 9 tiles');
+if(tileCount !== 10){
+  throw new Error('Expected 10 tiles');
 }
 
 console.log('All tests passed');
