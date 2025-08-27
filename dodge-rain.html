@@ -72,9 +72,9 @@
       display:none;
       color:var(--ink);
     }
-    .pad{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:12px;}
+    .pad{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:none;gap:12px;}
     .pad button{width:50px;height:50px;padding:0;}
-    @media (min-width:600px){.pad{display:none;}}
+    @media (hover:none){.pad{display:flex;}}
   </style>
 </head>
 <body>
@@ -119,7 +119,8 @@
     exitBtn.onclick=()=>{window.top.location.href='index.html';};
 
     function resize(){
-      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - 36;
+      const padH=pad.offsetHeight?pad.offsetHeight+16:0;
+      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - controls.offsetHeight - padH - 36;
       const availableWidth=window.innerWidth;
       const ratio=canvas.width/canvas.height;
       let w=availableWidth;

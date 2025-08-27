@@ -39,22 +39,17 @@
   .hud{ position:absolute; left:0; right:0; top:0; display:flex; justify-content:space-between; gap:8px; padding:8px; font-weight:700; }
   .pill{ background:#ffe9c9; border:2px solid #e8cda0; border-radius:999px; padding:6px 10px; box-shadow:0 2px 0 #e2c395 }
   .pad{
-    position:absolute; left:16px; right:16px; bottom:18px; display:flex; justify-content:space-between; gap:18px;
+    position:absolute; left:16px; right:16px; bottom:18px; display:none; justify-content:center;
   }
-  .dpad{
-    width:40vw; max-width:260px; aspect-ratio:1; display:grid; grid-template-areas:
-      ". up ."
-      "left mid right"
-      ". down .";
-    gap:8px; padding:10px; border-radius:16px;
-    background:#f4e5c2; border:2px solid #e8cda0; box-shadow:inset 0 2px 0 #fff3da, inset 0 -3px 0 #e1c79c;
+  .vpad{
+    width:40vw; max-width:120px; display:grid; grid-template-rows:1fr 1fr; gap:12px;
+    background:#f4e5c2; border:2px solid #e8cda0; border-radius:16px; padding:10px; box-shadow:inset 0 2px 0 #fff3da, inset 0 -3px 0 #e1c79c;
   }
-  .ab{ width:40vw; max-width:260px; display:grid; grid-template-columns:1fr 1fr; gap:12px }
   .k{
     background:#ffefcf; border:2px solid #e7c999; border-radius:12px; box-shadow:0 3px 0 #dcb985; height:24vw; max-height:120px;
   }
-  .dpad .k{height:100%}
   .k:active{ transform:translateY(1px) }
+  @media (hover:none){ .pad{display:flex;} }
   .label{ position:absolute; left:20px; top:8px; font-family:monospace; font-weight:800; letter-spacing:.6px }
   .hint{ position:absolute; right:20px; top:8px; opacity:.7; font-size:12px }
   .footer{ color:#7a5a36; font-weight:700; text-shadow:0 1px #fff4de; }
@@ -73,22 +68,15 @@
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
-      <div class="dpad">
-        <div class="k" data-btn="up" style="grid-area:up"></div>
-        <div class="k" data-btn="left" style="grid-area:left"></div>
-        <div class="k" style="grid-area:mid; opacity:.35"></div>
-        <div class="k" data-btn="right" style="grid-area:right"></div>
-        <div class="k" data-btn="down" style="grid-area:down"></div>
-      </div>
-      <div class="ab">
-        <div class="k" data-btn="a"></div>
-        <div class="k" data-btn="b"></div>
+      <div class="vpad">
+        <div class="k" data-btn="up"></div>
+        <div class="k" data-btn="down"></div>
       </div>
     </div>
     <div class="label">Pixel Pong</div>
-    <div class="hint">Pong: ↑/↓ или D‑pad. A — рывок.</div>
+    <div class="hint">Pong: ↑/↓. Space — рывок.</div>
   </div>
-  <div class="footer">D‑pad + A/B • Клавиатура: стрелки/WSAD, A=Space, B=Enter</div>
+  <div class="footer">Мобильные стрелки • Клавиатура: ↑/↓, Space — рывок</div>
 </div>
 
 <script>
