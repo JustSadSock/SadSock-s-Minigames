@@ -302,7 +302,7 @@
       pointer-events:none;
     }
     .tile::after{
-      content:""; position:absolute; inset:0; border-radius:inherit;
+      content:""; position:absolute; inset:6px; border-radius:12px;
       background:linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 60%);
       mix-blend-mode:overlay; opacity:0; transition:opacity .2s ease;
     }
@@ -321,13 +321,14 @@
       filter:blur(.5px) brightness(.9) contrast(.95);
     }
     .tile canvas{
-      width: calc(var(--size));
-      height: calc(var(--size));
-      image-rendering: pixelated;
-      background:#ffe9b6;
+      box-sizing:border-box;
+      width:calc(100% - 12px);
+      height:calc(100% - 12px);
+      image-rendering:pixelated;
+      background:#14110e;
       border-radius:12px;
       border:2px solid #ffbd69;
-      box-shadow: inset 0 0 0 2px #ffd59e, 0 0 0 1px rgba(0,0,0,.12);
+      box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
     }
 
     .tile .label{
