@@ -762,10 +762,11 @@
         const r = reel.getBoundingClientRect();
         const gap = 14;
         const size = Math.min((r.width - gap*(cols+1))/cols, (r.height - gap*3)/2);
-        const overlap = size*0.2;                 // перекрытие плиток ~20%
+        const small = window.innerWidth <= 600;
+        const overlap = size * (small ? 0.1 : 0.2); // меньше перекрытие на телефонах
         stepX = size + gap;
         STEP = size - overlap;                    // шаг меньше размера => перекрытие
-        R = STEP * 1.4;
+        R = STEP * (small ? 1.2 : 1.4);           // радиус цилиндра; меньше на мобилках -> больше глубина
         for(let i=0;i<tiles.length;i++){
           tiles[i].style.setProperty('--size', size + 'px');
         }
