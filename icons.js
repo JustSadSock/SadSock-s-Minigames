@@ -761,22 +761,14 @@ XXXXX
 `, {X:'#e6a64c'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [tower1,tower2,tower3,tower4,tower5] = towerFrames;
 
-  function makeAvatarFrames(){
-    const frames=[];
-    for(let i=0;i<10;i++){
-      const data=[];
-      for(let y=4;y<12;y++) for(let x=4;x<12;x++) data.push({c:'#ddb65a',x:x,y:y});
-      data.push({c:'#3b2a1b',x:6,y:7});
-      data.push({c:'#3b2a1b',x:9,y:7});
-      data.push({c:'#3b2a1b',x:7,y:10});
-      data.push({c:'#3b2a1b',x:8,y:10});
-      data.push({c:'#ffeec0',x:4+(i%8),y:4});
-      frames.push(data);
-    }
-    return frames;
-  }
-
-  const avatar = makeAvatarFrames();
+  const arenaFrames = makeFrames(`
+OOOOO
+OA.BO
+O...O
+O.BAO
+OOOOO
+`, {O:'#e6a64c',A:'#4A90E2',B:'#E46472'}, '#81C784', [[2,1],[3,2],[2,3],[1,2],[2,2]]);
+  const [arena1,arena2,arena3,arena4,arena5] = arenaFrames;
 
   const frames={
     heart:[heart1,heart2,heart3,heart4,heart5],
@@ -806,7 +798,7 @@ XXXXX
     pong:[pong1,pong2,pong3,pong4,pong5],
     rhythm:[rhythm1,rhythm2,rhythm3,rhythm4,rhythm5],
     tower:[tower1,tower2,tower3,tower4,tower5],
-    avatar:avatar
+    arena:[arena1,arena2,arena3,arena4,arena5]
   };
 
   Object.keys(frames).forEach(name=>{
