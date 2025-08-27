@@ -763,10 +763,10 @@
         const gap = 14;
         const size = Math.min((r.width - gap*(cols+1))/cols, (r.height - gap*3)/2);
         isSmall = window.innerWidth <= 600;
-        const overlap = size * (isSmall ? 0.05 : 0.2); // ещё меньше перекрытие на телефонах
+        const overlap = size * (isSmall ? 0.03 : 0.2); // ещё меньше перекрытие на телефонах
         stepX = size + gap;
         STEP = size - overlap;                    // шаг меньше размера => перекрытие
-        R = STEP * (isSmall ? 1.3 : 1.4);         // чуть глубже, но легче
+        R = STEP * (isSmall ? 1.6 : 1.4);         // ещё глубже на телефонах
         for(let i=0;i<tiles.length;i++){
           tiles[i].style.setProperty('--size', size + 'px');
         }
