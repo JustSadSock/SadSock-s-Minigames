@@ -702,14 +702,6 @@ XXXXX
 ..X..
 `, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [rain1,rain2,rain3,rain4,rain5] = rainFrames;
-  const animFrames = makeFrames(`
-XXXXX
-X...X
-X.X.X
-X...X
-XXXXX
-`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
-  const [anim1,anim2,anim3,anim4,anim5] = animFrames;
   const breakoutFrames = makeFrames(`
 BBBBB
 .....
@@ -782,7 +774,6 @@ XXXXX
     cards:[cards1,cards2,cards3,cards4,cards5],
     rain:[rain1,rain2,rain3,rain4,rain5],
     breakout:[breakout1,breakout2,breakout3,breakout4,breakout5],
-    anim:[anim1,anim2,anim3,anim4,anim5],
     rogue:[rogue1,rogue2,rogue3,rogue4,rogue5],
     pong:[pong1,pong2,pong3,pong4,pong5],
     rhythm:[rhythm1,rhythm2,rhythm3,rhythm4,rhythm5],

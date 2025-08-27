@@ -204,11 +204,8 @@
     }
     .menu.show{ display:block; }
     .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-    .menu .row.ar{ display:grid; grid-template-columns:80px 24px 1fr 24px; align-items:center; }
     .menu .value{ text-align:center; }
     .menu .row.wide input[type=range]{ flex:1; }
-    .menu .swatch{ width:20px; height:20px; border:2px solid var(--ink); border-radius:4px; }
-    .menu .arrow{ width:24px; height:24px; border:2px solid var(--ink); background:var(--bg1); cursor:pointer; font-size:12px; line-height:18px; }
 
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
@@ -452,75 +449,24 @@
               <canvas width="120" height="120"></canvas>
               <span class="label">Retro Breakout</span>
             </button>
-            <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" aria-label="Avatar">
-              <canvas width="120" height="120"></canvas>
-              <span class="label">Avatar</span>
-            </button>
-            <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" aria-label="Mini-Rogue">
+            <button class="tile" role="option" data-idx="5" data-color="#d4635b" data-game="mini-rogue.html" aria-label="Mini-Rogue">
               <canvas width="120" height="120"></canvas>
               <span class="label">Mini-Rogue</span>
             </button>
-            <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" aria-label="Pixel Pong">
+            <button class="tile" role="option" data-idx="6" data-color="#3fbf75" data-game="pixel-pong.html" aria-label="Pixel Pong">
               <canvas width="120" height="120"></canvas>
               <span class="label">Pixel Pong</span>
             </button>
-            <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" aria-label="Rhythm">
+            <button class="tile" role="option" data-idx="7" data-color="#00bbf9" data-game="rhythm.html" aria-label="Rhythm">
               <canvas width="120" height="120"></canvas>
               <span class="label">Rhythm</span>
             </button>
-            <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" aria-label="Tower">
+            <button class="tile" role="option" data-idx="8" data-color="#e6a64c" data-game="tower.html" aria-label="Tower">
               <canvas width="120" height="120"></canvas>
               <span class="label">Tower</span>
             </button>
             <div class="indicator" aria-hidden="true"></div>
-          </div>
-          <div id="avatarMenu" class="menu">
-            <div class="row"><span>Ник:</span><input id="nick" type="text" value="Player"></div>
-            <div class="row ar">
-              <span>Кожа:</span>
-              <button class="arrow" data-part="skin" data-dir="-1">◀</button>
-              <div id="skinSwatch" class="swatch value"></div>
-              <button class="arrow" data-part="skin" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Волосы:</span>
-              <button class="arrow" data-part="hair" data-dir="-1">◀</button>
-              <div id="hairSwatch" class="swatch value"></div>
-              <button class="arrow" data-part="hair" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Стиль:</span>
-              <button class="arrow" data-part="style" data-dir="-1">◀</button>
-              <span id="styleName" class="value">Короткая</span>
-              <button class="arrow" data-part="style" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Глаза:</span>
-              <button class="arrow" data-part="eyes" data-dir="-1">◀</button>
-              <div id="eyeSwatch" class="swatch value"></div>
-              <button class="arrow" data-part="eyes" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Рубашка:</span>
-              <button class="arrow" data-part="shirt" data-dir="-1">◀</button>
-              <div id="shirtSwatch" class="swatch value"></div>
-              <button class="arrow" data-part="shirt" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Головной убор:</span>
-              <button class="arrow" data-part="hat" data-dir="-1">◀</button>
-              <span id="hatName" class="value">Нет</span>
-              <button class="arrow" data-part="hat" data-dir="1">▶</button>
-            </div>
-            <div class="row ar">
-              <span>Цвет убора:</span>
-              <button class="arrow" data-part="hatColor" data-dir="-1">◀</button>
-              <div id="hatSwatch" class="swatch value"></div>
-              <button class="arrow" data-part="hatColor" data-dir="1">▶</button>
-            </div>
-            <div style="text-align:center"><button id="avatarOk" class="pbtn">OK</button></div>
-          </div>
-          <div id="settingsMenu" class="menu">
+          </div><div id="settingsMenu" class="menu">
             <div class="row wide">
               <span>Громкость:</span>
               <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" />
@@ -552,22 +498,11 @@
       const nickDisplay = $('#nickDisplay');
       const avatarCanvas = $('#avatarCanvas');
       const avatarBtn = $('#avatarBtn');
-      const avatarMenu = $('#avatarMenu');
       const settingsBtn = $('#settingsBtn');
       const settingsMenu = $('#settingsMenu');
       const volumeSlider = $('#volume');
       const fullscreenBtn = $('#fullscreenBtn');
       const settingsOk = $('#settingsOk');
-      const nickInput = $('#nick');
-      const skinSwatch = $('#skinSwatch');
-      const hairSwatch = $('#hairSwatch');
-      const eyeSwatch = $('#eyeSwatch');
-      const shirtSwatch = $('#shirtSwatch');
-      const hatSwatch = $('#hatSwatch');
-      const styleName = $('#styleName');
-      const hatName = $('#hatName');
-      const arrows = $$('.arrow');
-      const avatarOk = $('#avatarOk');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const indicator = $('.indicator');
@@ -601,97 +536,25 @@
       })();
 
       // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower'];
+      const drawers=['music','snake','cards','rain','breakout','rogue','pong','rhythm','tower'];
 
-      /* ---------- Аватар ---------- */
-      const avatar={ nick:'Player', hair:'#7b3f00', skin:'#ffcf9c', style:'short', eyes:'#000', shirt:'#ff9eb8', hat:'none', hatColor:'#ff595e'};
-      const skinColors=['#ffcf9c','#f1c27d','#e0ac69','#c68642'];
-      const hairColors=['#7b3f00','#ff595e','#2e2e2e','#ffa726','#c0c0c0'];
-      const hairStyles=['short','mohawk','long'];
-      const hairNames={short:'Короткая',mohawk:'Ирокез',long:'Длинная'};
-      const eyeColors=['#000','#1a1a1a','#004bff','#00d9b8','#ff595e'];
-      const shirtColors=['#ff9eb8','#ffca3a','#46a0ff','#00d9b8','#ffffff','#ffd6a6'];
-      const hatStyles=['none','cap','crown','bandana'];
-      const hatNames={none:'Нет',cap:'Кепка',crown:'Корона',bandana:'Бандана'};
-      const hatColors=['#ff595e','#ffca3a','#46a0ff','#00d9b8','#714f34','#ffffff'];
-      let skinIdx=0, hairIdx=0, styleIdx=0, eyeIdx=0, shirtIdx=0, hatIdx=0, hatColorIdx=0;
-      const savedAvatar = JSON.parse(localStorage.getItem('avatar')||'null');
-      if(savedAvatar){
-        Object.assign(avatar, savedAvatar);
-        skinIdx = Math.max(0, skinColors.indexOf(avatar.skin));
-        hairIdx = Math.max(0, hairColors.indexOf(avatar.hair));
-        styleIdx = Math.max(0, hairStyles.indexOf(avatar.style));
-        eyeIdx = Math.max(0, eyeColors.indexOf(avatar.eyes));
-        shirtIdx = Math.max(0, shirtColors.indexOf(avatar.shirt));
-        hatIdx = Math.max(0, hatStyles.indexOf(avatar.hat));
-        hatColorIdx = Math.max(0, hatColors.indexOf(avatar.hatColor));
-      }
-      const avCtx = avatarCanvas.getContext('2d',{alpha:false});
-      avCtx.imageSmoothingEnabled=false;
-      function drawAvatar(){
-        clear(avCtx);
-        const S=2;
-        for(let y=7;y<23;y++){
-          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.skin);
+      /* ---------- Профиль ---------- */
+      function loadProfile(){
+        const ctx = avatarCanvas.getContext('2d',{alpha:false});
+        ctx.imageSmoothingEnabled=false;
+        const data = localStorage.getItem('profileAvatar');
+        if(data){
+          const img = new Image();
+          img.onload=()=>ctx.drawImage(img,0,0,48,48);
+          img.src=data;
+        }else{
+          ctx.clearRect(0,0,48,48);
         }
-        for(let y=23;y<31;y++){
-          for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.shirt);
-        }
-        if(avatar.style==='short'){
-          for(let y=5;y<11;y++){
-            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hair);
-          }
-        } else if(avatar.style==='mohawk'){
-          for(let y=3;y<15;y++){
-            for(let x=15;x<17;x++) px(avCtx,x,y,S,avatar.hair);
-          }
-        } else if(avatar.style==='long'){
-          for(let y=3;y<17;y++){
-            for(let x=6;x<26;x++) px(avCtx,x,y,S,avatar.hair);
-          }
-        }
-        px(avCtx,12,15,S,avatar.eyes);
-        px(avCtx,20,15,S,avatar.eyes);
-        for(let x=12;x<=20;x++) px(avCtx,x,21,S,'#000');
-        if(avatar.hat==='cap'){
-          for(let y=1;y<5;y++){
-            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
-          }
-          for(let x=8;x<24;x++) px(avCtx,x,5,S,avatar.hatColor);
-        }else if(avatar.hat==='crown'){
-          for(let x=10;x<22;x++) px(avCtx,x,1,S,'#ffd700');
-          for(let i=0;i<3;i++){
-            px(avCtx,11+i*4,0,S,'#ffd700');
-            px(avCtx,12+i*4,-1,S,'#ffd700');
-            px(avCtx,13+i*4,0,S,'#ffd700');
-          }
-        }else if(avatar.hat==='bandana'){
-          for(let y=3;y<7;y++){
-            for(let x=8;x<24;x++) px(avCtx,x,y,S,avatar.hatColor);
-          }
-          for(let x=20;x<26;x++) px(avCtx,x,5,S,avatar.hatColor);
-        }
+        nickDisplay.textContent = localStorage.getItem('profileNick') || 'Player';
       }
-      function updateAvatarControls(){
-        skinSwatch.style.background = avatar.skin;
-        hairSwatch.style.background = avatar.hair;
-        eyeSwatch.style.background = avatar.eyes;
-        shirtSwatch.style.background = avatar.shirt;
-        hatSwatch.style.background = avatar.hatColor;
-        styleName.textContent = hairNames[avatar.style];
-        hatName.textContent = hatNames[avatar.hat];
-      }
-      function saveAvatar(){
-        localStorage.setItem('avatar', JSON.stringify(avatar));
-      }
-      drawAvatar();
-      updateAvatarControls();
-      nickInput.value = avatar.nick;
-      nickDisplay.textContent = avatar.nick;
-      avatarBtn.addEventListener('click',()=>{
-        const show = avatarMenu.classList.toggle('show');
-        Sound.fx(show?'open':'close');
-      });
+      avatarBtn.addEventListener('click',()=>{ location.href='pixel-animator.html'; });
+      loadProfile();
+
       settingsBtn.addEventListener('click',()=>{
         const show = settingsMenu.classList.toggle('show');
         if(show){ volumeSlider.value = Sound.getVolume(); }
@@ -715,46 +578,6 @@
           document.exitFullscreen();
         }
         Sound.fx('option');
-      });
-      arrows.forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          const part=btn.dataset.part;
-          const dir=parseInt(btn.dataset.dir,10);
-          if(part==='skin'){
-            skinIdx=(skinIdx+dir+skinColors.length)%skinColors.length;
-            avatar.skin=skinColors[skinIdx];
-          }else if(part==='hair'){
-            hairIdx=(hairIdx+dir+hairColors.length)%hairColors.length;
-            avatar.hair=hairColors[hairIdx];
-          }else if(part==='style'){
-            styleIdx=(styleIdx+dir+hairStyles.length)%hairStyles.length;
-            avatar.style=hairStyles[styleIdx];
-          }else if(part==='eyes'){
-            eyeIdx=(eyeIdx+dir+eyeColors.length)%eyeColors.length;
-            avatar.eyes=eyeColors[eyeIdx];
-          }else if(part==='shirt'){
-            shirtIdx=(shirtIdx+dir+shirtColors.length)%shirtColors.length;
-            avatar.shirt=shirtColors[shirtIdx];
-          }else if(part==='hat'){
-            hatIdx=(hatIdx+dir+hatStyles.length)%hatStyles.length;
-            avatar.hat=hatStyles[hatIdx];
-          }else if(part==='hatColor'){
-            hatColorIdx=(hatColorIdx+dir+hatColors.length)%hatColors.length;
-            avatar.hatColor=hatColors[hatColorIdx];
-          }
-          updateAvatarControls();
-          drawAvatar();
-          saveAvatar();
-        });
-      });
-      avatarOk.addEventListener('click',e=>{
-        e.preventDefault();
-        avatar.nick = nickInput.value||'Player';
-        nickDisplay.textContent = avatar.nick;
-        drawAvatar();
-        avatarMenu.classList.remove('show');
-        saveAvatar();
-        Sound.fx('select');
       });
 
       // инициализация 4 значков
@@ -981,7 +804,6 @@
         });
         // перерисовать
           items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
-          drawAvatar();
           recalcSteps();
           render();
       }

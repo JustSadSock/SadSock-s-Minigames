@@ -100,21 +100,11 @@ if(!/MAX_PARTICLES=100/.test(retro)){
   throw new Error('Particle cap missing');
 }
 
-if(!/grid-template-columns:80px 24px 1fr 24px/.test(html)){
-  throw new Error('Avatar arrow alignment grid missing');
-}
 
 if(!/setVolume\(v\)/.test(audio)){
   throw new Error('setVolume not implemented');
 }
 
-if(!/data-part="hatColor"/.test(html)){
-  throw new Error('Hat color controls missing');
-}
-
-if(!/hatColors\s*=\s*\[/.test(html)){
-  throw new Error('Hat color array missing');
-}
 
 if(!/touchStartT/.test(html)){
   throw new Error('Touch inertia timing missing');
@@ -128,8 +118,8 @@ if(!/drawImage/.test(icons)){
 }
 
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 10){
-  throw new Error('Expected 10 tiles');
+if(tileCount !== 9){
+  throw new Error('Expected 9 tiles');
 }
 
 console.log('All tests passed');

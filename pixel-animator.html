@@ -73,6 +73,10 @@
     <nav class="tabs" id="tabs"></nav>
     <div id="panels"></div>
   </div>
+  <div class="row" style="margin-top:8px; gap:8px;">
+    <input id="nick" type="text" placeholder="Ник" style="flex:1;padding:8px;border:2px solid var(--bezel);border-radius:8px;background:var(--paper);font-weight:600;">
+    <button id="saveBtn" class="btn">OK</button>
+  </div>
 </div>
 
 <script>
@@ -314,6 +318,16 @@ function save(){ localStorage.setItem('ss16_avatar_simple', JSON.stringify(state
 
 /* ===== init & loop ===== */
 buildUI(); render();
+const nickInput = document.getElementById('nick');
+nickInput.value = localStorage.getItem('profileNick') || 'Player';
+document.getElementById('saveBtn').onclick = ()=>{
+  const nick = nickInput.value || 'Player';
+  render();
+  localStorage.setItem('profileNick', nick);
+  localStorage.setItem('profileAvatar', off.toDataURL());
+  save();
+  location.href='index.html';
+};
 setInterval(render, 1000);
 </script>
 </body>
