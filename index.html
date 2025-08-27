@@ -6,6 +6,7 @@
   <title>SadSock’s playground</title>
   <!-- необязательно: пиксельный шрифт; оффлайн будет fallback -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
 
   <style>
     :root{
@@ -918,15 +919,6 @@
       function selectCurrent(){
         const idx = (Math.round(index)%rows)*cols + colIdx;
         const tile = tiles[idx];
-        const rect = tile.getBoundingClientRect();
-        const color = tile.dataset.color || '#ffca3a';
-        for(let i=0;i<8;i++){
-          RetroFX.spawn(
-            rect.left + rect.width/2 + (Math.random()*40-20),
-            rect.top + rect.height/2 + (Math.random()*40-20),
-            color
-          );
-        }
         tile.classList.add('flash');
         setTimeout(()=>tile.classList.remove('flash'),300);
         Sound.fx("select");
