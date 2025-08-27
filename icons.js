@@ -678,6 +678,46 @@ XXXXX
 .XX..
 `, {X:'#ff9eb8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
   const [music1,music2,music3,music4,music5] = musicFrames;
+  const snakeFrames = makeFrames(`
+XXXXX
+X....
+XXXXX
+....X
+XXXXX
+`, {X:'#00d9b8'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [snake1,snake2,snake3,snake4,snake5] = snakeFrames;
+  const cardsFrames = makeFrames(`
+XXXXX
+X.X.X
+XXXXX
+X.X.X
+XXXXX
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [cards1,cards2,cards3,cards4,cards5] = cardsFrames;
+  const rainFrames = makeFrames(`
+..X..
+.X.X.
+.X.X.
+.XXX.
+..X..
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [rain1,rain2,rain3,rain4,rain5] = rainFrames;
+  const animFrames = makeFrames(`
+XXXXX
+X...X
+X.X.X
+X...X
+XXXXX
+`, {X:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [anim1,anim2,anim3,anim4,anim5] = animFrames;
+  const breakoutFrames = makeFrames(`
+BBBBB
+.....
+..O..
+.....
+.PPP.
+`, {B:'#ffca3a',O:'#ff5f9c',P:'#46a0ff'}, '#fff', [[2,0],[4,2],[2,4],[0,2],[2,2]]);
+  const [breakout1,breakout2,breakout3,breakout4,breakout5] = breakoutFrames;
   const skullFrames = makeFrames(`
   .XXX.
   XOXOX
@@ -704,7 +744,12 @@ XXXXX
     crown:[crown1,crown2,crown3,crown4,crown5],
     tree:[tree1,tree2,tree3,tree4,tree5],
     skull:[skull1,skull2,skull3,skull4,skull5],
-    music:[music1,music2,music3,music4,music5]
+    music:[music1,music2,music3,music4,music5],
+    snake:[snake1,snake2,snake3,snake4,snake5],
+    cards:[cards1,cards2,cards3,cards4,cards5],
+    rain:[rain1,rain2,rain3,rain4,rain5],
+    breakout:[breakout1,breakout2,breakout3,breakout4,breakout5],
+    anim:[anim1,anim2,anim3,anim4,anim5]
   };
   Object.keys(frames).forEach(name=>{
     cache[name]=frames[name].map(data=>{

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Memory Flip</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg0:#fff6e5;
+      --bg1:#ffd9a3;
+      --bg2:#fff1cc;
+      --ink:#2d1600;
+      --pastel-pink:#ff5f9c;
+      --pastel-blue:#46a0ff;
+      --pastel-mint:#00d9b8;
+      --pastel-peach:#ffca3a;
+      --accent:#ff595e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      background:var(--bg0);
+      height:100svh;
+      overflow:hidden;
+      padding-top:12px;
+      font-family:'Press Start 2P',ui-monospace,monospace;
+      color:var(--ink);
+      gap:12px;
+    }
+    h1{margin:0;font-size:18px;}
+    .play{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    #grid{
+      width:100%;
+      max-width:400px;
+      aspect-ratio:1/1;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:6px;
+      margin:0 auto;
+    }
+    .card{
+      perspective:600px;
+      cursor:pointer;
+      user-select:none;
+      touch-action:manipulation;
+      aspect-ratio:1/1;
+    }
+    .card-inner{
+      position:relative;
+      width:100%;
+      height:100%;
+      transform-style:preserve-3d;
+      transition:transform .4s;
+    }
+    .card.open .card-inner{transform:rotateY(180deg);}
+    .face{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid var(--pastel-peach);
+      border-radius:8px;
+      font-size:30px;
+      backface-visibility:hidden;
+      box-shadow:0 4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.5);
+    }
+    .front{background:linear-gradient(180deg,var(--pastel-blue),#3a94ef);}
+    .back{background:linear-gradient(180deg,var(--pastel-peach),#e3a228);transform:rotateY(180deg);}
+    .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
+    #score{margin:0;font-size:14px;text-align:center;}
+    #timer{margin:0;font-size:14px;text-align:center;}
+    #controls{display:flex;gap:12px;margin:0;justify-content:center;}
+    button{
+      padding:8px 12px;
+      font-size:14px;
+      background:linear-gradient(180deg,var(--pastel-pink),var(--accent));
+      border:2px solid var(--accent);
+      border-radius:8px;
+      color:var(--ink);
+      cursor:pointer;
+      box-shadow:0 4px 0 var(--accent);
+    }
+    button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent);}
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    .overlay .panel{
+      background:var(--pastel-pink);
+      border:2px solid var(--accent);
+      border-radius:8px;
+      padding:16px;
+      text-align:center;
+      color:var(--ink);
+    }
+    .overlay .panel p{
+      margin:0 0 12px;
+      font-size:14px;
+    }
+    .overlay .panel button{
+      margin-top:8px;
+      padding:8px 16px;
+      font-size:14px;
+      background:linear-gradient(180deg,var(--pastel-pink),var(--accent));
+      border:2px solid var(--accent);
+      border-radius:8px;
+      color:var(--ink);
+      box-shadow:0 4px 0 var(--accent);
+      cursor:pointer;
+    }
+    .overlay .panel button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent);}
+  </style>
+</head>
+<body>
+  <h1>Memory Flip</h1>
+  <div id="score">Найдено пар: 0/8</div>
+  <div id="timer">Время: 0.0с</div>
+  <div id="controls">
+    <button id="startBtn">Старт</button>
+    <button id="resetBtn">Сброс</button>
+  </div>
+  <div class="play">
+    <div id="grid"></div>
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <p id="msg"></p>
+        <button id="againBtn">Сыграть ещё</button>
+        <button id="exitBtn">Выход</button>
+      </div>
+    </div>
+  </div>
+<script>
+(function(){
+  'use strict';
+  const icons=['🍎','🚗','🍀','👻','🗝️','💣','⭐','🛡️'];
+  let cards=[], firstCard=null, secondCard=null, matchedCount=0;
+  let gameActive=false;
+  const grid=document.getElementById('grid');
+  const scoreEl=document.getElementById('score');
+  const startBtn=document.getElementById('startBtn');
+  const resetBtn=document.getElementById('resetBtn');
+  const header=document.querySelector('h1');
+  const controls=document.getElementById('controls');
+  const play=document.querySelector('.play');
+  const overlay=document.getElementById('overlay');
+  const msg=document.getElementById('msg');
+  const againBtn=document.getElementById('againBtn');
+  const exitBtn=document.getElementById('exitBtn');
+  const timerEl=document.getElementById('timer');
+  let startTime=0, penalty=0, timerId=null;
+
+  function startTimer(){
+    startTime=performance.now();
+    penalty=0;
+    clearInterval(timerId);
+    timerId=setInterval(()=>{
+      const t=((performance.now()-startTime)/1000)+penalty;
+      timerEl.textContent='Время: '+t.toFixed(1)+'с';
+    },100);
+  }
+  function stopTimer(){clearInterval(timerId);}
+
+  function notify(text){
+    msg.textContent=text;
+    overlay.style.display='flex';
+    startBtn.disabled=true;
+    resetBtn.disabled=true;
+    gameActive=false;
+    againBtn.onclick=()=>{
+      overlay.style.display='none';
+      startBtn.disabled=false;
+      resetBtn.disabled=false;
+      startGame();
+    };
+  }
+  exitBtn.onclick=()=>{window.top.location.href='index.html';};
+  function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [array[i],array[j]]=[array[j],array[i]];
+    }
+    return array;
+  }
+  function resetGame(){
+    overlay.style.display='none';
+    startBtn.disabled=false;
+    resetBtn.disabled=false;
+    grid.innerHTML='';
+    const values=shuffle(icons.concat(icons));
+    cards=[];
+    matchedCount=0;
+    scoreEl.textContent='Найдено пар: 0/8';
+    values.forEach(val=>{
+      const card=document.createElement('div');
+      card.className='card';
+      card.dataset.value=val;
+      card.innerHTML='<div class="card-inner"><div class="face front"></div><div class="face back">'+val+'</div></div>';
+      card.addEventListener('click',()=>handleCard(card));
+      grid.appendChild(card);
+      cards.push(card);
+    });
+    firstCard=secondCard=null;
+    stopTimer();
+    timerEl.textContent='Время: 0.0с';
+    gameActive=false;
+  }
+
+  function startGame(){
+    resetGame();
+    startBtn.disabled=true;
+    gameActive=true;
+    startTimer();
+  }
+  function handleCard(card){
+    if(!gameActive || card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
+    reveal(card);
+    if(!firstCard){
+      firstCard=card;
+    }else{
+      secondCard=card;
+      if(firstCard.dataset.value===secondCard.dataset.value){
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        matchedCount++;
+        scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
+        firstCard=secondCard=null;
+        if(matchedCount===icons.length){
+          stopTimer();
+          const total=((performance.now()-startTime)/1000)+penalty;
+          notify('Поздравляем! Вы нашли все пары. Время: '+total.toFixed(1)+'с');
+        }
+      }else{
+        penalty+=0.5;
+        setTimeout(()=>{
+          hide(firstCard);
+          hide(secondCard);
+          firstCard=secondCard=null;
+        },700);
+      }
+    }
+  }
+  function reveal(card){
+    card.classList.add('open');
+  }
+  function hide(card){
+    card.classList.remove('open');
+  }
+  startBtn.addEventListener('click',startGame);
+  resetBtn.addEventListener('click',resetGame);
+  function adjustGrid(){
+    const GAP=6, cols=4;
+    const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - controls.offsetHeight - 48;
+    const availableWidth=play.clientWidth;
+    const base=Math.min(availableWidth, availableHeight);
+    const card=Math.floor((base - GAP*(cols-1))/cols);
+    const size=card*cols + GAP*(cols-1);
+    grid.style.width=size+'px';
+    grid.style.height=size+'px';
+  }
+  window.addEventListener('resize',adjustGrid);
+  adjustGrid();
+  resetGame();
+})();
+</script>
+</body>
+</html>
