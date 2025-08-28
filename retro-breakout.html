@@ -67,6 +67,7 @@
 <body>
   <h1>Retro Breakout</h1>
   <div id="score">Счёт: 0</div>
+  <div id="lives">Жизни: 3</div>
   <div class="play">
     <canvas id="gameCanvas" width="120" height="160"></canvas>
     <div id="toast" class="toast"></div>
@@ -77,6 +78,7 @@
     </div>
   </div>
   <script src="audio.js"></script>
+  <script src="ui.js"></script>
   <script>
   (function(){
     'use strict';
@@ -87,12 +89,16 @@
     let ball, paddle, bricks, brickRows=4, brickCols=8;
     let score=0, lives=3;
     const scoreEl=document.getElementById('score');
+    const livesEl=document.getElementById('lives');
     const startBtn=document.getElementById('startBtn');
     const paddleWidth=30;
     const header=document.querySelector('h1');
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
+    const showToast=UI.makeToast(toastEl);
+    const scoreBoard=UI.score(scoreEl,'Счёт');
     let left=false,right=false;
+    let best=Number(localStorage.getItem('breakoutBest')||0);
     const styles=getComputedStyle(document.documentElement);
     const bgColor=styles.getPropertyValue('--bg2');
     const paddleColor=styles.getPropertyValue('--pastel-blue');
@@ -101,11 +107,6 @@
     let lastTime=0;
     const paddleSpeed=200;
 
-    function toast(text){
-      toastEl.textContent=text;
-      toastEl.style.display='block';
-      setTimeout(()=> toastEl.style.display='none',2000);
-    }
     function resize(){
       const padH=pad.offsetHeight?pad.offsetHeight+16:0;
       const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - padH - 24;
@@ -137,7 +138,7 @@
     function setBall(){
       ball={x:canvas.width/2,y:canvas.height-20,vx:120,vy:-120,r:2};
     }
-    function updateScore(){scoreEl.textContent='Счёт: '+score+' Жизни: '+lives;}
+    function updateScore(){scoreBoard.set(score,best); livesEl.textContent='Жизни: '+lives;}
     function draw(){
       ctx.fillStyle=bgColor;
       ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -165,7 +166,13 @@
       if(ball.y>canvas.height-ball.r){
         lives--; updateScore();
         if(lives>0){ setBall(); }
-        else { Sound.fx('error'); gameRunning=false; toast('Счёт: '+score); return; }
+        else {
+          Sound.fx('error');
+          gameRunning=false;
+          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast('Новый рекорд: '+score);}
+          else {showToast('Счёт: '+score);}
+          return;
+        }
       }
       if(ball.y+ball.r>=paddle.y && ball.x>=paddle.x && ball.x<=paddle.x+paddle.w){
         ball.vy=-Math.abs(ball.vy);
@@ -199,7 +206,18 @@
       setPaddle(t.clientX-rect.left - paddle.w/2);
       e.preventDefault();
     },{passive:false});
-    const setBtn=(dir,val)=>{ const el=pad.querySelector(`[data-dir="${dir}"]`); if(el) el.classList.toggle('down',val); };
+    const setBtn=UI.attachDPad(pad,dir=>{
+      if(dir==='left'){ left=true; right=false; }
+      else if(dir==='right'){ right=true; left=false; }
+    });
+    pad.querySelectorAll('[data-dir]').forEach(btn=>{
+      const dir=btn.dataset.dir;
+      const off=e=>{e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false;};
+      btn.addEventListener('touchend',off,{passive:false});
+      btn.addEventListener('touchcancel',off,{passive:false});
+      btn.addEventListener('mouseup',off);
+      btn.addEventListener('mouseleave',off);
+    });
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
       if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); }
@@ -209,17 +227,6 @@
       const k=e.key.toLowerCase();
       if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); }
       else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); }
-    });
-    pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      const dir=btn.dataset.dir;
-      const on=e=>{ e.preventDefault(); setBtn(dir,true); if(dir==='left') left=true; else right=true; };
-      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false; };
-      btn.addEventListener('touchstart',on,{passive:false});
-      btn.addEventListener('touchend',off,{passive:false});
-      btn.addEventListener('touchcancel',off,{passive:false});
-      btn.addEventListener('mousedown',on);
-      addEventListener('mouseup',off);
-      btn.addEventListener('mouseleave',off);
     });
     startBtn.addEventListener('click',()=>{
       Sound.fx('start');

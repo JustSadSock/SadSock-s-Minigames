@@ -90,15 +90,14 @@
         if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
         if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
         if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
+        if(e.key===' '||e.key==='f') this.attack();
       });
     },
     cell(x,y){ return this.map[y]?.[x]; },
-    gen(){ const N=this.N, m=Array.from({length:N},()=>Array(N).fill('#'));
-      let x=irnd(1,N-2), y=irnd(1,N-2), open=0, target=Math.floor(N*N*.42);
-      const carve=(x,y)=>{ if(m[y][x]==='#'){ m[y][x]='.'; open++; } };
-      carve(x,y); let tries=0;
-      while(open<target && tries<5000){ const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; x=clamp(x+d[0],1,N-2); y=clamp(y+d[1],1,N-2); carve(x,y); tries++; }
-      for(let i=0;i<N;i++){ m[0][i]='#'; m[N-1][i]='#'; m[i][0]='#'; m[i][N-1]='#'; }
+    gen(){ const N=this.N; let m; let reachable=0; const target=Math.floor(N*N*.42);
+      function carveMap(){ m=Array.from({length:N},()=>Array(N).fill('#')); let x=irnd(1,N-2), y=irnd(1,N-2), open=0, tries=0; const carve=(x,y)=>{ if(m[y][x]==='#'){ m[y][x]='.'; open++; } }; carve(x,y); while(open<target && tries<5000){ const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; x=clamp(x+d[0],1,N-2); y=clamp(y+d[1],1,N-2); carve(x,y); tries++; } for(let i=0;i<N;i++){ m[0][i]='#'; m[N-1][i]='#'; m[i][0]='#'; m[i][N-1]='#'; }}
+      function countReachable(){ const q=[[1,1]]; const vis=Array.from({length:N},()=>Array(N).fill(false)); vis[1][1]=true; let c=0; while(q.length){ const [x,y]=q.shift(); if(m[y][x]==='.'){ c++; [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{const nx=x+d[0],ny=y+d[1]; if(nx>0&&ny>0&&nx<N-1&&ny<N-1&&!vis[ny][nx]&&m[ny][nx]==='.'){vis[ny][nx]=true; q.push([nx,ny]);}}); } } return c; }
+      let attempts=0; do{ carveMap(); reachable=countReachable(); attempts++; }while(reachable<target*0.8 && attempts<20);
       return m;
     },
     find(sym){ for(let y=0;y<this.N;y++) for(let x=0;x<this.N;x++) if(this.map[y][x]===sym) return {x,y}; return {x:1,y:1}; },
@@ -111,6 +110,14 @@
           if(Math.random()<.5 && this.cell(ex+ddx,ey)==='.') ex+=ddx; else if(this.cell(ex,ey+ddy)==='.') ey+=ddy;
         } else { const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; if(this.cell(ex+d[0],ey+d[1])==='.'){{ ex+=d[0]; ey+=d[1]; }}}
         e.x=ex; e.y=ey; if(e.x===this.p.x && e.y===this.p.y){ this.hp--; Sound.fx('error'); if(this.hp<=0) this.over=true; }
+      }
+    },
+    attack(){
+      const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+      for(const d of dirs){
+        const tx=this.p.x+d[0], ty=this.p.y+d[1];
+        const i=this.en.findIndex(e=>e.x===tx&&e.y===ty);
+        if(i>=0){ this.en.splice(i,1); this.score+=30; Sound.fx('coin'); break; }
       }
     },
     step(dt){},
