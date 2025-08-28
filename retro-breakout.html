@@ -76,6 +76,7 @@
       <button class="k" data-dir="right">►</button>
     </div>
   </div>
+  <script src="audio.js"></script>
   <script>
   (function(){
     'use strict';
@@ -84,7 +85,7 @@
     ctx.imageSmoothingEnabled=false;
     let gameRunning=false;
     let ball, paddle, bricks, brickRows=4, brickCols=8;
-    let score=0;
+    let score=0, lives=3;
     const scoreEl=document.getElementById('score');
     const startBtn=document.getElementById('startBtn');
     const paddleWidth=30;
@@ -92,6 +93,13 @@
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
     let left=false,right=false;
+    const styles=getComputedStyle(document.documentElement);
+    const bgColor=styles.getPropertyValue('--bg2');
+    const paddleColor=styles.getPropertyValue('--pastel-blue');
+    const ballColor=styles.getPropertyValue('--pastel-pink');
+    const brickPalette=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'].map(v=>styles.getPropertyValue(v));
+    let lastTime=0;
+    const paddleSpeed=200;
 
     function toast(text){
       toastEl.textContent=text;
@@ -112,27 +120,26 @@
     window.addEventListener('resize',resize);
     function resetGame(){
       gameRunning=false;
-      score=0;
+      score=0; lives=3;
       updateScore();
-      ball={x:canvas.width/2,y:canvas.height-20,dx:2,dy:-2,r:2};
+      setBall();
       paddle={x:(canvas.width-paddleWidth)/2,y:canvas.height-10,w:paddleWidth,h:4};
       bricks=[];
       const bw=canvas.width/brickCols;
       const bh=10;
       for(let r=0;r<brickRows;r++){
         for(let c=0;c<brickCols;c++){
-          bricks.push({x:c*bw,y:20+r*(bh+2),w:bw-2,h:bh,alive:true,color:getBrickColor(r)});
+          bricks.push({x:c*bw,y:20+r*(bh+2),w:bw-2,h:bh,alive:true,color:brickPalette[r%brickPalette.length]});
         }
       }
       draw();
     }
-    function getBrickColor(row){
-      const colors=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'];
-      return getComputedStyle(document.documentElement).getPropertyValue(colors[row%colors.length]);
+    function setBall(){
+      ball={x:canvas.width/2,y:canvas.height-20,vx:120,vy:-120,r:2};
     }
-    function updateScore(){scoreEl.textContent='Счёт: '+score;}
+    function updateScore(){scoreEl.textContent='Счёт: '+score+' Жизни: '+lives;}
     function draw(){
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--bg2');
+      ctx.fillStyle=bgColor;
       ctx.fillRect(0,0,canvas.width,canvas.height);
       for(const b of bricks){
         if(b.alive){
@@ -140,34 +147,38 @@
           ctx.fillRect(b.x,b.y,b.w,b.h);
         }
       }
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--pastel-blue');
+      ctx.fillStyle=paddleColor;
       ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--pastel-pink');
+      ctx.fillStyle=ballColor;
       ctx.fillRect(ball.x-ball.r,ball.y-ball.r,ball.r*2,ball.r*2);
     }
-    function loop(){
+    function loop(t){
       if(!gameRunning) return;
-      if(left) setPaddle(paddle.x-4);
-      if(right) setPaddle(paddle.x+4);
-      ball.x+=ball.dx;
-      ball.y+=ball.dy;
-      if(ball.x<ball.r || ball.x>canvas.width-ball.r) ball.dx*=-1;
-      if(ball.y<ball.r) ball.dy*=-1;
+      if(!lastTime) lastTime=t;
+      const dt=(t-lastTime)/1000; lastTime=t;
+      if(left) setPaddle(paddle.x-paddleSpeed*dt);
+      if(right) setPaddle(paddle.x+paddleSpeed*dt);
+      ball.x+=ball.vx*dt;
+      ball.y+=ball.vy*dt;
+      if(ball.x<ball.r || ball.x>canvas.width-ball.r) ball.vx*=-1;
+      if(ball.y<ball.r) ball.vy*=-1;
       if(ball.y>canvas.height-ball.r){
-        gameRunning=false;
-        toast('Счёт: '+score);
-        resetGame();
+        lives--; updateScore();
+        if(lives>0){ setBall(); }
+        else { Sound.fx('error'); gameRunning=false; toast('Счёт: '+score); return; }
       }
       if(ball.y+ball.r>=paddle.y && ball.x>=paddle.x && ball.x<=paddle.x+paddle.w){
-        ball.dy=-Math.abs(ball.dy);
+        ball.vy=-Math.abs(ball.vy);
         const offset=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
-        ball.dx=2*offset;
+        ball.vx=200*offset;
       }
       for(const b of bricks){
         if(b.alive && ball.x>=b.x && ball.x<=b.x+b.w && ball.y>=b.y && ball.y<=b.y+b.h){
           b.alive=false;
-          ball.dy*=-1;
+          ball.vy*=-1;
+          ball.vx*=1.02; ball.vy*=1.02;
           score++;
+          Sound.fx('coin');
           updateScore();
           break;
         }
@@ -211,6 +222,7 @@
       btn.addEventListener('mouseleave',off);
     });
     startBtn.addEventListener('click',()=>{
+      Sound.fx('start');
       resetGame();
       gameRunning=true;
       requestAnimationFrame(loop);

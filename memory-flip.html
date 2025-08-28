@@ -104,6 +104,7 @@
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad"><div class="k" id="startBtn">START</div></div>
   </div>
+<script src="audio.js"></script>
 <script>
 (function(){
   'use strict';
@@ -169,6 +170,7 @@
     startBtn.disabled=true;
     gameActive=true;
     startTimer();
+    Sound.fx('start');
   }
   function handleCard(card){
     if(!gameActive || card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
@@ -181,16 +183,19 @@
         firstCard.classList.add('matched');
         secondCard.classList.add('matched');
         matchedCount++;
+        Sound.fx('coin');
         scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
         firstCard=secondCard=null;
         if(matchedCount===icons.length){
           stopTimer();
           const total=((performance.now()-startTime)/1000)+penalty;
           toast('Время: '+total.toFixed(1)+'с');
+          Sound.fx('start');
           resetGame();
         }
       }else{
         penalty+=0.5;
+        Sound.fx('error');
         setTimeout(()=>{
           hide(firstCard);
           hide(secondCard);

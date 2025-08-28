@@ -144,6 +144,9 @@
             <label class="pill">Scale
               <select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select>
             </label>
+            <label class="pill">Steps
+              <select id="steps"><option>8</option><option selected>16</option><option>32</option></select>
+            </label>
           </div>
         </div>
         <div class="tabs">
@@ -267,6 +270,8 @@ function makeLegend(rows){ return rows.map(m=>NOTES[(m%12+12)%12] + (Math.floor(
 function buildMonoGrid(el, rowsDesc, notesArray){
   el.innerHTML="";
   const R = rowsDesc.length, C = state.steps;
+  el.style.setProperty('--cols', C);
+  el.style.setProperty('--rows', R);
 
   for (let y=0;y<R;y++){
     for (let x=0;x<C;x++){
@@ -323,6 +328,7 @@ function buildMonoGrid(el, rowsDesc, notesArray){
 function buildDrums(el, sets){
   el.innerHTML="";
   const C=state.steps;
+  el.style.setProperty('--cols', C);
   for(let row=0; row<3; row++){
     for(let x=0;x<C;x++){
       const d=document.createElement('div');
@@ -380,6 +386,16 @@ refreshAllGrids();
 $('bpm').oninput = (e)=>{ state.bpm=+e.target.value; $('bpmv').textContent=state.bpm; };
 $('root').onchange = (e)=>{ state.root=e.target.value; refreshAllGrids(); };
 $('scale').onchange = (e)=>{ state.scale=e.target.value; refreshAllGrids(); };
+$('steps').onchange = (e)=>{
+  const n=+e.target.value;
+  state.steps=n;
+  state.lead.notes = state.lead.notes.slice(0,n); while(state.lead.notes.length<n) state.lead.notes.push(null);
+  state.bass.notes = state.bass.notes.slice(0,n); while(state.bass.notes.length<n) state.bass.notes.push(null);
+  state.drums.kick = new Set([...state.drums.kick].filter(i=>i<n));
+  state.drums.snare = new Set([...state.drums.snare].filter(i=>i<n));
+  state.drums.hat = new Set([...state.drums.hat].filter(i=>i<n));
+  refreshAllGrids();
+};
 $('leadWave').onchange = (e)=> state.lead.wave = e.target.value;
 $('bassWave').onchange = (e)=> state.bass.wave = e.target.value;
 $('leadA').oninput = (e)=> state.lead.A = (+e.target.value)/1000;
@@ -400,7 +416,7 @@ const AudioCtx = window.AudioContext || window.webkitAudioContext;
 const ctx = new AudioCtx();
 let sched=null, playing=false, stepPtr=0;
 
-function stepDur(){ return 60/state.bpm/4; } // 16-я
+function stepDur(){ return 60/state.bpm/(state.steps/4); }
 function envGain(start, A, R, peak=0.3){
   const g=ctx.createGain();
   g.gain.setValueAtTime(0,start);
@@ -442,14 +458,16 @@ function start(){
   if(ctx.state==="suspended") ctx.resume();
   if(playing) return; playing=true; stepPtr=0;
   const look=0.1; let next=ctx.currentTime+0.05;
-  sched=setInterval(()=>{
+  function tick(){
     const d=stepDur();
     while(next < ctx.currentTime + look){
       scheduleStep(next); next+=d; stepPtr=(stepPtr+1)%state.steps;
     }
-  },25);
+    sched=setTimeout(tick,25);
+  }
+  tick();
 }
-function stop(){ playing=false; if(sched){clearInterval(sched); sched=null;} }
+function stop(){ playing=false; if(sched){clearTimeout(sched); sched=null;} }
 
 $('playBtn').onclick=()=>start();
 $('stopBtn').onclick=()=>stop();
@@ -505,12 +523,18 @@ function parseImported(txt){
 }
 function loadSongDataIntoState(data){
   state.bpm=data.bpm??state.bpm; $('bpm').value=state.bpm; $('bpmv').textContent=state.bpm;
-  state.steps=data.steps??state.steps; state.root=data.root??state.root; $('root').value=state.root;
+  state.steps=data.steps??state.steps; $('steps').value=state.steps;
+  state.root=data.root??state.root; $('root').value=state.root;
   state.scale=data.scale??state.scale; $('scale').value=state.scale;
-  state.lead={...state.lead,...data.lead}; state.bass={...state.bass,...data.bass};
-  state.drums.kick=new Set(data.drums?.kick||[]);
-  state.drums.snare=new Set(data.drums?.snare||[]);
-  state.drums.hat=new Set(data.drums?.hat||[]);
+  state.lead={...state.lead,...data.lead};
+  state.lead.notes=(data.lead?.notes||state.lead.notes).slice(0,state.steps);
+  while(state.lead.notes.length<state.steps) state.lead.notes.push(null);
+  state.bass={...state.bass,...data.bass};
+  state.bass.notes=(data.bass?.notes||state.bass.notes).slice(0,state.steps);
+  while(state.bass.notes.length<state.steps) state.bass.notes.push(null);
+  state.drums.kick=new Set((data.drums?.kick||[]).filter(i=>i<state.steps));
+  state.drums.snare=new Set((data.drums?.snare||[]).filter(i=>i<state.steps));
+  state.drums.hat=new Set((data.drums?.hat||[]).filter(i=>i<state.steps));
   refreshAllGrids();
 }
 $('importPlay').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); start();};
@@ -519,6 +543,7 @@ $('pasteBtn').onclick=async()=>{ try{$('inp').value=await navigator.clipboard.re
 
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;
+$('steps').value=state.steps;
 </script>
 </body>
 </html>

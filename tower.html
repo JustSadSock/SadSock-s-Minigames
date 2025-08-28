@@ -20,18 +20,24 @@
     <div class="pad" id="pad">
       <div class="k" data-btn="a" style="width:40vw;max-width:160px;"></div>
     </div>
+    <input type="range" id="widthRange" min="30" max="80" value="60" style="margin-top:8px;width:60%;">
     <div class="label">Башня</div>
     <div class="hint">Жми A, чтобы уронить блок.</div>
   </div>
   <div class="footer">Кнопка A • Клавиатура: пробел</div>
 </div>
 
+<script src="audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const widthRange=d('#widthRange');
   const ctx=cv.getContext('2d');
+  let best=parseInt(localStorage.getItem('towerBest')||'0',10);
+  widthRange.value=localStorage.getItem('towerWidth')||'60';
+  widthRange.addEventListener('change',e=>localStorage.setItem('towerWidth',e.target.value));
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
@@ -75,13 +81,18 @@
     init(){ this.reset(); loop(); },
     reset(){
       this.score=0; this.started=false; this.over=false;
+      scoreEl.textContent='Score: 0 (best: '+best+')';
       this.baseY=SETTINGS.H-60; this.speed=120; this.g=900;
-      this.active={x:SETTINGS.W*0.2,w:SETTINGS.W*0.6,y:this.baseY-20,dir:+1,vy:0,falling:false};
-      this.prev={x:SETTINGS.W*0.2,w:SETTINGS.W*0.6,y:this.baseY,fixed:true};
+      const startW=parseInt(widthRange.value)/100*SETTINGS.W;
+      const startX=(SETTINGS.W-startW)/2;
+      this.active={x:startX,w:startW,y:this.baseY-20,dir:+1,vy:0,falling:false};
+      this.prev={x:startX,w:startW,y:this.baseY,fixed:true};
       this.layers=[];
     },
     step(dt){
-      const I=Input.st; if(!this.started){ if(I.a||I.b) this.started=true; else return; }
+      const I=Input.st;
+      if(this.over){ if(I.a){ this.reset(); } return; }
+      if(!this.started){ if(I.a||I.b){ this.started=true; Sound.fx('start'); } else return; }
       const a=this.active;
       if(!a.falling){
         a.x+=a.dir*this.speed*dt;
@@ -92,11 +103,11 @@
         a.vy+=this.g*dt; a.y+=a.vy*dt;
         if(a.y>=this.prev.y-20){
           const L=Math.max(a.x,this.prev.x), R=Math.min(a.x+a.w,this.prev.x+this.prev.w), ov=R-L;
-          if(ov<=2){ this.over=true; return; }
+          if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } return; }
           this.layers.push({...this.prev});
           this.prev={x:L,w:ov,y:a.y+20,fixed:true};
           this.active={x:this.prev.x-60,w:this.prev.w,y:this.prev.y-20,dir:+1,vy:0,falling:false};
-          this.baseY-=10; this.speed+=4; this.score=this.layers.length;
+          this.baseY-=10; this.speed+=3+Math.random()*3; this.score=this.layers.length; Sound.fx('coin');
         }
       }
     },
@@ -113,7 +124,7 @@
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
   game.init();
 
 

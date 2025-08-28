@@ -29,12 +29,14 @@
   <div class="footer">Мобильные A/S/K/L • Клавиатура: A/S/K/L</div>
 </div>
 
+<script src="audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
   const ctx=cv.getContext('2d');
+  let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
@@ -77,22 +79,28 @@
     score:0, started:false, over:false,
     init(){ this.reset(); loop(); },
     reset(){ this.score=0; this.started=false; this.over=false;
+      best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
+      scoreEl.textContent='Score: 0 (best: '+best+')';
       this.lanes=4; this.speed=180; this.barY=SETTINGS.H-120;
-      this.notes=[]; for(let i=0;i<60;i++){ const lane=irnd(0,3); this.notes.push({lane,y:-i*90,hit:false}); if(Math.random()<.25)this.notes.push({lane:clamp(lane+(Math.random()<.5?1:-1),0,3),y:-(i*90+45),hit:false});}
+      const pattern=[0,1,2,3, 0,1,2,3, 0,2,1,3, 0,1,2,3];
+      this.notes=pattern.map((lane,i)=>({lane,y:-i*90,hit:false}));
+      this.total=this.notes.length;
       this.combo=0; this.winGood=110; this.winPerf=60;
     },
     tryHit(l){ const tgt=this.barY; let best=null, bd=1e9;
       for(const n of this.notes){ if(n.hit||n.lane!==l) continue; const d=Math.abs(n.y-tgt); if(d<bd){bd=d; best=n;} }
       if(!best) return;
-      if(bd<=this.winPerf/2){ this.score+=300; this.combo++; statusEl.textContent='PERFECT ×'+this.combo; best.hit=true; }
-      else if(bd<=this.winGood/2){ this.score+=100; this.combo++; statusEl.textContent='GOOD ×'+this.combo; best.hit=true; }
-      else { this.combo=0; statusEl.textContent='MISS'; }
+      if(bd<=this.winPerf/2){ this.score+=300; this.combo++; statusEl.textContent='PERFECT ×'+this.combo; best.hit=true; Sound.fx('coin'); }
+      else if(bd<=this.winGood/2){ this.score+=100; this.combo++; statusEl.textContent='GOOD ×'+this.combo; best.hit=true; Sound.fx('coin'); }
+      else { this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); }
     },
     step(dt){
-      const I=Input.st; if(!this.started){ if(I.a||I.b||I.left||I.right) this.started=true; else return; }
-      for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; } }
+      const I=Input.st;
+      if(this.over){ if(I.a||I.b||I.left||I.right){ this.reset(); } return; }
+      if(!this.started){ if(I.a||I.b||I.left||I.right){ this.started=true; Sound.fx('start'); } else return; }
+      for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); } }
       if(I.a) this.tryHit(0); if(I.b) this.tryHit(1); if(I.left) this.tryHit(2); if(I.right) this.tryHit(3);
-      if(this.notes.every(n=>n.hit)) this.over=true;
+      if(this.notes.every(n=>n.hit)){ this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('rhythmBest',best); } }
     },
     draw(){
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
@@ -101,14 +109,17 @@
       ctx.fillStyle='#e6a64c'; ctx.fillRect(0,this.barY,SETTINGS.W,4);
       ctx.fillStyle='#3fbf75';
       for(const n of this.notes){ if(n.hit) continue; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
+      const prog=this.notes.filter(n=>n.hit).length/this.total;
+      ctx.fillStyle='#d18f3f'; ctx.fillRect(0,8,SETTINGS.W*prog,4);
+      ctx.strokeStyle='#bf8a3d'; ctx.strokeRect(0,8,SETTINGS.W,4);
       if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A/S/K/L или тач по дорожкам', SETTINGS.W/2, SETTINGS.H*0.5); }
-      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Трек окончен. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Трек окончен. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
   game.init();
 
 

@@ -32,6 +32,7 @@
   <div class="footer">Мобильный D‑pad • Клавиатура: стрелки/WSAD</div>
 </div>
 
+<script src="audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
@@ -79,7 +80,7 @@
   const game = {
     score:0, started:true, over:false,
     init(){ this.reset(); loop(); },
-    reset(){ this.score=0; this.over=false;
+    reset(){ this.score=0; this.over=false; Sound.fx('start');
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
@@ -104,12 +105,12 @@
     randWalk(){ let p; do{ p={x:irnd(1,this.N-2),y:irnd(1,this.N-2)} }while(this.cell(p.x,p.y)!=='.'); return p; },
     randUnique(){ let p; do{ p=this.randWalk(); }while((this.p && p.x===this.p.x&&p.y===this.p.y)||this.ch?.some(c=>c.x===p.x&&c.y===p.y)||this.en?.some(e=>e.x===p.x&&e.y===p.y)||(this.exit && p.x===this.exit.x&&p.y===this.exit.y)); return p; },
     move(dx,dy){ const nx=this.p.x+dx, ny=this.p.y+dy; if(this.cell(nx,ny)!=='.') return; this.p.x=nx; this.p.y=ny;
-      const i=this.ch.findIndex(c=>c.x===nx&&c.y===ny); if(i>=0){ this.ch.splice(i,1); this.score+=50; }
-      if(this.exit.x===nx&&this.exit.y===ny){ this.lvl++; this.map=this.gen(); this.p=this.find('.'); this.en=[]; for(let i=0;i<3+Math.min(3,this.lvl);i++) this.en.push(this.randWalk()); this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique()); this.exit=this.randUnique(); this.score+=100; }
+      const i=this.ch.findIndex(c=>c.x===nx&&c.y===ny); if(i>=0){ this.ch.splice(i,1); this.score+=50; Sound.fx('coin'); }
+      if(this.exit.x===nx&&this.exit.y===ny){ this.lvl++; this.map=this.gen(); this.p=this.find('.'); this.en=[]; for(let i=0;i<3+Math.min(3,this.lvl);i++) this.en.push(this.randWalk()); this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique()); this.exit=this.randUnique(); this.score+=100; Sound.fx('coin'); }
       for(const e of this.en){ let ex=e.x, ey=e.y; if(Math.random()<.6){ const ddx=Math.sign(this.p.x-ex), ddy=Math.sign(this.p.y-ey);
           if(Math.random()<.5 && this.cell(ex+ddx,ey)==='.') ex+=ddx; else if(this.cell(ex,ey+ddy)==='.') ey+=ddy;
         } else { const d=[[1,0],[-1,0],[0,1],[0,-1]][irnd(0,3)]; if(this.cell(ex+d[0],ey+d[1])==='.'){{ ex+=d[0]; ey+=d[1]; }}}
-        e.x=ex; e.y=ey; if(e.x===this.p.x && e.y===this.p.y){ this.hp--; if(this.hp<=0) this.over=true; }
+        e.x=ex; e.y=ey; if(e.x===this.p.x && e.y===this.p.y){ this.hp--; Sound.fx('error'); if(this.hp<=0) this.over=true; }
       }
     },
     step(dt){},
