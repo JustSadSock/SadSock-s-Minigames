@@ -98,12 +98,15 @@
 <body>
   <h1>Memory Flip</h1>
   <div id="score">Найдено пар: 0/8</div>
-  <div id="timer">Время: 0.0с</div>
+  <div id="timer"></div>
+  <div id="moves"></div>
   <div class="play">
     <div id="grid"></div>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad"><div class="k" id="startBtn">START</div></div>
   </div>
+<script src="audio.js"></script>
+<script src="ui.js"></script>
 <script>
 (function(){
   'use strict';
@@ -117,7 +120,14 @@
   const play=document.querySelector('.play');
   const toastEl=document.getElementById('toast');
   const timerEl=document.getElementById('timer');
+  const movesEl=document.getElementById('moves');
+  const showToast=UI.makeToast(toastEl);
+  const timeBoard=UI.score(timerEl,'Время');
+  const movesBoard=UI.score(movesEl,'Ходы');
   let startTime=0, penalty=0, timerId=null;
+  let moves=0;
+  let bestTime=parseFloat(localStorage.getItem('mfBestTime'))||null;
+  let bestMoves=parseInt(localStorage.getItem('mfBestMoves'))||null;
 
   function startTimer(){
     startTime=performance.now();
@@ -125,16 +135,10 @@
     clearInterval(timerId);
     timerId=setInterval(()=>{
       const t=((performance.now()-startTime)/1000)+penalty;
-      timerEl.textContent='Время: '+t.toFixed(1)+'с';
+      timeBoard.set(t.toFixed(1)+'с', bestTime!=null?bestTime.toFixed(1)+'с':null);
     },100);
   }
   function stopTimer(){clearInterval(timerId);}
-
-  function toast(text){
-    toastEl.textContent=text;
-    toastEl.style.display='block';
-    setTimeout(()=> toastEl.style.display='none',2000);
-  }
   function shuffle(array){
     for(let i=array.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -149,6 +153,9 @@
     cards=[];
     matchedCount=0;
     scoreEl.textContent='Найдено пар: 0/8';
+    moves=0;
+    timeBoard.set('0с', bestTime!=null?bestTime.toFixed(1)+'с':null);
+    movesBoard.set(0, bestMoves);
     values.forEach(val=>{
       const card=document.createElement('div');
       card.className='card';
@@ -169,6 +176,8 @@
     startBtn.disabled=true;
     gameActive=true;
     startTimer();
+    movesBoard.set(0,bestMoves);
+    Sound.fx('start');
   }
   function handleCard(card){
     if(!gameActive || card.classList.contains('open') || card.classList.contains('matched') || secondCard) return;
@@ -177,20 +186,35 @@
       firstCard=card;
     }else{
       secondCard=card;
+      moves++;
+      movesBoard.set(moves,bestMoves);
       if(firstCard.dataset.value===secondCard.dataset.value){
         firstCard.classList.add('matched');
         secondCard.classList.add('matched');
         matchedCount++;
+        Sound.fx('coin');
         scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
         firstCard=secondCard=null;
         if(matchedCount===icons.length){
           stopTimer();
           const total=((performance.now()-startTime)/1000)+penalty;
-          toast('Время: '+total.toFixed(1)+'с');
+          if(bestTime==null || total<bestTime){
+            bestTime=total;
+            localStorage.setItem('mfBestTime',bestTime);
+            showToast('Новый рекорд времени: '+total.toFixed(1)+'с');
+          }else{
+            showToast('Время: '+total.toFixed(1)+'с');
+          }
+          if(bestMoves==null || moves<bestMoves){
+            bestMoves=moves;
+            localStorage.setItem('mfBestMoves',bestMoves);
+          }
+          Sound.fx('start');
           resetGame();
         }
       }else{
         penalty+=0.5;
+        Sound.fx('error');
         setTimeout(()=>{
           hide(firstCard);
           hide(secondCard);

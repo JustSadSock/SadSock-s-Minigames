@@ -29,6 +29,7 @@
   <div class="footer">Мобильные стрелки • Клавиатура: ↑/↓, Space — рывок</div>
 </div>
 
+<script src="audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
@@ -84,7 +85,7 @@
     },
     step(dt){
       const I=Input.st;
-      if(!this.started){ if(I.a||I.b||I.up||I.down||I.left||I.right) this.started=true; else return; }
+      if(!this.started){ if(I.a||I.b||I.up||I.down||I.left||I.right){ this.started=true; Sound.fx('start'); } else return; }
       if(I.up) this.p1.y-=this.p1.s*dt;
       if(I.down) this.p1.y+=this.p1.s*dt;
       this.p1.y=clamp(this.p1.y,10,SETTINGS.H-10-this.ph);
@@ -103,10 +104,10 @@
       };
       hit(this.p1.x,this.p1.y,this.pw,this.ph,+1);
       hit(this.p2.x,this.p2.y,this.pw,this.ph,-1);
-      if(b.x<-20){ this.s2++; this.resetBall(-1); }
-      if(b.x>SETTINGS.W+20){ this.s1++; this.resetBall(+1); }
+      if(b.x<-20){ this.s2++; Sound.fx('coin'); this.resetBall(-1); }
+      if(b.x>SETTINGS.W+20){ this.s1++; Sound.fx('coin'); this.resetBall(+1); }
       this.score=Math.max(this.s1,this.s2);
-      if(this.s1>=7||this.s2>=7){ this.over=true; this.started=false; }
+      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; }
     },
     resetBall(dir){ const b=this.b; b.x=SETTINGS.W/2; b.y=SETTINGS.H/2; b.vx=dir*180; b.vy=rnd(-140,140); },
     draw(){

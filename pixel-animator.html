@@ -90,6 +90,7 @@
                 <button class="tool" id="play">▶️</button>
                 <button class="tool" id="stop">⏹</button>
                 <label class="row" style="gap:6px"><input id="onion" type="checkbox"/> Onion</label>
+                <label class="row" style="gap:6px"><input id="mirror" type="checkbox"/> Mirror</label>
               </div>
             </div>
             <div class="toolbar" id="palette" style="margin-top:8px"></div>
@@ -115,6 +116,7 @@
             <button class="tool" id="btn-export">Экспорт JSON</button>
             <button class="tool" id="btn-import">Импорт JSON</button>
             <button class="tool" id="btn-copy">Скопировать</button>
+            <button class="tool" id="btn-save">Сохранить</button>
           </div>
           <div class="row">
             <button class="tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
@@ -182,7 +184,17 @@
     }
     const val = (tool==='erase')? 0 : currentColorIndex;
     if(frames[cur][idx] !== val){
-      frames[cur][idx] = val; renderCell(x,y,val); refreshThumb(cur);
+      frames[cur][idx] = val;
+      renderCell(x,y,val);
+      if(document.getElementById('mirror').checked){
+        const mx = GRID-1-x;
+        if(mx!==x){
+          const midx = y*GRID+mx;
+          frames[cur][midx]=val;
+          renderCell(mx,y,val);
+        }
+      }
+      refreshThumb(cur);
     }
   }
   function drawChecker(ctx){
@@ -271,6 +283,8 @@
     palette = obj.palette || palette; fps = obj.fps || fps; document.getElementById('fps').value=fps;
     frames = obj.frames.map(arr=> Uint16Array.from(arr)); cur=0; rebuildPalette(); rebuildTimeline(); render();
   }
+  function saveLS(){ localStorage.setItem('ss_pixel_animator', JSON.stringify(pack())); }
+  function loadLS(){ const data=localStorage.getItem('ss_pixel_animator'); if(data){ try{unpack(JSON.parse(data));}catch(e){} } }
   document.getElementById('btn-export').onclick = ()=>{ io.value = JSON.stringify(pack()); io.scrollTop=0; };
   document.getElementById('btn-import').onclick = ()=>{ try{ const data = JSON.parse(io.value); unpack(data); }catch(e){ alert('Ошибка импорта: '+e.message); } };
   document.getElementById('btn-copy').onclick   = async()=>{ try{ await navigator.clipboard.writeText(io.value); }catch{} };
@@ -279,6 +293,8 @@
     const code = `<!-- ВСТАВЬ ЭТОТ БЛОК В САЙТ -->\n<canvas id=anim width=16 height=16 style="image-rendering:pixelated;width:100%;max-width:256px;aspect-ratio:1/1;background:#000;border-radius:8px"></canvas>\n<script>\nconst DATA = ${data};\n(function(){\n  const c=document.getElementById('anim'); const x=c.getContext('2d'); const G=DATA.grid; const L=G*G; let i=0; x.imageSmoothingEnabled=false;\n  function draw(frame){ x.clearRect(0,0,G,G); for(let p=0;p<L;p++){ const ci=frame[p]; if(!ci) continue; x.fillStyle=DATA.palette[ci]; x.fillRect(p%G,(p/G)|0,1,1); } }\n  setInterval(()=>{ const fr = Uint16Array.from(DATA.frames[i++%DATA.frames.length]); draw(fr); }, 1000/(DATA.fps||6));\n})();\n<\/script>`;
     const box = document.getElementById('embed'); box.style.display='block'; box.textContent = code;
   };
+  document.getElementById('btn-save').onclick = saveLS;
+  loadLS();
   document.getElementById('btn-record').onclick = async()=>{
     if(!('MediaRecorder' in window)) { alert('MediaRecorder не поддерживается'); return; }
     const seconds = Math.max(1, Math.ceil(frames.length / Math.max(1,fps)));

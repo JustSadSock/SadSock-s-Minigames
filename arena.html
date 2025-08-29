@@ -1,34 +1,320 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>5×5 Arena — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5×5 Arena</title>
+  <style>
+    :root {
+      --bg-color: #FAF3E0;
+      --card-bg: #FFFDE7;
+      --card-border: #E0C097;
+      --board-bg: #F5E8C7;
+      --board-border: #D8AE71;
+      --cell-bg: #FFF9C4;
+      --cell-border: #E0C097;
+      --cell-collapsed-bg: #F0B7A4;
+      --playerA-color: #4A90E2;
+      --playerB-color: #E46472;
+      --attack-color: #EF6C57;
+      --shield-color: #81C784;
+      --text-color: #3E2723;
+      --btn-bg: #FFE0B2;
+      --btn-hover: #FFD180;
+      --btn-disabled: #E0E0E0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; font-family: 'Press Start 2P', 'Courier New', monospace; }
+    body { background: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; align-items: center; }
+    button, select, input, .card { font-family: inherit; }
+    .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; width: 100%; height: 100vh; }
+    .card { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px 40px; min-width: 200px; text-align: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.15s, box-shadow 0.15s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .card:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    #gameArea { width: 100%; max-width: 480px; margin: 20px auto; position: relative; }
+    #outerFrame { background: linear-gradient(135deg, #FBE8C6, #FDDCCB); border: 6px solid var(--card-border); border-radius: 28px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 4px 8px rgba(0,0,0,0.1); width: fit-content; margin: 0 auto; }
+    #playArea { display: flex; flex-direction: column; align-items: center; background: var(--board-bg); border: none; border-radius: 16px; padding: 12px; gap: 12px; }
+    #board { display: grid; grid-template-columns: repeat(5, 60px); grid-template-rows: repeat(5, 60px); gap: 4px; margin: 0; background: var(--board-bg); border: none; border-radius: 12px; padding: 0; position: relative; }
+    .cell { width: 60px; height: 60px; background: var(--cell-bg); border: 2px solid var(--cell-border); border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 36px; user-select: none; }
+    .cell.preview-move { outline: 2px dashed var(--text-color); }
+    .cell.preview-attack { outline: 2px dashed var(--attack-color); }
+    .cell.preview-shield { outline: 2px dashed var(--shield-color); }
+    .cell.collapsed { background: var(--cell-collapsed-bg); opacity: 0.6; }
+    .token { width: 60%; height: 60%; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; }
+    .token.A { background: var(--playerA-color); }
+    .token.B { background: var(--playerB-color); }
+    .action-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; pointer-events: none; z-index: 4; animation: pop 0.5s ease-out forwards; }
+    .preview-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; pointer-events: none; z-index: 3; opacity: 0.6; }
+    @keyframes pop { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+    #ui { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 0 0 12px 12px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: none; flex-direction: column; gap: 10px; width: fit-content; margin: 0 auto; }
+    #ui.show { display: flex; }
+    #phase { text-align: center; font-size: 16px; min-height: 24px; }
+    #planCells { display: flex; justify-content: space-between; }
+    .planCell { width: 18%; height: 40px; border: 3px solid var(--card-border); background: var(--board-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    #actions { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6px; }
+    #actions button { padding: 16px; font-size: 32px; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; color: var(--text-color); }
+    #actions button[data-act="attack"] { color: var(--attack-color); }
+    #actions button[data-act="shield"] { color: var(--shield-color); }
+    #actions button:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    #actions button:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    #actions button:disabled { background: var(--btn-disabled); cursor: default; color: #999; box-shadow: none; }
+    #navButtons { display: flex; gap: 10px; justify-content: space-between; }
+    #navButtons button { flex: 1; padding: 14px; font-size: 20px; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; color: var(--text-color); }
+    #navButtons button:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    #navButtons button:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    #navButtons button:disabled { background: var(--btn-disabled); cursor: default; color: #999; box-shadow: none; }
+    #scoreboard { width: fit-content; margin: 0 auto; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px 12px 0 0; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    #scoreboard button { padding: 4px 10px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; font-size: 16px; }
+    #scoreboard button:hover { background: var(--btn-hover); }
+    #atkOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 50; }
+    #atkOverlay.show { display: flex; }
+    #atkOverlay .atkBox { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; display: grid; grid-template-areas: " . up . " " left center right" " . down . " " ok ok ok " " cancel cancel cancel"; gap: 10px; }
+    #atkOverlay button { padding: 12px; font-size: 24px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; text-align: center; }
+    #atkOverlay button.sel { background: var(--btn-hover); }
+    #atkOverlay .up { grid-area: up; }
+    #atkOverlay .down { grid-area: down; }
+    #atkOverlay .left { grid-area: left; }
+    #atkOverlay .right { grid-area: right; }
+    #atkOverlay .ok { grid-area: ok; }
+    #atkOverlay .cancel { grid-area: cancel; }
+    #atkOverlay .center { grid-area: center; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--attack-color); pointer-events: none; }
+    .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; max-width: 90%; max-height: 80%; overflow-y: auto; z-index: 60; display: none; }
+    .modal.show { display: block; }
+    .modal h2 { margin-bottom: 10px; font-size: 20px; }
+    .modal p { margin-bottom: 8px; line-height: 1.4; font-size: 14px; }
+    .modal button { margin-top: 12px; padding: 8px 12px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
+    .modal button:hover { background: var(--btn-hover); }
+    .modal label { display: block; margin-top: 10px; font-size: 14px; }
+    .modal select, .modal input[type="range"] { width: 100%; margin-top: 4px; padding: 6px; font-size: 14px; border: 2px solid var(--card-border); border-radius: 4px; background: var(--bg-color); }
+    #replayOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 70; }
+    #replayOverlay.show { display: flex; }
+    #replayControls { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
+    #replayControls button { padding: 6px 10px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
+    #replayControls button:hover { background: var(--btn-hover); }
+    #replayControls input[type="range"] { width: 100%; }
+    #speedButtons { display: flex; gap: 4px; justify-content: center; }
+    #speedButtons button.active { background: var(--btn-hover); }
+    @media (max-width: 420px) { #board { grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px); } .cell { width: 50px; height: 50px; font-size: 24px; } }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="cabinet">
-  <div class="frame">
-    <div class="inner">
-      <canvas id="cv" width="360" height="640"></canvas>
-      <div class="scanlines"></div>
-    </div>
-    <div class="pad" id="pad">
-      <div class="dpad">
-        <div class="k" data-btn="up" style="grid-area:up"></div>
-        <div class="k" data-btn="left" style="grid-area:left"></div>
-        <div class="k" style="grid-area:mid; opacity:.35"></div>
-        <div class="k" data-btn="right" style="grid-area:right"></div>
-        <div class="k" data-btn="down" style="grid-area:down"></div>
+  <div id="modeSelect" class="screen">
+    <div class="card" id="btn1p" data-i18n="singlePlayer"></div>
+    <div class="card" id="btn2p" data-i18n="twoPlayers"></div>
+    <div class="card" id="rulesBtnInitial" data-i18n="rules"></div>
+  </div>
+  <div id="difficultySelect" class="screen" style="display:none;">
+    <div class="card" data-level="easy" data-i18n="easy"></div>
+    <div class="card" data-level="medium" data-i18n="medium"></div>
+    <div class="card" data-level="hard" data-i18n="hard"></div>
+    <div class="card" data-level="expert" data-i18n="expert"></div>
+    <div class="card" data-level="insane" data-i18n="insane"></div>
+  </div>
+  <div id="gameArea" style="display:none;">
+    <div id="outerFrame">
+      <div id="playArea">
+        <div id="scoreboard">
+          <span id="scoreA">0</span> : <span id="scoreB">0</span>
+          <button id="scoreReset" data-i18n="resetScore"></button>
+          <button id="settingsBtn">⚙</button>
+          <button id="menuBtn" data-i18n="toMenu"></button>
+          <button id="btnReplay" data-i18n="replay"></button>
+        </div>
+        <div id="board"></div>
       </div>
     </div>
-    <div class="label">5×5 Arena</div>
-    <div class="hint">WIP</div>
+    <div id="ui">
+      <div id="phase"></div>
+      <div id="planCells">
+        <div id="pc0" class="planCell"></div>
+        <div id="pc1" class="planCell"></div>
+        <div id="pc2" class="planCell"></div>
+        <div id="pc3" class="planCell"></div>
+        <div id="pc4" class="planCell"></div>
+      </div>
+      <div id="actions">
+        <button data-act="up">▲</button>
+        <button data-act="down">▼</button>
+        <button data-act="left">◀</button>
+        <button data-act="right">▶</button>
+        <button data-act="attack">⚔</button>
+        <button data-act="shield">🛡</button>
+      </div>
+      <div id="navButtons">
+        <button id="btn-del" data-i18n="deleteBtn"></button>
+        <button id="btn-next" data-i18n="nextBtn"></button>
+      </div>
+    </div>
   </div>
-  <div class="footer">TODO</div>
-</div>
-<script>
-// TODO: game implementation
-</script>
+  <div id="atkOverlay"><div class="atkBox"></div></div>
+  <div id="rulesOverlay" class="modal">
+    <h2 data-i18n="rulesHeader"></h2>
+    <h3 data-i18n="rulesGeneral"></h3>
+    <p data-i18n="rulesIntro"></p>
+    <ul style="margin-left:15px;">
+      <li data-i18n="rule1"></li>
+      <li data-i18n="rule2"></li>
+      <li data-i18n="rule3"></li>
+      <li data-i18n="rule4"></li>
+      <li data-i18n="rule5"></li>
+      <li data-i18n="rule6"></li>
+      <li data-i18n="rule7"></li>
+      <li data-i18n="rule8"></li>
+    </ul>
+    <button id="rulesClose" data-i18n="close"></button>
+    <button id="rulesTutorial" data-i18n="tutorial"></button>
+  </div>
+  <div id="settingsModal" class="modal">
+    <h2>⚙</h2>
+    <label data-i18n="volume">Volume:</label>
+    <input type="range" id="volumeRange" min="0" max="1" step="0.1">
+    <label data-i18n="language">Language:</label>
+    <select id="langSelect">
+      <option value="en" data-i18n="selectEnglish">English</option>
+      <option value="ru" data-i18n="selectRussian">Русский</option>
+      <option value="uk" data-i18n="selectUkrainian">Українська</option>
+    </select>
+    <button id="settingsClose" data-i18n="close"></button>
+  </div>
+  <div id="tutorialOverlay" class="modal">
+    <h2 data-i18n="tutorial"></h2>
+    <p id="tutorialContent"></p>
+    <button id="tutorialNext" data-i18n="nextBtn"></button>
+    <button id="tutorialClose" data-i18n="close"></button>
+  </div>
+  <div id="replayOverlay">
+    <div id="replayControls">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button id="replayClose" data-i18n="close"></button>
+        <button id="replayPlay">▶</button>
+        <button id="replayPause" style="display:none;">❚❚</button>
+      </div>
+      <input type="range" id="replaySlider" min="0" max="0" value="0">
+      <div id="speedButtons">
+        <button data-speed="1">1x</button>
+        <button data-speed="2">2x</button>
+        <button data-speed="3">3x</button>
+        <button data-speed="4">4x</button>
+        <button data-speed="5">5x</button>
+      </div>
+    </div>
+  </div>
+  <div id="msgOverlay" class="modal">
+    <h2 id="msgTitle"></h2>
+    <p id="msgContent"></p>
+    <button id="msgClose" data-i18n="close"></button>
+  </div>
+  <script>
+  // Translation
+  (function(){
+    const translations={
+      en:{round:'Round',singlePlayer:'1 Player',twoPlayers:'2 Players',rules:'Rules',easy:'Easy',medium:'Medium',hard:'Hard',expert:'Expert',insane:'Insane',resetScore:'Reset',language:'Language:',volume:'Volume:',close:'Close',deleteBtn:'\u2190 Delete',nextBtn:'\u25B6 Next',executeBtn:'\u25B6 Execute',toMenu:'Menu',replay:'Replay',rulesHeader:'Game Concept and Rules',rulesGeneral:'Overview',rulesIntro:'This is a turn‑based 5×5 PvP arena for two players. Up to three rounds are played. If nobody wins, sudden death starts on the central 3×3 grid.',rule1:'Each round players pre‑plan five actions.',rule2:'Available actions are movement, one attack and one shield per round.',rule3:'An attack selects directions and hits your cell and chosen neighbours.',rule4:'The shield negates all damage for that step.',rule5:'After planning, actions execute in order for both players simultaneously.',rule6:'A player dies if struck by an attack or when stepping on collapsed cells.',rule7:'After three rounds the outer ring collapses leaving a 3×3 arena.',rule8:'If there is no winner after the last round, the match ends in a draw.',ok:'OK',cancel:'Cancel',tutorial:'Tutorial',tutorial1:'Welcome! Use arrows or buttons to move.',tutorial2:'Plan five actions including one attack and one shield.',tutorial3:'Press Confirm to execute and win.',playerA:'Player A',playerB:'Player B',plan:'Plan',playerA_wins:'Player A won!',playerB_wins:'Player B won!',bothDieDraw:'Both players died: draw.',exhaustedDraw:'Exhausted — draw.',selectEnglish:'English',selectRussian:'Русский',selectUkrainian:'Українська',internalMsg:'Internal'},
+      ru:{round:'Раунд',singlePlayer:'1 игрок',twoPlayers:'2 игрока',rules:'Правила',easy:'Легко',medium:'Средне',hard:'Сложно',expert:'Эксперт',insane:'Безумие',resetScore:'Сброс',language:'Язык:',volume:'Громкость:',close:'Закрыть',deleteBtn:'\u2190 Удалить',nextBtn:'\u25B6 Далее',executeBtn:'\u25B6 Выполнить',toMenu:'В меню',replay:'Повтор',rulesHeader:'Концепция и правила игры',rulesGeneral:'Общее',rulesIntro:'Это пошаговая PvP‑арена 5×5 для двух игроков. Игра идёт три раунда, затем в отсутствие победителя начинается «внезапная смерть» на центральной арене 3×3.',rule1:'Каждый раунд игроки заранее выбирают пять действий.',rule2:'В распоряжении перемещения, одна атака и один щит за раунд.',rule3:'Атака задаёт направления и поражает текущую и соседние клетки.',rule4:'Щит блокирует урон выбранного хода.',rule5:'После планирования действия выполняются по порядку одновременно.',rule6:'Игрок погибает от атаки или наступив на провалившуюся клетку.',rule7:'После трёх раундов края поля разрушаются, остаётся зона 3×3.',rule8:'Если победителя нет после финала, объявляется ничья.',ok:'Ок',cancel:'Отмена',tutorial:'Обучение',tutorial1:'Добро пожаловать! Используйте стрелки или кнопки для движения.',tutorial2:'Запланируйте пять действий, включая атаку и щит.',tutorial3:'Нажмите «Подтвердить», чтобы начать раунд.',playerA:'Игрок A',playerB:'Игрок B',plan:'План',playerA_wins:'Игрок A победил!',playerB_wins:'Игрок B победил!',bothDieDraw:'Смерть с обеих сторон: ничья.',exhaustedDraw:'Изнурённые — ничья.',selectEnglish:'English',selectRussian:'Русский',selectUkrainian:'Українська',internalMsg:'Внутреннее'},
+      uk:{round:'Раунд',singlePlayer:'1 гравець',twoPlayers:'2 гравці',rules:'Правила',easy:'Легко',medium:'Середньо',hard:'Важко',expert:'Експерт',insane:'Божевілля',resetScore:'Скинути',language:'Мова:',volume:'Гучність:',close:'Закрити',deleteBtn:'\u2190 Видалити',nextBtn:'\u25B6 Далі',executeBtn:'\u25B6 Виконати',toMenu:'До меню',replay:'Повторити',rulesHeader:'Концепція та правила гри',rulesGeneral:'Загальне',rulesIntro:'Це покрокова PvP‑арена 5×5 для двох гравців. Після трьох раундів за відсутності переможця починається «раптова смерть» у центрі 3×3.',rule1:'Щоразу гравці заздалегідь планують п’ять дій.',rule2:'Доступні переміщення, одна атака та один щит за раунд.',rule3:'Атака вибирає напрямки та вражає поточну й сусідні клітини.',rule4:'Щит блокує весь урон цього кроку.',rule5:'Після планування дії виконуються послідовно одночасно у обох гравців.',rule6:'Гравець гине від атаки або ступивши на зруйновану клітину.',rule7:'Після трьох раундів зовнішнє кільце зникає, залишається арена 3×3.',rule8:'Якщо переможця немає після фінального раунду, оголошується нічия.',ok:'Ок',cancel:'Скасувати',tutorial:'Навчання',tutorial1:'Ласкаво просимо! Використовуйте стрілки або кнопки для руху.',tutorial2:'Заплануйте п’ять дій, включаючи атаку та щит.',tutorial3:'Натисніть «Підтвердити», щоб розпочати раунд.',playerA:'Гравець A',playerB:'Гравець B',plan:'План',playerA_wins:'Гравець A переміг!',playerB_wins:'Гравець B переміг!',bothDieDraw:'Смерть обох гравців: нічия.',exhaustedDraw:'Виснаження — нічия.',selectEnglish:'English',selectRussian:'Русский',selectUkrainian:'Українська',internalMsg:'Внутрішнє'}
+    };
+    let currentLang=localStorage.getItem('language')||'en';
+    function t(key){return (translations[currentLang]&&translations[currentLang][key])||translations.en[key]||key;}
+    function applyTranslations(){document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n'); if(el.tagName==='OPTION'){el.textContent=t(key);}else{el.textContent=t(key);}}); document.querySelectorAll('#langSelect option').forEach(opt=>{const val=opt.value;if(val==='en')opt.textContent=t('selectEnglish'); if(val==='ru')opt.textContent=t('selectRussian'); if(val==='uk')opt.textContent=t('selectUkrainian');});}
+    function setLang(lang){if(translations[lang]){currentLang=lang;localStorage.setItem('language',lang);applyTranslations();updateUI();}}
+    window.i18n={t,applyTranslations,setLang,get lang(){return currentLang;}};
+  })();
+
+  // Main game logic
+  (function(){
+    const STEPS=5;
+    const DXY={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+    let single=false; let aiLevel='medium'; let round=1; let phase='planA';
+    let plans={A:[],B:[]};
+    let usedMove={A:new Set(),B:new Set()};
+    let usedAtkDirs={A:new Set(),B:new Set()};
+    let usedAtk={A:0,B:0};
+    let usedShield={A:0,B:0};
+    let units={A:{x:0,y:2,alive:true},B:{x:4,y:2,alive:true}};
+    let fullReset=false;
+    let previewPositions={A:{x:units.A.x,y:units.A.y},B:{x:units.B.x,y:units.B.y}};
+    let previewIcons=[];
+    let previewHighlightCells=[];
+    let score={A:0,B:0};
+    let edgesCollapsed=false;
+    let replayFrames=[]; let replayIndex=0; let replayTimer=null; let replaySpeed=1; let savedReplayFrames=[]; let isReplaying=false; let actionIcons=[];
+    const modeSel=document.getElementById('modeSelect');
+    const diffSel=document.getElementById('difficultySelect');
+    const gameArea=document.getElementById('gameArea');
+    const boardEl=document.getElementById('board');
+    const ui=document.getElementById('ui');
+    const phaseEl=document.getElementById('phase');
+    const planCells=[0,1,2,3,4].map(i=>document.getElementById('pc'+i));
+    const actions=Array.from(document.querySelectorAll('#actions button'));
+    const btnDel=document.getElementById('btn-del');
+    const btnNext=document.getElementById('btn-next');
+    const scoreA=document.getElementById('scoreA');
+    const scoreB=document.getElementById('scoreB');
+    const scoreReset=document.getElementById('scoreReset');
+    const menuBtn=document.getElementById('menuBtn');
+    const btnReplay=document.getElementById('btnReplay');
+    const atkOverlay=document.getElementById('atkOverlay');
+    const atkBox=atkOverlay.querySelector('.atkBox');
+    const rulesBtnInitial=document.getElementById('rulesBtnInitial');
+    const rulesOv=document.getElementById('rulesOverlay');
+    const msgOverlay=document.getElementById('msgOverlay');
+    const msgTitle=document.getElementById('msgTitle');
+    const msgContent=document.getElementById('msgContent');
+    const msgClose=document.getElementById('msgClose');
+    const rulesClose=document.getElementById('rulesClose');
+    const rulesTutorial=document.getElementById('rulesTutorial');
+    const settingsBtn=document.getElementById('settingsBtn');
+    const settingsModal=document.getElementById('settingsModal');
+    const settingsClose=document.getElementById('settingsClose');
+    const volumeRange=document.getElementById('volumeRange');
+    const langSelect=document.getElementById('langSelect');
+    const tutorialOv=document.getElementById('tutorialOverlay');
+    const tutorialContent=document.getElementById('tutorialContent');
+    const tutorialNext=document.getElementById('tutorialNext');
+    const tutorialClose=document.getElementById('tutorialClose');
+    const replayOverlay=document.getElementById('replayOverlay');
+    const replayClose=document.getElementById('replayClose');
+    const replayPlay=document.getElementById('replayPlay');
+    const replayPause=document.getElementById('replayPause');
+    const replaySlider=document.getElementById('replaySlider');
+    const speedButtons=document.querySelectorAll('#speedButtons button');
+    function drawBoard(){boardEl.innerHTML=''; for(let y=0;y<5;y++){for(let x=0;x<5;x++){const cell=document.createElement('div'); cell.className='cell'; cell.id=`c${x}${y}`; if(edgesCollapsed&&(x===0||x===4||y===0||y===4)) cell.classList.add('collapsed'); boardEl.appendChild(cell);}} updateUnitsOnBoard();}
+    function updateUnitsOnBoard(){document.querySelectorAll('.token').forEach(tok=>tok.remove()); ['A','B'].forEach(p=>{const u=units[p]; if(!u.alive) return; const cell=document.getElementById('c'+u.x+u.y); if(cell){const tok=document.createElement('div'); tok.className='token '+p; tok.textContent=p; cell.appendChild(tok);}});}
+    function resetRound(){plans={A:[],B:[]}; usedMove={A:new Set(),B:new Set()}; usedAtkDirs={A:new Set(),B:new Set()}; usedAtk={A:0,B:0}; usedShield={A:0,B:0}; if(fullReset){units={A:{x:0,y:2,alive:true},B:{x:4,y:2,alive:true}}; edgesCollapsed=false; fullReset=false;} replayFrames=[]; replayIndex=0; clearActionIcons(); clearPreviewIcons(); drawBoard(); phase='planA'; updateUI(); initPreviewPositions();}
+    function startGame(){modeSel.style.display='none'; diffSel.style.display='none'; gameArea.style.display='block'; ui.classList.add('show'); round=1; score={A:0,B:0}; updateScore(); fullReset=true; resetRound(); initPreviewPositions();}
+    function updateScore(){scoreA.textContent=score.A; scoreB.textContent=score.B;}
+    function recordAction(player,action){const plan=plans[player]; if(plan.length>=STEPS) return; if(typeof action==='string'){if(action==='shield'){if(usedShield[player]>=1) return; usedShield[player]++; plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;} if(DXY[action]){if(usedAtkDirs[player].has(action)) return; usedMove[player].add(action); plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;}} else if(typeof action==='object'){if(usedAtk[player]>=1) return; for(const d of action.dirs){if(usedMove[player].has(d)||usedAtkDirs[player].has(d)) return;} usedAtk[player]++; action.dirs.forEach(d=>usedAtkDirs[player].add(d)); plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;}}
+    function deleteLast(){const player=(phase==='planA')?'A':'B'; const plan=plans[player]; if(!plan.length) return; const a=plan.pop(); if(typeof a==='string'){if(a==='shield') usedShield[player]--; if(DXY[a]){const hasOther=plan.some(item=>item===a); if(!hasOther) usedMove[player].delete(a);}} else {usedAtk[player]--; a.dirs.forEach(d=>usedAtkDirs[player].delete(d));} drawPlan(player); updateUI(); updatePreviewIcons(player);}
+    function drawPlan(player){const plan=plans[player]; for(let i=0;i<STEPS;i++){const cell=planCells[i]; const act=plan[i]; if(!cell) continue; if(!act){cell.textContent=''; continue;} if(typeof act==='string'){cell.textContent={up:'▲',down:'▼',left:'◀',right:'▶',shield:'🛡'}[act]||'';} else {cell.textContent='⚔';}}}
+    function hidePlanCells(){planCells.forEach(cell=>{cell.textContent='';});}
+    function clearActionIcons(){actionIcons.forEach(el=>el.remove()); actionIcons=[];}
+    function initPreviewPositions(){previewPositions.A={x:units.A.x,y:units.A.y}; previewPositions.B={x:units.B.x,y:units.B.y};}
+    function clearPreviewIcons(){previewIcons.forEach(el=>el.remove()); previewIcons=[]; previewHighlightCells.forEach(cell=>{cell.classList.remove('preview-move','preview-attack','preview-shield');}); previewHighlightCells=[];}
+    function addPreviewIcon(x,y,char,color){const cell=document.getElementById('c'+x+y); if(!cell) return; const span=document.createElement('span'); span.className='preview-icon'; span.textContent=char; if(color) span.style.color=color; cell.appendChild(span); previewIcons.push(span);}
+    function addPreviewHighlight(x,y,type){const cell=document.getElementById('c'+x+y); if(!cell) return; const cls=type==='move'?'preview-move':type==='attack'?'preview-attack':'preview-shield'; if(!cell.classList.contains(cls)){cell.classList.add(cls); previewHighlightCells.push(cell);}}
+    function updatePreviewIcons(player){clearPreviewIcons(); let px=units[player].x; let py=units[player].y; const plan=plans[player]; plan.forEach(act=>{if(typeof act==='string'&&DXY[act]){const dx=DXY[act][0],dy=DXY[act][1]; px=Math.max(0,Math.min(4,px+dx)); py=Math.max(0,Math.min(4,py+dy)); const char={up:'▲',down:'▼',left:'◀',right:'▶'}[act]||''; addPreviewHighlight(px,py,'move'); addPreviewIcon(px,py,char);} else if(typeof act==='object'){act.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=px+dx,ty=py+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const char={up:'▲',down:'▼',left:'◀',right:'▶'}[d]||''; addPreviewHighlight(tx,ty,'attack'); addPreviewIcon(tx,ty,char,varToRGB('--attack-color'));}}); addPreviewHighlight(px,py,'attack'); addPreviewIcon(px,py,'⚔',varToRGB('--attack-color'));} else if(typeof act==='string'&&act==='shield'){addPreviewHighlight(px,py,'shield'); addPreviewIcon(px,py,'🛡',varToRGB('--shield-color'));}}); previewPositions[player]={x:px,y:py};}
+    function showMessage(text){msgTitle.textContent=i18n.t('internalMsg'); msgContent.textContent=text; msgOverlay.classList.add('show');}
+    if(msgClose){msgClose.onclick=()=>{msgOverlay.classList.remove('show');};}
+    function addActionIcon(x,y,char,color){const cell=document.getElementById('c'+x+y); if(!cell) return; const span=document.createElement('span'); span.className='action-icon'; span.textContent=char; if(color) span.style.color=color; cell.appendChild(span); actionIcons.push(span);}
+    function updateUI(){if(!phaseEl) return; if(phase==='planA'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerA')||'A');} else if(phase==='planB'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerB')||'B');} else if(phase==='execute'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('executeBtn');} if(phase==='planA'){btnNext.textContent=i18n.t('nextBtn');} else if(phase==='planB'){btnNext.textContent=i18n.t('executeBtn');} else {btnNext.textContent=i18n.t('nextBtn');} const currentPlan=(phase==='planA')?plans.A:plans.B; if(phase==='planA'&&single){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planB'){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planA'){btnNext.disabled=currentPlan.length<STEPS;} else {btnNext.disabled=false;} btnDel.disabled=!currentPlan.length;}
+    function executePlans(){let step=0; function stepExec(){if(step>=STEPS){endRound(); return;} const actA=plans.A[step]||null; const actB=plans.B[step]||null; const shieldA=(actA==='shield'); const shieldB=(actB==='shield'); applyMove(units.A,actA); applyMove(units.B,actB); if(actA&&typeof actA==='object'&&units.A.alive){applyAttack(units.A,actA.dirs,units.B,shieldB);} if(actB&&typeof actB==='object'&&units.B.alive){applyAttack(units.B,actB.dirs,units.A,shieldA);} if(round>=4&&step===1&&!edgesCollapsed){collapseEdges();} recordFrame(actA,actB); updateUnitsOnBoard(); clearActionIcons(); if(actA){if(typeof actA==='string'){if(actA==='shield'){addActionIcon(units.A.x,units.A.y,'🛡',varToRGB('--shield-color'));} else if(DXY[actA]){const icon={up:'▲',down:'▼',left:'◀',right:'▶'}[actA]; addActionIcon(units.A.x,units.A.y,icon);}} else {addActionIcon(units.A.x,units.A.y,'⚔',varToRGB('--attack-color')); actA.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=units.A.x+dx,ty=units.A.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});}} if(actB){if(typeof actB==='string'){if(actB==='shield'){addActionIcon(units.B.x,units.B.y,'🛡',varToRGB('--shield-color'));} else if(DXY[actB]){const iconB={up:'▲',down:'▼',left:'◀',right:'▶'}[actB]; addActionIcon(units.B.x,units.B.y,iconB);}} else {addActionIcon(units.B.x,units.B.y,'⚔',varToRGB('--attack-color')); actB.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=units.B.x+dx,ty=units.B.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});}} const outcome=getOutcome(); step++; if(outcome){endRound(outcome); return;} setTimeout(stepExec,500);} stepExec();}
+    function applyMove(unit,action){if(!unit.alive) return; if(typeof action==='string'&&DXY[action]){const dx=DXY[action][0],dy=DXY[action][1]; unit.x=Math.max(0,Math.min(4,unit.x+dx)); unit.y=Math.max(0,Math.min(4,unit.y+dy)); if(edgesCollapsed&&(unit.x===0||unit.x===4||unit.y===0||unit.y===4)) unit.alive=false;}}
+    function applyAttack(attacker,dirs,opponent,opponentShield){const ax=attacker.x,ay=attacker.y; if(!opponentShield&&opponent.alive&&opponent.x===ax&&opponent.y===ay) opponent.alive=false; dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const nx=ax+dx,ny=ay+dy; if(nx<0||nx>4||ny<0||ny>4) return; if(!opponentShield&&opponent.alive&&opponent.x===nx&&opponent.y===ny) opponent.alive=false;});}
+    function collapseEdges(){edgesCollapsed=true; for(let y=0;y<5;y++){for(let x=0;x<5;x++){if(x===0||x===4||y===0||y===4){const cell=document.getElementById('c'+x+y); if(cell) cell.classList.add('collapsed');}}}}
+    function getOutcome(){if(!units.A.alive&&!units.B.alive) return 'draw'; if(!units.A.alive) return 'B'; if(!units.B.alive) return 'A'; return null;}
+    function endRound(outcome){if(outcome==='A') score.A++; if(outcome==='B') score.B++; updateScore(); let message; if(outcome==='draw') message=i18n.t('bothDieDraw'); else if(!outcome) message=i18n.t('exhaustedDraw'); else message=(outcome==='A')?i18n.t('playerA_wins'):i18n.t('playerB_wins'); let showMsg=false; if(outcome==='A'||outcome==='B'||outcome==='draw') showMsg=true; else if(round===4) showMsg=true; if(showMsg){showMessage(message);} savedReplayFrames=replayFrames.slice(); round++; if(round>4){round=1; fullReset=true;} resetRound();}
+    function recordFrame(actA=null,actB=null){const frame={A:{x:units.A.x,y:units.A.y,alive:units.A.alive},B:{x:units.B.x,y:units.B.y,alive:units.B.alive},edges:edgesCollapsed,actions:{A:actA? (typeof actA==='object'?{dirs:actA.dirs.slice()}:actA):null,B:actB? (typeof actB==='object'?{dirs:actB.dirs.slice()}:actB):null}}; replayFrames.push(frame); replaySlider.max=replayFrames.length-1;}
+    function openAttack(player){atkBox.innerHTML=''; let tmp=[]; const center=document.createElement('div'); center.className='center'; center.textContent='⚔'; atkBox.appendChild(center); ['up','left','right','down'].forEach(dir=>{if(usedMove[player].has(dir)||usedAtkDirs[player].has(dir)) return; const btn=document.createElement('button'); btn.textContent={up:'▲',down:'▼',left:'◀',right:'▶'}[dir]; btn.classList.add(dir); btn.onclick=()=>{if(tmp.includes(dir)){tmp=tmp.filter(d=>d!==dir); btn.classList.remove('sel');} else {tmp.push(dir); btn.classList.add('sel');}}; atkBox.appendChild(btn);}); const okBtn=document.createElement('button'); okBtn.textContent=i18n.t('ok'); okBtn.className='ok'; okBtn.onclick=()=>{recordAction(player,{dirs:tmp.slice()}); atkOverlay.classList.remove('show');}; atkBox.appendChild(okBtn); const cancelBtn=document.createElement('button'); cancelBtn.textContent=i18n.t('cancel'); cancelBtn.className='cancel'; cancelBtn.onclick=()=>{atkOverlay.classList.remove('show');}; atkBox.appendChild(cancelBtn); atkOverlay.classList.add('show');}
+    function aiPlan(){const plan=[]; let shieldUsed=false; let attackUsed=false; const usedMoveAI=new Set(); const usedAtkDirAI=new Set(); let px=units.B.x; let py=units.B.y; for(let i=0;i<STEPS;i++){const dx=units.A.x-px; const dy=units.A.y-py; let desiredAttack=null; let desiredMove=null; if(!attackUsed && Math.abs(dx)+Math.abs(dy)<=2){const dirs=[]; if(dy<0) dirs.push('up'); if(dy>0) dirs.push('down'); if(dx<0) dirs.push('left'); if(dx>0) dirs.push('right'); if(dirs.length===0) dirs.push('up'); desiredAttack={dirs:dirs};} if(Math.abs(dx)+Math.abs(dy)>0){ if(Math.abs(dx)>Math.abs(dy)) desiredMove=(dx>0?'right':'left'); else desiredMove=(dy>0?'down':'up'); } let chosen=null; if(desiredAttack&&!attackUsed){let valid=true; for(const d of desiredAttack.dirs){if(usedMoveAI.has(d)||usedAtkDirAI.has(d)) {valid=false; break;}} if(valid){chosen=desiredAttack;}} if(!chosen && desiredMove){ if(usedAtkDirAI.has(desiredMove)){const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); if(available.length>0) desiredMove=available[Math.floor(Math.random()*available.length)]; } chosen=desiredMove;} if(!chosen){ if(!shieldUsed){chosen='shield'; shieldUsed=true;} else {const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); chosen=available[Math.floor(Math.random()*available.length)];}} plan.push(chosen); if(typeof chosen==='string'){ if(DXY[chosen]){usedMoveAI.add(chosen); px=Math.max(0,Math.min(4,px+DXY[chosen][0])); py=Math.max(0,Math.min(4,py+DXY[chosen][1]));}} else if(typeof chosen==='object'){attackUsed=true; for(const d of chosen.dirs) usedAtkDirAI.add(d);} } plans.B=plan;}
+    function bindUI(){actions.forEach(btn=>{btn.onclick=()=>{if(phase!=='planA'&&phase!=='planB') return; const player=(phase==='planA')?'A':'B'; const act=btn.dataset.act; if(act==='attack') openAttack(player); else recordAction(player,act);};}); btnDel.onclick=deleteLast; btnNext.onclick=()=>{if(phase==='planA'){if(plans.A.length<STEPS) return; if(single){clearPreviewIcons(); aiPlan(); phase='execute'; updateUI(); executePlans();} else {clearPreviewIcons(); hidePlanCells(); phase='planB'; updateUI(); initPreviewPositions();}} else if(phase==='planB'){if(plans.B.length<STEPS) return; clearPreviewIcons(); phase='execute'; updateUI(); executePlans();}}; document.getElementById('btn1p').onclick=()=>{single=true; modeSel.style.display='none'; diffSel.style.display='flex';}; document.getElementById('btn2p').onclick=()=>{single=false; startGame();}; Array.from(diffSel.querySelectorAll('.card')).forEach(card=>{card.onclick=()=>{aiLevel=card.dataset.level; startGame();};}); rulesBtnInitial.onclick=()=>{rulesOv.classList.add('show');}; rulesClose.onclick=()=>{rulesOv.classList.remove('show');}; let tutorialIndex=0; const tutorialScript=['tutorial1','tutorial2','tutorial3']; function showTutorial(){tutorialContent.textContent=i18n.t(tutorialScript[tutorialIndex]); tutorialOv.classList.add('show');} rulesTutorial.onclick=()=>{rulesOv.classList.remove('show'); tutorialIndex=0; showTutorial();}; tutorialNext.onclick=()=>{tutorialIndex++; if(tutorialIndex<tutorialScript.length){showTutorial();} else {tutorialOv.classList.remove('show'); single=true; startGame();}}; tutorialClose.onclick=()=>{tutorialOv.classList.remove('show');}; settingsBtn.onclick=()=>{settingsModal.classList.add('show'); volumeRange.value=localStorage.getItem('volume')||1; langSelect.value=i18n.lang;}; settingsClose.onclick=()=>{settingsModal.classList.remove('show');}; menuBtn.onclick=()=>{location.reload();}; scoreReset.onclick=()=>{score={A:0,B:0}; updateScore();}; volumeRange.oninput=()=>{localStorage.setItem('volume',volumeRange.value);}; langSelect.onchange=()=>{i18n.setLang(langSelect.value);}; btnReplay.onclick=()=>{const frames=(savedReplayFrames&&savedReplayFrames.length)?savedReplayFrames:replayFrames; if(!frames||!frames.length) return; replayFrames=frames.slice(); isReplaying=true; replayOverlay.classList.add('show'); replayIndex=0; replaySlider.value=0; replaySlider.max=replayFrames.length-1; replayPlay.style.display='inline-block'; replayPause.style.display='none'; renderReplayFrame(0);}; replayClose.onclick=()=>{stopReplay();}; replayPlay.onclick=()=>{startReplay();}; replayPause.onclick=()=>{pauseReplay();}; replaySlider.oninput=e=>{pauseReplay(); renderReplayFrame(parseInt(e.target.value));}; speedButtons.forEach(btn=>{btn.onclick=()=>{speedButtons.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); replaySpeed=parseInt(btn.dataset.speed); if(isReplaying){startReplay();}};});}
+    function renderReplayFrame(index){if(index<0||index>=replayFrames.length) return; replayIndex=index; replaySlider.value=index; const frame=replayFrames[index]; edgesCollapsed=frame.edges; drawBoard(); units.A.x=frame.A.x; units.A.y=frame.A.y; units.A.alive=frame.A.alive; units.B.x=frame.B.x; units.B.y=frame.B.y; units.B.alive=frame.B.alive; updateUnitsOnBoard(); clearActionIcons(); if(frame.actions){const actA=frame.actions.A; const actB=frame.actions.B; if(actA){if(typeof actA==='string'){if(actA==='shield') addActionIcon(frame.A.x,frame.A.y,'🛡',varToRGB('--shield-color')); else if(DXY[actA]){const iconA={up:'▲',down:'▼',left:'◀',right:'▶'}[actA]; addActionIcon(frame.A.x,frame.A.y,iconA);}} else {addActionIcon(frame.A.x,frame.A.y,'⚔',varToRGB('--attack-color')); actA.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=frame.A.x+dx,ty=frame.A.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});} } if(actB){if(typeof actB==='string'){if(actB==='shield') addActionIcon(frame.B.x,frame.B.y,'🛡',varToRGB('--shield-color')); else if(DXY[actB]){const iconB={up:'▲',down:'▼',left:'◀',right:'▶'}[actB]; addActionIcon(frame.B.x,frame.B.y,iconB);}} else {addActionIcon(frame.B.x,frame.B.y,'⚔',varToRGB('--attack-color')); actB.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=frame.B.x+dx,ty=frame.B.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});} }} }
+    function startReplay(){pauseReplay(); replayPlay.style.display='none'; replayPause.style.display='inline-block'; replayTimer=setInterval(()=>{if(replayIndex>=replayFrames.length-1){pauseReplay(); return;} replayIndex++; renderReplayFrame(replayIndex);},600/replaySpeed);}
+    function pauseReplay(){if(replayTimer) clearInterval(replayTimer); replayTimer=null; replayPlay.style.display='inline-block'; replayPause.style.display='none';}
+    function stopReplay(){pauseReplay(); replayOverlay.classList.remove('show'); isReplaying=false; drawBoard(); updateUnitsOnBoard();}
+    i18n.applyTranslations();
+    bindUI();
+    langSelect.value=i18n.lang;
+  })();
+  </script>
 </body>
 </html>

@@ -74,6 +74,7 @@
       <button class="k" data-dir="right">►</button>
     </div>
   </div>
+  <script src="audio.js"></script>
   <script>
   (function(){
     'use strict';
@@ -137,12 +138,13 @@
         o.y+=o.vy;
       }
       objects = objects.filter(o=>{
-        if(o.y>canvas.height){ score++; scoreEl.textContent='Счёт: '+score; return false; }
+        if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreEl.textContent='Счёт: '+score; return false; }
         return true;
       });
       for(const o of objects){
         if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){
           running=false;
+          Sound.fx('error');
           toast('Счёт: '+score);
           resetGame();
           break;
@@ -198,6 +200,7 @@
       btn.addEventListener('mouseleave',off);
     });
     startBtn.addEventListener('click',()=>{
+      Sound.fx('start');
       resetGame();
       running=true;
       requestAnimationFrame(update);
