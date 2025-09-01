@@ -68,6 +68,7 @@
   <h1>Retro Breakout</h1>
   <div id="score">Счёт: 0</div>
   <div id="lives">Жизни: 3</div>
+  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
   <div class="play">
     <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
@@ -79,6 +80,7 @@
   </div>
   <script src="src/audio.js"></script>
   <script src="src/ui.js"></script>
+  <script src="src/scores.js"></script>
   <script>
   (function(){
     'use strict';
@@ -97,6 +99,8 @@
     const pad=document.getElementById('pad');
     const showToast=UI.makeToast(toastEl);
     const scoreBoard=UI.score(scoreEl,'Счёт');
+    const scores=Scores('breakout');
+    document.getElementById('scoresBtn').onclick=scores.show;
     let left=false,right=false;
     let best=Number(localStorage.getItem('breakoutBest')||0);
     const styles=getComputedStyle(document.documentElement);
@@ -169,8 +173,8 @@
         else {
           Sound.fx('error');
           gameRunning=false;
-          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast('Новый рекорд: '+score);}
-          else {showToast('Счёт: '+score);}
+          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast('Новый рекорд: '+score);}else{showToast('Счёт: '+score);}
+          scores.add(score);
           return;
         }
       }

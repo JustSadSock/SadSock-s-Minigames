@@ -223,6 +223,7 @@
             <button class="btn" id="exportJSON">↥ Export JSON</button>
             <button class="btn" id="exportCode">↥ Export as Code</button>
             <button class="btn" id="copyOut">Copy</button>
+            <button class="btn" id="saveFile">Save file</button>
           </div>
           <textarea id="out" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
         </div>
@@ -232,6 +233,7 @@
             <button class="btn" id="importPlay">Play imported</button>
             <button class="btn" id="loadIntoEditor">Load into editor</button>
             <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
+            <button class="btn" id="loadFile">Load file</button>
           </div>
           <textarea id="inp" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
         </div>
@@ -530,6 +532,10 @@ function stop(){if(t){clearInterval(t);t=null}} return {start:st, stop, play:(x)
 $('exportJSON').onclick=()=>{$('out').value=JSON.stringify(toSongData(),null,2);};
 $('exportCode').onclick=()=>{$('out').value=buildSnippet(toSongData());};
 $('copyOut').onclick=()=>{navigator.clipboard.writeText($('out').value||'').catch(()=>{});};
+$('saveFile').onclick=()=>{
+  const blob=new Blob([JSON.stringify(toSongData(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='song.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
 
 const msg=$('msg');
 function notify(text){
@@ -563,6 +569,11 @@ function loadSongDataIntoState(data){
 $('importPlay').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); start();};
 $('loadIntoEditor').onclick=()=>{const d=parseImported($('inp').value); if(!d) return; loadSongDataIntoState(d); notify('Загружено в редактор.');};
 $('pasteBtn').onclick=async()=>{ try{$('inp').value=await navigator.clipboard.readText();}catch(e){notify('Clipboard недоступен');} };
+$('loadFile').onclick=()=>{
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+  inp.onchange=e=>{const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{const d=parseImported(ev.target.result); if(d){loadSongDataIntoState(d); notify('Загружено из файла');}}; r.readAsText(f);};
+  inp.click();
+};
 
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;

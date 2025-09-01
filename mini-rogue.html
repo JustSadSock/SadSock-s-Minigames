@@ -12,6 +12,7 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
@@ -33,11 +34,14 @@
 </div>
 
 <script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('rogue');
+  d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
@@ -80,7 +84,7 @@
   const game = {
     score:0, started:true, over:false,
     init(){ this.reset(); addEventListener('keydown',e=>this.onKey(e)); loop(); },
-    reset(){ this.score=0; this.over=false; Sound.fx('start');
+    reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
@@ -136,9 +140,10 @@
       ctx.restore();
     }
   };
-  let last=performance.now();
+  let last=performance.now(), recorded=false;
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+    game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
+    game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
   game.init();
 
 

@@ -12,6 +12,7 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
@@ -30,11 +31,14 @@
 </div>
 
 <script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('pong');
+  d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
@@ -107,7 +111,7 @@
       if(b.x<-20){ this.s2++; Sound.fx('coin'); this.resetBall(-1); }
       if(b.x>SETTINGS.W+20){ this.s1++; Sound.fx('coin'); this.resetBall(+1); }
       this.score=Math.max(this.s1,this.s2);
-      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; }
+      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; scores.add(this.score); }
     },
     resetBall(dir){ const b=this.b; b.x=SETTINGS.W/2; b.y=SETTINGS.H/2; b.vx=dir*180; b.vy=rnd(-140,140); },
     draw(){

@@ -12,6 +12,7 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
@@ -28,11 +29,14 @@
 </div>
 
 <script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('tower');
+  d('#scoresBtn').onclick=scores.show;
   const widthRange=d('#widthRange');
   const ctx=cv.getContext('2d');
   let best=parseInt(localStorage.getItem('towerBest')||'0',10);
@@ -103,7 +107,7 @@
         a.vy+=this.g*dt; a.y+=a.vy*dt;
         if(a.y>=this.prev.y-20){
           const L=Math.max(a.x,this.prev.x), R=Math.min(a.x+a.w,this.prev.x+this.prev.w), ov=R-L;
-          if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } return; }
+          if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } scores.add(this.score); return; }
           this.layers.push({...this.prev});
           this.prev={x:L,w:ov,y:a.y+20,fixed:true};
           this.active={x:this.prev.x-60,w:this.prev.w,y:this.prev.y-20,dir:+1,vy:0,falling:false};

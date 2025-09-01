@@ -100,6 +100,7 @@
   <div id="score">Найдено пар: 0/8</div>
   <div id="timer"></div>
   <div id="moves"></div>
+  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
   <div class="play">
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
@@ -107,6 +108,7 @@
   </div>
 <script src="src/audio.js"></script>
 <script src="src/ui.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (function(){
   'use strict';
@@ -124,6 +126,8 @@
   const showToast=UI.makeToast(toastEl);
   const timeBoard=UI.score(timerEl,'Время');
   const movesBoard=UI.score(movesEl,'Ходы');
+  const scores=Scores('memory',{cmp:'asc',format:s=>s.toFixed(1)+'с'});
+  document.getElementById('scoresBtn').onclick=scores.show;
   let startTime=0, penalty=0, timerId=null;
   let moves=0;
   let bestTime=parseFloat(localStorage.getItem('mfBestTime'))||null;
@@ -211,6 +215,7 @@
           }else{
             showToast('Время: '+total.toFixed(1)+'с');
           }
+          scores.add(total);
           if(bestMoves==null || moves<bestMoves){
             bestMoves=moves;
             localStorage.setItem('mfBestMoves',bestMoves);

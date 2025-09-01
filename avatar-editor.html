@@ -80,6 +80,8 @@
     <input id="nick" type="text" placeholder="Ник" style="flex:1;padding:8px;border:2px solid var(--bezel);border-radius:8px;background:var(--paper);font-weight:600;">
     <button id="saveBtn" class="btn">OK</button>
     <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
+    <button id="exportJson" class="btn" title="Экспорт JSON">JSON↥</button>
+    <button id="importJson" class="btn" title="Импорт JSON">JSON↧</button>
   </div>
       </div>
     </div>
@@ -341,6 +343,26 @@ document.getElementById('dlBtn').onclick = ()=>{
   a.href=off.toDataURL();
   a.download=(nickInput.value||'avatar')+'.png';
   a.click();
+};
+document.getElementById('exportJson').onclick = ()=>{
+  const data = JSON.stringify(state);
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(data);
+  a.download=(nickInput.value||'avatar')+'.json';
+  a.click();
+};
+document.getElementById('importJson').onclick = ()=>{
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='application/json';
+  inp.onchange=e=>{
+    const f=e.target.files[0];
+    if(!f) return;
+    const r=new FileReader();
+    r.onload=ev=>{ try{ state=JSON.parse(ev.target.result); render(); }catch(err){ alert('Ошибка импорта'); } };
+    r.readAsText(f);
+  };
+  inp.click();
 };
 setInterval(render, 1000);
 </script>
