@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Dodge Rain</title>
-  <link rel="stylesheet" href="shell.css">
+  <title data-i18n="dodgeRain"></title>
+  <link rel="stylesheet" href="styles/shell.css">
   <style>
     :root{
       --bg0:var(--bg);
@@ -65,16 +65,18 @@
 <body>
   <h1>Dodge Rain</h1>
   <div id="score">Счёт: 0</div>
+  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
   <div class="play">
-    <canvas id="gameCanvas" width="120" height="160"></canvas>
+    <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
-      <button class="k" data-dir="left">◄</button>
-      <button class="k" id="startBtn">START</button>
-      <button class="k" data-dir="right">►</button>
+      <button class="k" data-dir="left" aria-label="Влево">◄</button>
+      <button class="k" id="startBtn" aria-label="Начать игру">START</button>
+      <button class="k" data-dir="right" aria-label="Вправо">►</button>
     </div>
   </div>
-  <script src="audio.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/scores.js"></script>
   <script>
   (function(){
     'use strict';
@@ -88,6 +90,8 @@
     const header=document.querySelector('h1');
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
+    const scores=Scores('rain');
+    document.getElementById('scoresBtn').onclick=scores.show;
     let left=false,right=false;
 
     function toast(text){
@@ -146,6 +150,7 @@
           running=false;
           Sound.fx('error');
           toast('Счёт: '+score);
+          scores.add(score);
           resetGame();
           break;
         }
@@ -209,6 +214,7 @@
     resetGame();
   })();
   </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>
 

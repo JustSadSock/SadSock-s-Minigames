@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>SadSock Pixel Animator — 16×16</title>
+<title data-i18n="pixelAnimator"></title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -52,12 +52,23 @@
   label{font-size:12px;color:var(--muted);font-weight:700}
   input[type="range"]{width:160px}
   .timeline{display:flex;gap:8px;overflow:auto;padding:6px}
+  details.accordion>summary{cursor:pointer;list-style:none}
+  details.accordion>summary::-webkit-details-marker{display:none}
   .thumb{position:relative;min-width:56px;min-height:56px;background:#f7e5c6;border:2px solid #e9c38e;border-radius:10px;display:grid;place-items:center;cursor:pointer}
   .thumb canvas{image-rendering:pixelated;border-radius:6px}
   .thumb.active{outline:3px solid var(--amber)}
   .thumb .num{position:absolute;left:6px;top:4px;background:#0004;color:#fff;font-size:10px;padding:2px 4px;border-radius:6px}
   textarea{width:100%;min-height:220px;resize:vertical;background:#121212;color:#c1f2b0;border:2px solid #28342a;border-radius:12px;padding:10px;font-family:ui-monospace,monospace}
   .codeBox{background:#0c0f12;color:#cbe4ff;border:2px solid #2a405b;border-radius:12px;padding:10px;overflow:auto;max-height:220px}
+
+  @media (max-width:600px){
+    .workspace{grid-template-columns:1fr;grid-template-rows:1fr auto}
+    .tools{max-height:50vh;overflow:auto}
+  }
+
+  @media (min-width:601px){
+    details.accordion>summary{display:none}
+  }
 </style>
 </head>
 <body>
@@ -72,7 +83,7 @@
         <div class="panel screen">
           <div class="canvasWrap">
             <div id="square" class="square">
-              <canvas id="paint" width="16" height="16"></canvas>
+              <canvas id="paint" width="16" height="16" tabindex="0" aria-label="Поле рисования"></canvas>
             </div>
           </div>
         </div>
@@ -104,10 +115,10 @@
               <div class="muted">Текущий: <span id="curIndex">1</span>/<span id="totalFrames">1</span></div>
             </div>
           </div>
-          <div class="panel">
-            <strong style="display:block;margin-bottom:6px">Кадры</strong>
+          <details class="panel accordion" open>
+            <summary style="display:block;margin-bottom:6px">Кадры</summary>
             <div id="timeline" class="timeline"></div>
-          </div>
+          </details>
         </div>
       </section>
       <section id="tab-io" class="panel" style="display:none">
@@ -117,6 +128,9 @@
             <button class="tool" id="btn-import">Импорт JSON</button>
             <button class="tool" id="btn-copy">Скопировать</button>
             <button class="tool" id="btn-save">Сохранить</button>
+            <button class="tool" id="btn-download">Скачать файл</button>
+            <button class="tool" id="btn-upload">Загрузить файл</button>
+            <button class="tool" id="btn-png">PNG</button>
           </div>
           <div class="row">
             <button class="tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
@@ -133,6 +147,9 @@
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;
+  document.querySelectorAll('details.accordion').forEach(d=>{
+    if(window.matchMedia('(max-width:600px)').matches) d.removeAttribute('open');
+  });
   let fps = 6;
   let palette = [null, "#000000", "#ffffff", "#4aa9ff", "#ff4757", "#ffd166", "#06d6a0", "#8338ec", "#ff99c8", "#8d99ae", "#2b2d42"];
   let currentColorIndex = 3;
@@ -294,6 +311,21 @@
     const box = document.getElementById('embed'); box.style.display='block'; box.textContent = code;
   };
   document.getElementById('btn-save').onclick = saveLS;
+  document.getElementById('btn-download').onclick = ()=>{
+    const blob=new Blob([JSON.stringify(pack(),null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='anim.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  document.getElementById('btn-upload').onclick = ()=>{
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+    inp.onchange=e=>{const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{unpack(JSON.parse(ev.target.result));}catch(err){alert('Ошибка импорта');} }; r.readAsText(f);};
+    inp.click();
+  };
+  document.getElementById('btn-png').onclick = ()=>{
+    const cols=frames.length; const cv=document.createElement('canvas'); cv.width=GRID*cols; cv.height=GRID; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+    for(let i=0;i<cols;i++){ const fr=frames[i]; for(let p=0;p<LEN;p++){ const ci=fr[p]; if(!ci) continue; ctx.fillStyle=palette[ci]; ctx.fillRect(i*GRID+(p%GRID), ((p/GRID)|0), 1,1); }}
+    const a=document.createElement('a'); a.href=cv.toDataURL(); a.download='anim.png'; a.click();
+  };
   loadLS();
   document.getElementById('btn-record').onclick = async()=>{
     if(!('MediaRecorder' in window)) { alert('MediaRecorder не поддерживается'); return; }
@@ -317,5 +349,6 @@
   }));
 })();
 </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

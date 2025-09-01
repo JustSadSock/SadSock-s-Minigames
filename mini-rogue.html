@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Mini‑Rogue — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<title data-i18n="miniRogue"></title>
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -12,12 +12,13 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
-    <div class="pad" id="pad">
+    <div class="pad" id="pad" aria-hidden="true">
       <div class="dpad">
         <div class="k" data-btn="up" style="grid-area:up"></div>
         <div class="k" data-btn="left" style="grid-area:left"></div>
@@ -32,12 +33,15 @@
   <div class="footer">Мобильный D‑pad • Клавиатура: стрелки/WSAD</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('rogue');
+  d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
@@ -79,19 +83,19 @@
   
   const game = {
     score:0, started:true, over:false,
-    init(){ this.reset(); loop(); },
-    reset(){ this.score=0; this.over=false; Sound.fx('start');
+    init(){ this.reset(); addEventListener('keydown',e=>this.onKey(e)); loop(); },
+    reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
       this.exit=this.randUnique();
-      addEventListener('keydown',e=>{ if(this.over) return;
-        if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
-        if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
-        if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
-        if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
-        if(e.key===' '||e.key==='f') this.attack();
-      });
+    },
+    onKey(e){ if(this.over) return;
+      if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
+      if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
+      if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
+      if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
+      if(e.key===' '||e.key==='f') this.attack();
     },
     cell(x,y){ return this.map[y]?.[x]; },
     gen(){ const N=this.N; let m; let reachable=0; const target=Math.floor(N*N*.42);
@@ -136,13 +140,15 @@
       ctx.restore();
     }
   };
-  let last=performance.now();
+  let last=performance.now(), recorded=false;
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+    game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
+    game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
   game.init();
 
 
 })();
 </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

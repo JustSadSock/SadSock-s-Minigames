@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Avatar 16×16 — simple editor</title>
-<link rel="stylesheet" href="shell.css">
+<title data-i18n="avatarEditor"></title>
+<link rel="stylesheet" href="styles/shell.css">
 <style>
   :root{
     --bezel:#ddb65a; --panel:#f6f0d9; --paper:#fff6dc; --shadow:#caa263; --ink:#3b2a1b;
@@ -68,7 +68,7 @@
     <div class="inner" style="display:flex;align-items:center;justify-content:center;">
       <div class="editor">
   <div class="stage">
-    <canvas id="cv" width="16" height="16"></canvas>
+    <canvas id="cv" width="16" height="16" tabindex="0" aria-label="Редактор аватара"></canvas>
     <div class="gesture" id="gesture"></div>
   </div>
 
@@ -80,6 +80,8 @@
     <input id="nick" type="text" placeholder="Ник" style="flex:1;padding:8px;border:2px solid var(--bezel);border-radius:8px;background:var(--paper);font-weight:600;">
     <button id="saveBtn" class="btn">OK</button>
     <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
+    <button id="exportJson" class="btn" title="Экспорт JSON">JSON↥</button>
+    <button id="importJson" class="btn" title="Импорт JSON">JSON↧</button>
   </div>
       </div>
     </div>
@@ -342,7 +344,28 @@ document.getElementById('dlBtn').onclick = ()=>{
   a.download=(nickInput.value||'avatar')+'.png';
   a.click();
 };
+document.getElementById('exportJson').onclick = ()=>{
+  const data = JSON.stringify(state);
+  const a=document.createElement('a');
+  a.href='data:application/json,'+encodeURIComponent(data);
+  a.download=(nickInput.value||'avatar')+'.json';
+  a.click();
+};
+document.getElementById('importJson').onclick = ()=>{
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='application/json';
+  inp.onchange=e=>{
+    const f=e.target.files[0];
+    if(!f) return;
+    const r=new FileReader();
+    r.onload=ev=>{ try{ state=JSON.parse(ev.target.result); render(); }catch(err){ alert('Ошибка импорта'); } };
+    r.readAsText(f);
+  };
+  inp.click();
+};
 setInterval(render, 1000);
 </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

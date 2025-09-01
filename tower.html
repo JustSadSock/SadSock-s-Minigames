@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Башня — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<title data-i18n="tower"></title>
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -12,27 +12,31 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
-      <div class="k" data-btn="a" style="width:40vw;max-width:160px;"></div>
+      <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;"></button>
     </div>
-    <input type="range" id="widthRange" min="30" max="80" value="60" style="margin-top:8px;width:60%;">
+    <input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Ширина башни" style="margin-top:8px;width:60%;">
     <div class="label">Башня</div>
     <div class="hint">Жми A, чтобы уронить блок.</div>
   </div>
   <div class="footer">Кнопка A • Клавиатура: пробел</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('tower');
+  d('#scoresBtn').onclick=scores.show;
   const widthRange=d('#widthRange');
   const ctx=cv.getContext('2d');
   let best=parseInt(localStorage.getItem('towerBest')||'0',10);
@@ -103,7 +107,7 @@
         a.vy+=this.g*dt; a.y+=a.vy*dt;
         if(a.y>=this.prev.y-20){
           const L=Math.max(a.x,this.prev.x), R=Math.min(a.x+a.w,this.prev.x+this.prev.w), ov=R-L;
-          if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } return; }
+          if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } scores.add(this.score); return; }
           this.layers.push({...this.prev});
           this.prev={x:L,w:ov,y:a.y+20,fixed:true};
           this.active={x:this.prev.x-60,w:this.prev.w,y:this.prev.y-20,dir:+1,vy:0,falling:false};
@@ -130,5 +134,6 @@
 
 })();
 </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

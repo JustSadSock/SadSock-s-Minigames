@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Ритм — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<title data-i18n="rhythm"></title>
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -12,12 +12,13 @@
     <div class="inner">
       <div class="hud">
         <div class="pill" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
-    <div class="pad" id="pad">
+    <div class="pad" id="pad" aria-hidden="true">
       <div class="k" data-btn="a"></div>
       <div class="k" data-btn="b"></div>
       <div class="k" data-btn="left"></div>
@@ -29,12 +30,15 @@
   <div class="footer">Мобильные A/S/K/L • Клавиатура: A/S/K/L</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/scores.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scores=Scores('rhythm');
+  d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
@@ -100,7 +104,7 @@
       if(!this.started){ if(I.a||I.b||I.left||I.right){ this.started=true; Sound.fx('start'); } else return; }
       for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); } }
       if(I.a) this.tryHit(0); if(I.b) this.tryHit(1); if(I.left) this.tryHit(2); if(I.right) this.tryHit(3);
-      if(this.notes.every(n=>n.hit)){ this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('rhythmBest',best); } }
+      if(this.notes.every(n=>n.hit)){ this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('rhythmBest',best); } scores.add(this.score); }
     },
     draw(){
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
@@ -125,5 +129,6 @@
 
 })();
 </script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>
