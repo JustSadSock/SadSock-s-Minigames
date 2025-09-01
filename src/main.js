@@ -1,6 +1,7 @@
 import './audio.js';
 import './icons.js';
-import { setLang, getLang, t } from './i18n.js';
+import { t } from './i18n.js';
+import { initSettings } from './settings.js';
 
 (function(){
       'use strict';
@@ -9,13 +10,7 @@ import { setLang, getLang, t } from './i18n.js';
       const nickDisplay = $('#nickDisplay');
       const avatarCanvas = $('#avatarCanvas');
       const avatarBtn = $('#avatarBtn');
-      const settingsBtn = $('#settingsBtn');
-      const settingsMenu = $('#settingsMenu');
       const avatarOverlay = $('#avatarOverlay');
-      const volumeSlider = $('#volume');
-      const fullscreenBtn = $('#fullscreenBtn');
-      const settingsOk = $('#settingsOk');
-      const langSelect = $('#langSelect');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const indicator = $('.indicator');
@@ -30,7 +25,7 @@ import { setLang, getLang, t } from './i18n.js';
         document.body.appendChild(iframe);
         preloaded[src]=iframe;
       });
-      const DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
+      let DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
       addEventListener('dblclick', e=> e.preventDefault(), {passive:false});
@@ -79,38 +74,7 @@ import { setLang, getLang, t } from './i18n.js';
       avatarOverlay.addEventListener('click', e=>{ if(e.target===avatarOverlay) avatarOverlay.classList.remove('show'); });
       window.addEventListener('message', e=>{ if(e.data && e.data.type==='avatarSaved'){ avatarOverlay.classList.remove('show'); loadProfile(); } });
 
-      settingsBtn.addEventListener('click',()=>{
-        const show = settingsMenu.classList.toggle('show');
-        if(show){
-          volumeSlider.value = Sound.getVolume();
-          if(langSelect) langSelect.value = getLang();
-        }
-        Sound.fx(show?'open':'close');
-      });
-      settingsOk.addEventListener('click',()=>{
-        settingsMenu.classList.remove('show');
-        Sound.fx('select');
-      });
-      const savedVolume = localStorage.getItem('volume');
-      if(savedVolume!==null){ Sound.setVolume(parseFloat(savedVolume)); }
-      volumeSlider.value = Sound.getVolume();
-      volumeSlider.addEventListener('input',e=>{
-        Sound.setVolume(parseFloat(e.target.value));
-        localStorage.setItem('volume', e.target.value);
-      });
-      if(langSelect){
-        langSelect.addEventListener('change', e=>{
-          setLang(e.target.value);
-        });
-      }
-      fullscreenBtn.addEventListener('click',()=>{
-        if(!document.fullscreenElement){
-          document.documentElement.requestFullscreen();
-        }else{
-          document.exitFullscreen();
-        }
-        Sound.fx('option');
-      });
+      initSettings(ms=>{ DUR = ms; });
 
       // инициализация 4 значков
       const items=[];
@@ -223,6 +187,7 @@ import { setLang, getLang, t } from './i18n.js';
             frac = 0;
             snapping = false;
             render();
+            focusTile();
           }
         }
         requestAnimationFrame(step);
@@ -233,6 +198,7 @@ import { setLang, getLang, t } from './i18n.js';
       function moveH(dir){
         colIdx = dir === 'right' ? (colIdx + 1) % cols : (colIdx - 1 + cols) % cols;
         render();
+        focusTile();
         Sound.fx('move');
       }
 
@@ -284,7 +250,13 @@ import { setLang, getLang, t } from './i18n.js';
         });
       });
 
+      function focusTile(){
+        const idx = (Math.round(index)%rows)*cols + colIdx;
+        tiles[idx]?.focus();
+      }
+
       recalcSteps();
+      focusTile();
       addEventListener('resize', ()=> requestAnimationFrame(recalcSteps));
 
       function selectCurrent(){

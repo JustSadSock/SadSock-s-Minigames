@@ -82,17 +82,7 @@ if(!/id="settingsBtn"/.test(html)){
   throw new Error('Settings button missing');
 }
 
-if(!/id="settingsMenu"/.test(html)){
-  throw new Error('Settings menu missing');
-}
-
-if(!/id="volume"/.test(html)){
-  throw new Error('Volume slider missing');
-}
-
-if(!/id="fullscreenBtn"/.test(html)){
-  throw new Error('Fullscreen button missing');
-}
+// Settings UI is now injected dynamically, so only the button remains in HTML.
 
 if(!/width:320px/.test(css)){
   throw new Error('Menu width not expanded');
