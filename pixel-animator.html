@@ -177,7 +177,17 @@
         <div id="embed" class="codeBox" style="display:none"></div>
       </section>
     </div>
+    <div id="pad" class="pad">
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid; opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
+    </div>
   </div>
+<script src="src/ui.js"></script>
 <script>
 (function(){
   const GRID = 16;
@@ -319,7 +329,10 @@
     highlightThumb(); updateCounters();
   }
   function highlightThumb(){ timeline.querySelectorAll('.thumb').forEach((t,idx)=>{ t.classList.toggle('active', idx===cur); }); }
+  function stepFrame(d){ cur=Math.max(0,Math.min(frames.length-1,cur+d)); highlightThumb(); updateCounters(); render(); }
   rebuildTimeline();
+  const pad=document.getElementById('pad');
+  UI.attachDPad(pad,dir=>{ if(dir==='left') stepFrame(-1); else if(dir==='right') stepFrame(1); });
   document.getElementById('add-frame').onclick = ()=>{ frames.push(new Uint16Array(LEN)); cur = frames.length-1; pushHistory(); rebuildTimeline(); render(); };
   document.getElementById('dup-frame').onclick = ()=>{ const dup = new Uint16Array(frames[cur]); frames.splice(cur+1,0,dup); cur++; rebuildTimeline(); render(); };
   document.getElementById('del-frame').onclick = ()=>{ if(frames.length>1){ frames.splice(cur,1); cur=Math.max(0,cur-1); rebuildTimeline(); render(); } };
