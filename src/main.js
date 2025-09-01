@@ -84,13 +84,16 @@ import { initSettings } from './settings.js';
         ctx.imageSmoothingEnabled = false;
         items.push({ctx, name: drawers[i%drawers.length]});
       });
-      let frame=0;
-      function animateIcons(){
-        frame++;
-        items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
+      let frame=0,last=0;
+      function animateIcons(t){
+        if(t-last>1000/12){
+          frame++;
+          items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
+          last=t;
+        }
         requestAnimationFrame(animateIcons);
       }
-      animateIcons();
+      requestAnimationFrame(animateIcons);
 
       /* ---------- Барабан и навигация ---------- */
       const total = tiles.length;

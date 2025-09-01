@@ -3,21 +3,37 @@
   const S=1;                   // базовый пиксель для 16×16 иконок
   const cache={};              // кэш готовых кадров для оптимизации
 
-  function baseFromPattern(pattern,palette){
+  function baseFromPattern(pattern,palette,scale){
     const rows=pattern.trim().split('\n');
     const pts=[];
     rows.forEach((row,y)=>{
       row.split('').forEach((ch,x)=>{
         const col=palette[ch];
-        if(col) pts.push({c:col,x:x+8,y:y+8});
+        if(col){
+          for(let sy=0;sy<scale;sy++){
+            for(let sx=0;sx<scale;sx++){
+              pts.push({c:col,x:x*scale+sx,y:y*scale+sy});
+            }
+          }
+        }
       });
     });
     return pts;
   }
 
   function makeFrames(pattern,palette,hlColor,highlights){
-    const base=baseFromPattern(pattern,palette);
-    return highlights.map(([hx,hy])=> base.concat({c:hlColor,x:hx+8,y:hy+8}));
+    const rows=pattern.trim().split('\n');
+    const scale=Math.floor(16/rows.length) || 1;
+    const base=baseFromPattern(pattern,palette,scale);
+    return highlights.map(([hx,hy])=>{
+      const frame=base.slice();
+      for(let sy=0;sy<scale;sy++){
+        for(let sx=0;sx<scale;sx++){
+          frame.push({c:hlColor,x:hx*scale+sx,y:hy*scale+sy});
+        }
+      }
+      return frame;
+    });
   }
 
   const heart1=[
@@ -827,6 +843,9 @@ OOOOO
     const img=set[frame%set.length];
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
     ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
+    const twX=frame%16, twY=((frame/16)|0)%16;
+    ctx.fillStyle='#fff';
+    ctx.fillRect(twX,twY,1,1);
   }
 
   window.Icons={draw};
