@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "SadSock’s playground",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "node test/test.js",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
   }
 }

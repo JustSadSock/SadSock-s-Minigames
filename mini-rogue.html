@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Mini‑Rogue — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -14,10 +14,10 @@
         <div class="pill" id="score">Score: 0</div>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
-    <div class="pad" id="pad">
+    <div class="pad" id="pad" aria-hidden="true">
       <div class="dpad">
         <div class="k" data-btn="up" style="grid-area:up"></div>
         <div class="k" data-btn="left" style="grid-area:left"></div>
@@ -32,7 +32,7 @@
   <div class="footer">Мобильный D‑pad • Клавиатура: стрелки/WSAD</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
@@ -79,19 +79,19 @@
   
   const game = {
     score:0, started:true, over:false,
-    init(){ this.reset(); loop(); },
+    init(){ this.reset(); addEventListener('keydown',e=>this.onKey(e)); loop(); },
     reset(){ this.score=0; this.over=false; Sound.fx('start');
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
       this.exit=this.randUnique();
-      addEventListener('keydown',e=>{ if(this.over) return;
-        if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
-        if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
-        if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
-        if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
-        if(e.key===' '||e.key==='f') this.attack();
-      });
+    },
+    onKey(e){ if(this.over) return;
+      if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
+      if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
+      if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
+      if(e.key==='ArrowDown'||e.key==='s') this.move(0,1);
+      if(e.key===' '||e.key==='f') this.attack();
     },
     cell(x,y){ return this.map[y]?.[x]; },
     gen(){ const N=this.N; let m; let reachable=0; const target=Math.floor(N*N*.42);

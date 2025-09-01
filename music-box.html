@@ -66,6 +66,11 @@
     background:var(--cream-2); border:1px solid #e3c17a; color:var(--sub)
   }
   .pill input[type="range"]{width:130px}
+  details.opts>summary{cursor:pointer; list-style:none}
+  details.opts>summary::-webkit-details-marker{display:none}
+  details.opts>.right{display:flex}
+  details.accordion>summary{list-style:none; cursor:pointer}
+  details.accordion>summary::-webkit-details-marker{display:none}
 
   .tabs{display:flex; gap:8px; padding:6px}
   .tabs button{flex:1; border:1px solid #e0ba75; background:var(--cream-2)}
@@ -102,6 +107,18 @@
 
   textarea{width:100%; min-height:170px; background:var(--cream); border:1px solid #e3c17a; border-radius:12px}
 
+  @media (max-width:600px){
+    .transport{flex-direction:column; align-items:flex-start}
+    .transport .left{width:100%; justify-content:center}
+    details.opts{width:100%}
+    details.opts>.right{margin-top:8px}
+    .panel.accordion{margin-bottom:10px}
+  }
+
+  @media (min-width:601px){
+    details.opts>summary{display:none}
+  }
+
   @media (min-width:900px){
     .panel.two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   }
@@ -134,20 +151,23 @@
             <button id="stopBtn" class="btn">■ Stop</button>
             <button id="clearBtn" class="btn">✖ Clear</button>
           </div>
-          <div class="right">
-            <div class="pill">BPM
-              <input type="range" id="bpm" min="60" max="200" value="120"><b id="bpmv">120</b>
+          <details class="opts" open>
+            <summary class="pill">⚙ Options</summary>
+            <div class="right">
+              <div class="pill">BPM
+                <input type="range" id="bpm" min="60" max="200" value="120"><b id="bpmv">120</b>
+              </div>
+              <label class="pill">Root
+                <select id="root"></select>
+              </label>
+              <label class="pill">Scale
+                <select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select>
+              </label>
+              <label class="pill">Steps
+                <select id="steps"><option>8</option><option selected>16</option><option>32</option></select>
+              </label>
             </div>
-            <label class="pill">Root
-              <select id="root"></select>
-            </label>
-            <label class="pill">Scale
-              <select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select>
-            </label>
-            <label class="pill">Steps
-              <select id="steps"><option>8</option><option selected>16</option><option>32</option></select>
-            </label>
-          </div>
+          </details>
         </div>
         <div class="tabs">
           <button class="active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
@@ -190,10 +210,10 @@
         </div>
 
         <!-- Барабаны в той же колонке -->
-        <div class="panel">
-          <div class="row"><strong>Drums</strong><span style="color:#86694b">Ряды: Kick • Snare • Hat</span></div>
+        <details class="panel accordion" open>
+          <summary class="row"><strong>Drums</strong><span style="color:#86694b">Ряды: Kick • Snare • Hat</span></summary>
           <div class="grid drums" id="drumGrid" style="--cols:16; --rows:3"></div>
-        </div>
+        </details>
       </div>
 
       <div class="section" id="code">
@@ -243,6 +263,9 @@
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const $ = (id)=>document.getElementById(id);
 NOTES.forEach(n=>$('root').add(new Option(n,n))); $('root').value="C";
+document.querySelectorAll('details.accordion, details.opts').forEach(d=>{
+  if(window.matchMedia('(max-width:600px)').matches) d.removeAttribute('open');
+});
 
 const state = {
   bpm: 120, steps: 16,

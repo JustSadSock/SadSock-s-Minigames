@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Memory Flip</title>
-  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="styles/shell.css">
   <style>
     :root{
       --bg0:var(--bg);
@@ -101,12 +101,12 @@
   <div id="timer"></div>
   <div id="moves"></div>
   <div class="play">
-    <div id="grid"></div>
-    <div id="toast" class="toast"></div>
-    <div id="pad" class="pad"><div class="k" id="startBtn">START</div></div>
+    <div id="grid" role="grid"></div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <div id="pad" class="pad"><button class="k" id="startBtn" aria-label="Начать игру">START</button></div>
   </div>
-<script src="audio.js"></script>
-<script src="ui.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/ui.js"></script>
 <script>
 (function(){
   'use strict';
@@ -162,6 +162,12 @@
       card.dataset.value=val;
       card.innerHTML='<div class="card-inner"><div class="face front"></div><div class="face back">'+val+'</div></div>';
       card.addEventListener('click',()=>handleCard(card));
+      card.tabIndex=0;
+      card.setAttribute('role','button');
+      card.setAttribute('aria-label','Карта');
+      card.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleCard(card); }
+      });
       grid.appendChild(card);
       cards.push(card);
     });

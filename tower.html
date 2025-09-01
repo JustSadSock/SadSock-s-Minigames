@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Башня — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -14,20 +14,20 @@
         <div class="pill" id="score">Score: 0</div>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
-      <div class="k" data-btn="a" style="width:40vw;max-width:160px;"></div>
+      <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;"></button>
     </div>
-    <input type="range" id="widthRange" min="30" max="80" value="60" style="margin-top:8px;width:60%;">
+    <input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Ширина башни" style="margin-top:8px;width:60%;">
     <div class="label">Башня</div>
     <div class="hint">Жми A, чтобы уронить блок.</div>
   </div>
   <div class="footer">Кнопка A • Клавиатура: пробел</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };

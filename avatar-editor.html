@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Avatar 16×16 — simple editor</title>
-<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="styles/shell.css">
 <style>
   :root{
     --bezel:#ddb65a; --panel:#f6f0d9; --paper:#fff6dc; --shadow:#caa263; --ink:#3b2a1b;
@@ -68,7 +68,7 @@
     <div class="inner" style="display:flex;align-items:center;justify-content:center;">
       <div class="editor">
   <div class="stage">
-    <canvas id="cv" width="16" height="16"></canvas>
+    <canvas id="cv" width="16" height="16" tabindex="0" aria-label="Редактор аватара"></canvas>
     <div class="gesture" id="gesture"></div>
   </div>
 

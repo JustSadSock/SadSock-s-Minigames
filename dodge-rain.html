@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Dodge Rain</title>
-  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="styles/shell.css">
   <style>
     :root{
       --bg0:var(--bg);
@@ -66,15 +66,15 @@
   <h1>Dodge Rain</h1>
   <div id="score">Счёт: 0</div>
   <div class="play">
-    <canvas id="gameCanvas" width="120" height="160"></canvas>
+    <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
-      <button class="k" data-dir="left">◄</button>
-      <button class="k" id="startBtn">START</button>
-      <button class="k" data-dir="right">►</button>
+      <button class="k" data-dir="left" aria-label="Влево">◄</button>
+      <button class="k" id="startBtn" aria-label="Начать игру">START</button>
+      <button class="k" data-dir="right" aria-label="Вправо">►</button>
     </div>
   </div>
-  <script src="audio.js"></script>
+  <script src="src/audio.js"></script>
   <script>
   (function(){
     'use strict';

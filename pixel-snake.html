@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Pixel Snake</title>
-  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="styles/shell.css">
   <style>
     :root{
       --bg0:var(--bg);
@@ -69,10 +69,10 @@
   <div id="score">Счёт: 0</div>
   <input id="colorPick" type="color" title="Цвет змейки" style="width:36px;height:36px;border:none;background:none;padding:0">
   <div class="play">
-    <canvas id="gameCanvas" width="120" height="160"></canvas>
+    <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
-      <div class="dpad">
+      <div class="dpad" aria-hidden="true">
         <div class="k" data-dir="up" style="grid-area:up">▲</div>
         <div class="k" data-dir="left" style="grid-area:left">◄</div>
         <div class="k" style="grid-area:mid; opacity:.35"></div>
@@ -80,12 +80,12 @@
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
       <div class="ab">
-        <div class="k" id="startBtn">START</div>
+        <button class="k" id="startBtn" aria-label="Начать игру">START</button>
       </div>
     </div>
   </div>
-  <script src="ui.js"></script>
-  <script src="audio.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/audio.js"></script>
   <script>
   (function(){
     'use strict';

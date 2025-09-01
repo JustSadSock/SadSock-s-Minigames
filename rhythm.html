@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Ритм — SadSock’s playground</title>
-<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="styles/shell.css">
 </head>
 <body>
 <div class="cabinet">
@@ -14,10 +14,10 @@
         <div class="pill" id="score">Score: 0</div>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
     </div>
-    <div class="pad" id="pad">
+    <div class="pad" id="pad" aria-hidden="true">
       <div class="k" data-btn="a"></div>
       <div class="k" data-btn="b"></div>
       <div class="k" data-btn="left"></div>
@@ -29,7 +29,7 @@
   <div class="footer">Мобильные A/S/K/L • Клавиатура: A/S/K/L</div>
 </div>
 
-<script src="audio.js"></script>
+<script src="src/audio.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
