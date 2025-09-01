@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
@@ -16,75 +16,83 @@
       <div class="bezel">
         <div class="screen">
       <header class="topbar">
-            <button class="avatar" id="avatarBtn" aria-label="Профиль">
+            <button class="avatar" id="avatarBtn" data-i18n-aria-label="profile">
               <canvas id="avatarCanvas" width="48" height="48"></canvas>
             </button>
-            <h2 class="title">SadSock’s playground</h2>
+            <h2 class="title" data-i18n="title"></h2>
             <div class="topright">
-              <span id="nickDisplay">Player</span>
-              <button class="avatar" id="settingsBtn" aria-label="Настройки">
+              <span id="nickDisplay" data-i18n="player">Player</span>
+              <button class="avatar" id="settingsBtn" data-i18n-aria-label="settings">
                 <canvas id="settingsCanvas" width="32" height="32"></canvas>
               </button>
             </div>
           </header>
-          <div class="reel" role="listbox" aria-label="Меню">
-              <button class="tile" role="option" data-idx="0" data-color="#ff9eb8" data-game="music-box.html" aria-label="Music Box" title="Music Box — compose chiptune loops">
+          <div class="reel" role="listbox" data-i18n-aria-label="menu">
+              <button class="tile" role="option" data-idx="0" data-color="#ff9eb8" data-game="music-box.html" data-i18n-aria-label="musicBox" data-i18n-title="musicBoxDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Music Box</span>
-            </button>
-              <button class="tile" role="option" data-idx="1" data-color="#00d9b8" data-game="pixel-snake.html" aria-label="Pixel Snake" title="Pixel Snake — eat apples and grow">
+              <span class="label" data-i18n="musicBox"></span>
+              </button>
+              <button class="tile" role="option" data-idx="1" data-color="#00d9b8" data-game="pixel-snake.html" data-i18n-aria-label="pixelSnake" data-i18n-title="pixelSnakeDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Pixel Snake</span>
-            </button>
-              <button class="tile" role="option" data-idx="2" data-color="#46a0ff" data-game="memory-flip.html" aria-label="Memory Flip" title="Memory Flip — match all the pairs">
+              <span class="label" data-i18n="pixelSnake"></span>
+              </button>
+              <button class="tile" role="option" data-idx="2" data-color="#46a0ff" data-game="memory-flip.html" data-i18n-aria-label="memoryFlip" data-i18n-title="memoryFlipDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Memory Flip</span>
-            </button>
-              <button class="tile" role="option" data-idx="3" data-color="#ffca3a" data-game="dodge-rain.html" aria-label="Dodge Rain" title="Dodge Rain — avoid falling drops">
+              <span class="label" data-i18n="memoryFlip"></span>
+              </button>
+              <button class="tile" role="option" data-idx="3" data-color="#ffca3a" data-game="dodge-rain.html" data-i18n-aria-label="dodgeRain" data-i18n-title="dodgeRainDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Dodge Rain</span>
-            </button>
-              <button class="tile" role="option" data-idx="4" data-color="#ff5f9c" data-game="retro-breakout.html" aria-label="Retro Breakout" title="Retro Breakout — smash bricks with a paddle">
+              <span class="label" data-i18n="dodgeRain"></span>
+              </button>
+              <button class="tile" role="option" data-idx="4" data-color="#ff5f9c" data-game="retro-breakout.html" data-i18n-aria-label="retroBreakout" data-i18n-title="retroBreakoutDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Retro Breakout</span>
-            </button>
-              <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" aria-label="Pixel Animator" title="Pixel Animator — draw frame by frame">
+              <span class="label" data-i18n="retroBreakout"></span>
+              </button>
+              <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" data-i18n-aria-label="pixelAnimator" data-i18n-title="pixelAnimatorDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Pixel Animator</span>
-            </button>
-              <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" aria-label="Mini-Rogue" title="Mini-Rogue — explore a tiny dungeon">
+              <span class="label" data-i18n="pixelAnimator"></span>
+              </button>
+              <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" data-i18n-aria-label="miniRogue" data-i18n-title="miniRogueDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Mini-Rogue</span>
-            </button>
-              <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" aria-label="Pixel Pong" title="Pixel Pong — paddle battle vs AI">
+              <span class="label" data-i18n="miniRogue"></span>
+              </button>
+              <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" data-i18n-aria-label="pixelPong" data-i18n-title="pixelPongDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Pixel Pong</span>
-            </button>
-              <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" aria-label="Rhythm" title="Rhythm — hit notes in time">
+              <span class="label" data-i18n="pixelPong"></span>
+              </button>
+              <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" data-i18n-aria-label="rhythm" data-i18n-title="rhythmDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Rhythm</span>
-            </button>
-              <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" aria-label="Tower" title="Tower — stack blocks to build high">
+              <span class="label" data-i18n="rhythm"></span>
+              </button>
+              <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" data-i18n-aria-label="tower" data-i18n-title="towerDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">Tower</span>
-            </button>
-              <button class="tile" role="option" data-idx="10" data-color="#81c784" data-game="arena.html" aria-label="5x5 Arena" title="5x5 Arena — plan moves on a tiny grid">
+              <span class="label" data-i18n="tower"></span>
+              </button>
+              <button class="tile" role="option" data-idx="10" data-color="#81c784" data-game="arena.html" data-i18n-aria-label="arena" data-i18n-title="arenaDesc">
               <canvas width="120" height="120" aria-hidden="true"></canvas>
-              <span class="label">5x5 Arena</span>
-            </button>
+              <span class="label" data-i18n="arena"></span>
+              </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
           <div id="avatarOverlay" class="avatar-overlay"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
-          <div id="settingsMenu" class="menu" role="dialog" aria-label="Настройки">
+          <div id="settingsMenu" class="menu" role="dialog" data-i18n-aria-label="settings">
             <div class="row wide">
-              <span>Громкость:</span>
-              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" aria-label="Громкость" />
+              <span data-i18n="volume"></span>
+              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" data-i18n-aria-label="volume" />
             </div>
             <div class="row wide">
-              <span>Экран:</span>
-              <button id="fullscreenBtn" class="pbtn" aria-label="Полноэкранный режим">Полноэкранно</button>
+              <span data-i18n="screen"></span>
+              <button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen"></button>
             </div>
-          <div style="text-align:center"><button id="settingsOk" class="pbtn" aria-label="Закрыть настройки">OK</button></div>
+            <div class="row wide">
+              <label for="langSelect" data-i18n="language"></label>
+              <select id="langSelect">
+                <option value="en" data-i18n="selectEnglish">English</option>
+                <option value="ru" data-i18n="selectRussian">Русский</option>
+                <option value="uk" data-i18n="selectUkrainian">Українська</option>
+              </select>
+            </div>
+          <div style="text-align:center"><button id="settingsOk" class="pbtn" data-i18n="ok" data-i18n-aria-label="close"></button></div>
           </div>
           <div id="gameOverlay" class="game-overlay"></div>
           <div class="scanlines" aria-hidden="true"></div>

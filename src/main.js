@@ -1,5 +1,6 @@
 import './audio.js';
 import './icons.js';
+import { setLang, getLang, t } from './i18n.js';
 
 (function(){
       'use strict';
@@ -14,6 +15,7 @@ import './icons.js';
       const volumeSlider = $('#volume');
       const fullscreenBtn = $('#fullscreenBtn');
       const settingsOk = $('#settingsOk');
+      const langSelect = $('#langSelect');
       const reel = $('.reel');
       const tiles = $$('.reel .tile');
       const indicator = $('.indicator');
@@ -70,7 +72,7 @@ import './icons.js';
         }else{
           ctx.clearRect(0,0,48,48);
         }
-        nickDisplay.textContent = localStorage.getItem('profileNick') || 'Player';
+        nickDisplay.textContent = localStorage.getItem('profileNick') || t('player');
       }
       avatarBtn.addEventListener('click',()=>{ avatarOverlay.classList.add('show'); });
       loadProfile();
@@ -79,7 +81,10 @@ import './icons.js';
 
       settingsBtn.addEventListener('click',()=>{
         const show = settingsMenu.classList.toggle('show');
-        if(show){ volumeSlider.value = Sound.getVolume(); }
+        if(show){
+          volumeSlider.value = Sound.getVolume();
+          if(langSelect) langSelect.value = getLang();
+        }
         Sound.fx(show?'open':'close');
       });
       settingsOk.addEventListener('click',()=>{
@@ -93,6 +98,11 @@ import './icons.js';
         Sound.setVolume(parseFloat(e.target.value));
         localStorage.setItem('volume', e.target.value);
       });
+      if(langSelect){
+        langSelect.addEventListener('change', e=>{
+          setLang(e.target.value);
+        });
+      }
       fullscreenBtn.addEventListener('click',()=>{
         if(!document.fullscreenElement){
           document.documentElement.requestFullscreen();
