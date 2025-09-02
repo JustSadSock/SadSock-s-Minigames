@@ -66,15 +66,15 @@
 </head>
 <body>
   <h1>Retro Breakout</h1>
-  <div id="score">Счёт: 0</div>
-  <div id="lives">Жизни: 3</div>
-  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
+  <div id="score" class="pill">Счёт: 0</div>
+  <div id="lives" class="pill">Жизни: 3</div>
+  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
   <div class="play">
     <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
       <button class="k" data-dir="left" aria-label="Влево">◄</button>
-      <button class="k" id="startBtn" aria-label="Начать игру">START</button>
+      <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
       <button class="k" data-dir="right" aria-label="Вправо">►</button>
     </div>
   </div>

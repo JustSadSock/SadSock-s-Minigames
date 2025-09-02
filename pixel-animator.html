@@ -26,9 +26,7 @@
   .scan::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#0000 96%,rgba(0,0,0,.08) 100%);background-size:100% 3px;mix-blend-mode:multiply;opacity:.35;}
   .content{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;gap:10px;}
   .tabs{display:flex;gap:10px;align-self:center}
-  .tabBtn{background:var(--tile-bg);border:2px solid var(--bezel);color:var(--ink);padding:10px 14px;border-radius:8px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--bezel-lo);transform:translateY(0);transition:transform .05s;}
-  .tabBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--bezel-lo)}
-  .tabBtn.active{outline:2px solid var(--amber);}
+  .tab.active{outline:2px solid var(--amber);}
   .workspace{flex:1;min-height:0;display:grid;grid-template-columns:1fr;grid-template-rows:1fr auto;gap:10px}
   @media (min-width:940px){.workspace{grid-template-columns:minmax(320px,1fr) 420px;grid-template-rows:1fr}}
   .panel{position:relative;background:var(--panel);border-radius:14px;padding:10px;box-shadow:0 6px 0 var(--panel-deep),inset 0 0 0 2px var(--bezel-hi);min-height:0}
@@ -42,30 +40,14 @@
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .chip{width:26px;height:26px;border:2px solid #543;border-radius:6px;box-shadow:inset 0 0 0 2px #fff6;cursor:pointer}
   .chip[selected]{outline:3px solid var(--accent)}
-  .tool{background:var(--tile-bg);border:2px solid var(--bezel);border-radius:8px;padding:8px 10px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--bezel-lo)}
-  .tool:active{transform:translateY(2px);box-shadow:0 1px 0 var(--bezel-lo)}
-  .tool[data-danger]{border-color:#e09a9a;box-shadow:0 3px 0 #c27979}
+  .tool{padding:8px 10px;}
+  .tool[data-danger]{--btn-border:#e09a9a;--btn-shadow:#c27979;}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .muted{color:var(--muted)}
   label{font-size:12px;color:var(--muted);font-weight:700}
   input,button,select,textarea{font-family:'Press Start 2P',ui-monospace,monospace}
-  input,select,textarea{
-    appearance:none;
-    border:2px solid var(--bezel);
-    border-radius:8px;
-    background:var(--tile-bg);
-    padding:6px 8px;
-    color:var(--ink);
-    box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
-  }
   input:focus,select:focus,textarea:focus{outline:2px solid var(--amber)}
-  input[type="checkbox"]{
-    appearance:none;
-    width:20px;height:20px;margin:0;cursor:pointer;padding:0;
-    border:2px solid var(--bezel);border-radius:4px;
-    background:var(--tile-bg);
-    box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
-  }
+  input[type="checkbox"]{appearance:none;width:20px;height:20px;margin:0;cursor:pointer;padding:0;border:2px solid var(--bezel);border-radius:4px;background:var(--tile-bg);box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);}
   input[type="checkbox"]:checked{background:var(--accent)}
   .timeline{display:flex;gap:8px;overflow:auto;padding:6px}
   details.accordion>summary{cursor:pointer;list-style:none}
@@ -93,8 +75,8 @@
     <div class="scan"></div>
     <div class="content">
       <div class="tabs">
-        <button class="tabBtn active" data-tab="edit">🎨 Редактор</button>
-        <button class="tabBtn" data-tab="io">📤 Импорт · Экспорт</button>
+        <button class="tab active" data-tab="edit">🎨 Редактор</button>
+        <button class="tab" data-tab="io">📤 Импорт · Экспорт</button>
       </div>
       <section id="tab-edit" class="workspace">
         <div class="panel screen">
@@ -108,15 +90,15 @@
           <div class="panel">
             <div class="row" style="justify-content:space-between">
               <div class="row">
-                <button class="tool" id="tool-pen">Кисть</button>
-                <button class="tool" id="tool-erase">Ластик</button>
-                <button class="tool" id="tool-pick">Пипетка</button>
+                <button class="btn tool" id="tool-pen">Кисть</button>
+                <button class="btn tool" id="tool-erase">Ластик</button>
+                <button class="btn tool" id="tool-pick">Пипетка</button>
               </div>
               <div class="row">
                 <label>FPS</label>
                 <pixel-range><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
-                <button class="tool" id="play">▶️</button>
-                <button class="tool" id="stop">⏹</button>
+                <button class="btn tool" id="play">▶️</button>
+                <button class="btn tool" id="stop">⏹</button>
                 <label class="row" style="gap:6px"><input id="onion" type="checkbox"/> Onion</label>
                 <label class="row" style="gap:6px"><input id="mirror" type="checkbox"/> Mirror</label>
               </div>
@@ -124,10 +106,10 @@
             <div class="toolbar" id="palette" style="margin-top:8px"></div>
             <div class="row" style="justify-content:space-between; margin-top:6px">
               <div class="row">
-                <button class="tool" id="add-frame">➕ Кадр</button>
-                <button class="tool" id="dup-frame">⧉ Дубликат</button>
-                <button class="tool" id="del-frame" data-danger>🗑 Удалить</button>
-                <button class="tool" id="undo">↶ Undo</button>
+                <button class="btn tool" id="add-frame">➕ Кадр</button>
+                <button class="btn tool" id="dup-frame">⧉ Дубликат</button>
+                <button class="btn tool" id="del-frame" data-danger>🗑 Удалить</button>
+                <button class="btn tool" id="undo">↶ Undo</button>
               </div>
               <div class="muted">Текущий: <span id="curIndex">1</span>/<span id="totalFrames">1</span></div>
             </div>
@@ -141,17 +123,17 @@
       <section id="tab-io" class="panel" style="display:none">
         <div class="row" style="justify-content:space-between; flex-wrap:wrap">
           <div class="row" style="gap:8px">
-            <button class="tool" id="btn-export">Экспорт JSON</button>
-            <button class="tool" id="btn-import">Импорт JSON</button>
-            <button class="tool" id="btn-copy">Скопировать</button>
-            <button class="tool" id="btn-save">Сохранить</button>
-            <button class="tool" id="btn-download">Скачать файл</button>
-            <button class="tool" id="btn-upload">Загрузить файл</button>
-            <button class="tool" id="btn-png">PNG</button>
+            <button class="btn tool" id="btn-export">Экспорт JSON</button>
+            <button class="btn tool" id="btn-import">Импорт JSON</button>
+            <button class="btn tool" id="btn-copy">Скопировать</button>
+            <button class="btn tool" id="btn-save">Сохранить</button>
+            <button class="btn tool" id="btn-download">Скачать файл</button>
+            <button class="btn tool" id="btn-upload">Загрузить файл</button>
+            <button class="btn tool" id="btn-png">PNG</button>
           </div>
           <div class="row">
-            <button class="tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
-            <button class="tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</button>
+            <button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
+            <button class="btn tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</button>
           </div>
         </div>
         <textarea id="io" class="code"></textarea>
@@ -367,7 +349,7 @@
     await p; const blob = new Blob(chunks, {type:'video/webm'}); const url = URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download='pixel.webm'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
   };
-  const btns = document.querySelectorAll('.tabBtn');
+  const btns = document.querySelectorAll('.tab');
   const tabEdit = document.getElementById('tab-edit');
   const tabIO   = document.getElementById('tab-io');
   btns.forEach(b=> b.addEventListener('click', ()=>{

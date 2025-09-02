@@ -10,8 +10,10 @@
     --panel:var(--tile-bg);
     --paper:var(--tile-bg);
     --shadow:var(--bezel-lo);
-    --btn:var(--tile-bg);
+    --btn-bg:var(--tile-bg);
     --btn-ink:var(--ink);
+    --btn-shadow:var(--shadow);
+    --tab-bg:var(--tile-bg);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;background:transparent;color:var(--ink);font-family:'Press Start 2P',ui-monospace,monospace}
@@ -42,22 +44,15 @@
     overflow: hidden;
   }
   .tab{
-    appearance:none;border:0;background:var(--btn);color:var(--btn-ink);font-weight:800;
     font-size:12px; line-height:1; white-space:nowrap;
     min-width:84px;               /* 11 вкладок = 4+4+3 по ширине ~320-360px */
-    padding:7px 9px;border-radius:8px;cursor:pointer;
-    box-shadow:0 3px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)
   }
-  .tab[aria-selected="true"]{background:linear-gradient(var(--btn),var(--tile-bg-dim));outline:2px solid var(--accent)}
   .panel{display:none;padding:10px}
   .panel.active{display:block}
 
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .card{background:var(--paper);border-radius:10px;padding:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi),0 2px 0 var(--shadow)}
   .badge{font-size:11px;background:var(--paper);border-radius:8px;padding:2px 6px}
-  .btn{appearance:none;border:0;background:var(--btn);color:var(--btn-ink);font-weight:900;cursor:pointer;
-       padding:9px 12px;border-radius:8px;box-shadow:0 3px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)}
-  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)}
   .cols{display:grid;grid-auto-flow:column;grid-auto-columns:26px;gap:8px;overflow:auto}
   .sw{width:26px;height:26px;border-radius:7px;border:2px solid rgba(0,0,0,.06);box-shadow:inset 0 1px 0 #fff}
   .sw.sel{outline:2px solid var(--accent)}

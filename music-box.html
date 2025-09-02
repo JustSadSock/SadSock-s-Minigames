@@ -21,6 +21,17 @@
     --cell-on:#ffe6a6;
     --shadow:rgba(0,0,0,.35);
     --r:16px;
+    --btn-bg:var(--cream-2);
+    --btn-border:#e3c17a;
+    --btn-shadow:#d9b16b;
+    --tab-bg:var(--cream-2);
+    --tab-border:#e0ba75;
+    --tab-shadow:#cfa360;
+    --tab-active-bg:var(--cell-on);
+    --pill-bg:var(--cream-2);
+    --pill-border:#e3c17a;
+    --pill-shadow:#d9b16b;
+    --pill-ink:var(--sub);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -54,19 +65,13 @@
   .topbar{display:flex; flex-direction:column; gap:8px}
   .transport{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:6px}
   .left,.right{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  button, textarea{
+  textarea{
     border-radius:10px; border:1px solid #d9b16b; background:var(--cream);
     color:var(--ink); padding:10px 12px; font:inherit; outline:none;
     box-shadow:0 2px 0 rgba(255,255,255,.6) inset;
   }
-  button{cursor:pointer}
-  button:active{transform:translateY(1px)}
-  .btn{background:var(--cream-2)}
-  .btn.primary{background:var(--cell-on); border-color:#e3ad56}
-  .pill{
-    display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
-    background:var(--cream-2); border:1px solid #e3c17a; color:var(--sub)
-  }
+  .btn.primary{--btn-bg:var(--cell-on); --btn-border:#e3ad56}
+  .pill{display:flex; align-items:center; gap:8px;}
   .pill pixel-range{width:130px}
   details.opts>summary{cursor:pointer; list-style:none}
   details.opts>summary::-webkit-details-marker{display:none}
@@ -75,8 +80,8 @@
   details.accordion>summary::-webkit-details-marker{display:none}
 
   .tabs{display:flex; gap:8px; padding:6px}
-  .tabs button{flex:1; border:1px solid #e0ba75; background:var(--cream-2)}
-  .tabs button.active{background:var(--cell-on); color:#5b421f; border-color:#e3a651}
+  .tabs .tab{flex:1}
+  .tabs .tab.active{--tab-active-ink:#5b421f; --tab-border:#e3a651}
 
   .section{display:none; padding:8px}
   .section.active{display:block}
@@ -173,9 +178,9 @@
           </details>
         </div>
         <div class="tabs">
-          <button class="active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
-          <button data-tab="code">📤 Import / Export</button>
-          <button data-tab="info">ℹ Info</button>
+          <button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
+          <button class="tab" data-tab="code">📤 Import / Export</button>
+          <button class="tab" data-tab="info">ℹ Info</button>
         </div>
       </div>
 

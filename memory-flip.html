@@ -96,14 +96,14 @@
 </head>
 <body>
   <h1>Memory Flip</h1>
-  <div id="score">Найдено пар: 0/8</div>
-  <div id="timer"></div>
-  <div id="moves"></div>
-  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
+  <div id="score" class="pill">Найдено пар: 0/8</div>
+  <div id="timer" class="pill"></div>
+  <div id="moves" class="pill"></div>
+  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
   <div class="play">
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad"><button class="k" id="startBtn" aria-label="Начать игру">START</button></div>
+    <div id="pad" class="pad"><button class="btn" id="startBtn" aria-label="Начать игру">START</button></div>
   </div>
 <script src="src/audio.js"></script>
 <script src="src/ui.js"></script>
