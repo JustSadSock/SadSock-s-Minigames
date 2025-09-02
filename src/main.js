@@ -76,24 +76,11 @@ import { initSettings } from './settings.js';
 
       initSettings(ms=>{ DUR = ms; });
 
-      // инициализация 4 значков
-      const items=[];
+      // инициализация анимированных значков
       tiles.forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
-        const ctx = cv.getContext('2d',{alpha:false});
-        ctx.imageSmoothingEnabled = false;
-        items.push({ctx, name: drawers[i%drawers.length]});
+        Icons.animate(cv, drawers[i%drawers.length]);
       });
-      let frame=0,last=0;
-      function animateIcons(t){
-        if(t-last>1000/12){
-          frame++;
-          items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
-          last=t;
-        }
-        requestAnimationFrame(animateIcons);
-      }
-      requestAnimationFrame(animateIcons);
 
       /* ---------- Барабан и навигация ---------- */
       const total = tiles.length;
@@ -327,9 +314,9 @@ import { initSettings } from './settings.js';
           }
         });
         // перерисовать
-          items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
-          recalcSteps();
-          render();
+        Icons.redraw();
+        recalcSteps();
+        render();
       }
       addEventListener('resize', fixDPR, {passive:true});
       // чуть позже, чтобы успели примениться CSS-размеры

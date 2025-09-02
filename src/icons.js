@@ -2,6 +2,8 @@
   'use strict';
   const S=1;                   // базовый пиксель для 16×16 иконок
   const cache={};              // кэш готовых кадров для оптимизации
+  const items=[];              // зарегистрированные канвасы
+  let frame=0,last=0,fps=12,animating=false;
 
   function baseFromPattern(pattern,palette,scale){
     const rows=pattern.trim().split('\n');
@@ -837,6 +839,25 @@ OOOOO
     });
   });
 
+  function loop(t){
+    if(t-last>1000/fps){
+      frame++;
+      items.forEach(it=> draw(it.ctx,it.name,frame));
+      last=t;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function animate(canvas,name){
+    const ctx=canvas.getContext('2d',{alpha:false});
+    ctx.imageSmoothingEnabled=false;
+    items.push({ctx,name});
+    draw(ctx,name,frame);
+    if(!animating){ animating=true; requestAnimationFrame(loop); }
+  }
+
+  function redraw(){ items.forEach(it=> draw(it.ctx,it.name,frame)); }
+
   function draw(ctx,name,frame){
     const set=cache[name];
     if(!set) return;
@@ -848,6 +869,6 @@ OOOOO
     ctx.fillRect(twX,twY,1,1);
   }
 
-  window.Icons={draw};
+  window.Icons={animate, redraw, draw};
 })();
 

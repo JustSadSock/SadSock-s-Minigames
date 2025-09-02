@@ -217,6 +217,12 @@ html,body{overflow:hidden;}
     @keyframes scanMove{ from{background-position:0 0;} to{background-position:0 4px;} }
     @keyframes tileFlash{ 0%{opacity:1;} 100%{opacity:0;} }
     @keyframes staticShift{ from{background-position:0 0;} to{background-position:4px 4px;} }
+    @keyframes tileGlitch{
+      0%,100%{transform:scale(1.05) translate(0);}
+      25%{transform:scale(1.05) translate(-2px,0);}
+      50%{transform:scale(1.05) translate(2px,0);}
+      75%{transform:scale(1.05) translate(-1px,0);}
+    }
     .tile.flash::after{ opacity:.8; animation:tileFlash .3s steps(1) forwards; }
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
@@ -289,12 +295,25 @@ html,body{overflow:hidden;}
       border-radius:12px;
       border:2px solid #ffbd69;
       box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
+      transform:scale(1);
+      transition:transform .2s var(--ease), filter .2s linear;
     }
     .tile canvas::after{
       content:""; position:absolute; inset:0; border-radius:inherit;
       background:linear-gradient(145deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%);
       mix-blend-mode:screen; opacity:.4;
       pointer-events:none;
+    }
+
+    .tile:hover canvas,
+    .tile:focus-visible canvas,
+    .tile[data-active="1"] canvas{
+      transform:scale(1.05);
+      filter:brightness(1.15);
+    }
+    .tile:active canvas{
+      animation:tileGlitch .3s steps(2);
+      filter:brightness(1.25);
     }
 
     .tile .label{
