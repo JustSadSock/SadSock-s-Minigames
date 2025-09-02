@@ -25,7 +25,8 @@
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; color:var(--ink); font:14px/1.35 ui-monospace, Menlo, Consolas, "SF Mono", monospace;
+    margin:0; color:var(--ink); font-size:14px; line-height:1.35;
+    font-family:'Press Start 2P', ui-monospace, monospace;
     background:
       radial-gradient(120% 160% at 50% -20%, #f9e1b3 0%, #f4d6a1 50%, #f2d29a 70%, #efc782 100%);
   }
@@ -107,6 +108,7 @@
   .drums .cell{aspect-ratio:1/0.55}
 
   textarea{width:100%; min-height:170px; background:var(--cream); border:1px solid #e3c17a; border-radius:12px}
+  textarea.code{font-family:ui-monospace,monospace; border:2px solid var(--gold-2)}
 
   @media (max-width:600px){
     .transport{flex-direction:column; align-items:flex-start}
@@ -226,7 +228,7 @@
             <button class="btn" id="copyOut">Copy</button>
             <button class="btn" id="saveFile">Save file</button>
           </div>
-          <textarea id="out" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
+          <textarea id="out" class="code" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
         </div>
         <div class="panel">
           <strong>Import</strong>
@@ -236,7 +238,7 @@
             <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
             <button class="btn" id="loadFile">Load file</button>
           </div>
-          <textarea id="inp" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
+          <textarea id="inp" class="code" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
         </div>
       </div>
 
