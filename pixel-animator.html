@@ -67,24 +67,6 @@
     box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
   }
   input[type="checkbox"]:checked{background:var(--accent)}
-  input[type="range"]{
-    appearance:none;width:160px;height:16px;padding:0;
-    border:2px solid var(--bezel);border-radius:8px;
-    background:var(--tile-bg);
-    box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
-  }
-  input[type="range"]::-webkit-slider-thumb{
-    appearance:none;width:18px;height:18px;border-radius:6px;
-    background:var(--bezel-hi);
-    border:2px solid var(--bezel);
-    box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--tile-bg);
-  }
-  input[type="range"]::-moz-range-thumb{
-    width:18px;height:18px;border-radius:6px;
-    background:var(--bezel-hi);
-    border:2px solid var(--bezel);
-    box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--tile-bg);
-  }
   .timeline{display:flex;gap:8px;overflow:auto;padding:6px}
   details.accordion>summary{cursor:pointer;list-style:none}
   details.accordion>summary::-webkit-details-marker{display:none}
@@ -132,7 +114,7 @@
               </div>
               <div class="row">
                 <label>FPS</label>
-                <input id="fps" type="range" min="1" max="24" value="6" />
+                <pixel-range><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
                 <button class="tool" id="play">▶️</button>
                 <button class="tool" id="stop">⏹</button>
                 <label class="row" style="gap:6px"><input id="onion" type="checkbox"/> Onion</label>
@@ -397,6 +379,7 @@
   }));
 })();
 </script>
+<script type="module" src="src/pixel-widgets.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>
 </html>

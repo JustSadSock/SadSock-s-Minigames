@@ -58,9 +58,6 @@
   .btn{appearance:none;border:0;background:var(--btn);color:var(--btn-ink);font-weight:900;cursor:pointer;
        padding:9px 12px;border-radius:8px;box-shadow:0 3px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)}
   .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)}
-  .field{appearance:none;border:0;background:var(--paper);color:var(--ink);font-weight:800;
-        padding:8px 10px;border-radius:8px;box-shadow:0 2px 0 var(--shadow),inset 0 0 0 2px var(--bezel-hi)}
-  .field:focus{outline:2px solid var(--accent)}
   .cols{display:grid;grid-auto-flow:column;grid-auto-columns:26px;gap:8px;overflow:auto}
   .sw{width:26px;height:26px;border-radius:7px;border:2px solid rgba(0,0,0,.06);box-shadow:inset 0 1px 0 #fff}
   .sw.sel{outline:2px solid var(--accent)}
@@ -71,7 +68,8 @@
   @media (max-height:600px){
     .stage{max-width:120px}
   }
- </style>
+</style>
+<script type="module" src="src/pixel-widgets.js"></script>
 </head>
 <body>
 <div class="cabinet">
@@ -88,7 +86,7 @@
     <div id="panels"></div>
   </div>
   <div class="row" style="margin-top:8px; gap:8px;">
-    <input id="nick" type="text" placeholder="Ник" class="field" style="flex:1;">
+    <pixel-input style="flex:1;"><input id="nick" type="text" placeholder="Ник"></pixel-input>
     <button id="saveBtn" class="btn">OK</button>
     <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
     <button id="exportJson" class="btn" title="Экспорт JSON">JSON↥</button>

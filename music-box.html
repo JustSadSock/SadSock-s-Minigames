@@ -54,7 +54,7 @@
   .topbar{display:flex; flex-direction:column; gap:8px}
   .transport{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:6px}
   .left,.right{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  button, select, input, textarea{
+  button, textarea{
     border-radius:10px; border:1px solid #d9b16b; background:var(--cream);
     color:var(--ink); padding:10px 12px; font:inherit; outline:none;
     box-shadow:0 2px 0 rgba(255,255,255,.6) inset;
@@ -67,7 +67,7 @@
     display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
     background:var(--cream-2); border:1px solid #e3c17a; color:var(--sub)
   }
-  .pill input[type="range"]{width:130px}
+  .pill pixel-range{width:130px}
   details.opts>summary{cursor:pointer; list-style:none}
   details.opts>summary::-webkit-details-marker{display:none}
   details.opts>.right{display:flex}
@@ -158,16 +158,16 @@
             <summary class="pill">⚙ Options</summary>
             <div class="right">
               <div class="pill">BPM
-                <input type="range" id="bpm" min="60" max="200" value="120"><b id="bpmv">120</b>
+                <pixel-range><input type="range" id="bpm" min="60" max="200" value="120"></pixel-range><b id="bpmv">120</b>
               </div>
               <label class="pill">Root
-                <select id="root"></select>
+                <pixel-select><select id="root"></select></pixel-select>
               </label>
               <label class="pill">Scale
-                <select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select>
+                <pixel-select><select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select></pixel-select>
               </label>
               <label class="pill">Steps
-                <select id="steps"><option>8</option><option selected>16</option><option>32</option></select>
+                <pixel-select><select id="steps"><option>8</option><option selected>16</option><option>32</option></select></pixel-select>
               </label>
             </div>
           </details>
@@ -186,10 +186,10 @@
               <strong>Lead</strong>
               <div class="row">
                 <label class="pill">Wave
-                  <select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select>
+                  <pixel-select><select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select></pixel-select>
                 </label>
-                <label class="pill">A<input type="range" id="leadA" min="0" max="200" value="15"></label>
-                <label class="pill">R<input type="range" id="leadR" min="0" max="400" value="80"></label>
+                <label class="pill">A<pixel-range><input type="range" id="leadA" min="0" max="200" value="15"></pixel-range></label>
+                <label class="pill">R<pixel-range><input type="range" id="leadR" min="0" max="400" value="80"></pixel-range></label>
               </div>
             </div>
             <div class="legend" id="leadLegend"></div>
@@ -201,10 +201,10 @@
               <strong>Bass</strong>
               <div class="row">
                 <label class="pill">Wave
-                  <select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select>
+                  <pixel-select><select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select></pixel-select>
                 </label>
-                <label class="pill">A<input type="range" id="bassA" min="0" max="200" value="10"></label>
-                <label class="pill">R<input type="range" id="bassR" min="0" max="400" value="60"></label>
+                <label class="pill">A<pixel-range><input type="range" id="bassA" min="0" max="200" value="10"></pixel-range></label>
+                <label class="pill">R<pixel-range><input type="range" id="bassR" min="0" max="400" value="60"></pixel-range></label>
               </div>
             </div>
             <div class="legend" id="bassLegend"></div>
@@ -581,7 +581,8 @@ $('loadFile').onclick=()=>{
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
-  </script>
-  <script type="module" src="src/i18n.js"></script>
+</script>
+<script type="module" src="src/pixel-widgets.js"></script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

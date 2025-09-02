@@ -86,13 +86,13 @@
     .modal button { margin-top: 12px; padding: 8px 12px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
     .modal button:hover { background: var(--btn-hover); }
     .modal label { display: block; margin-top: 10px; font-size: 14px; }
-    .modal select, .modal input[type="range"] { width: 100%; margin-top: 4px; padding: 6px; font-size: 14px; border: 2px solid var(--card-border); border-radius: 4px; background: var(--bg-color); }
+    .modal pixel-select, .modal pixel-range { width: 100%; margin-top: 4px; display:block; }
     #replayOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 70; }
     #replayOverlay.show { display: flex; }
     #replayControls { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
     #replayControls button { padding: 6px 10px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
     #replayControls button:hover { background: var(--btn-hover); }
-    #replayControls input[type="range"] { width: 100%; }
+    #replayControls pixel-range { width: 100%; }
     #speedButtons { display: flex; gap: 4px; justify-content: center; }
     #speedButtons button.active { background: var(--btn-hover); }
     @media (max-width: 420px) { #board { grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px); } .cell { width: 50px; height: 50px; font-size: 24px; } }
@@ -169,13 +169,13 @@
   <div id="settingsModal" class="modal">
     <h2>⚙</h2>
     <label data-i18n="volume">Volume:</label>
-    <input type="range" id="volumeRange" min="0" max="1" step="0.1">
+    <pixel-range><input type="range" id="volumeRange" min="0" max="1" step="0.1"></pixel-range>
     <label data-i18n="language">Language:</label>
-    <select id="langSelect">
+    <pixel-select><select id="langSelect">
       <option value="en" data-i18n="selectEnglish">English</option>
       <option value="ru" data-i18n="selectRussian">Русский</option>
       <option value="uk" data-i18n="selectUkrainian">Українська</option>
-    </select>
+    </select></pixel-select>
     <button id="settingsClose" data-i18n="close"></button>
   </div>
   <div id="tutorialOverlay" class="modal">
@@ -191,7 +191,7 @@
         <button id="replayPlay">▶</button>
         <button id="replayPause" style="display:none;">❚❚</button>
       </div>
-      <input type="range" id="replaySlider" min="0" max="0" value="0">
+      <pixel-range><input type="range" id="replaySlider" min="0" max="0" value="0"></pixel-range>
       <div id="speedButtons">
         <button data-speed="1">1x</button>
         <button data-speed="2">2x</button>
@@ -206,6 +206,7 @@
     <p id="msgContent"></p>
     <button id="msgClose" data-i18n="close"></button>
   </div>
+  <script type="module" src="src/pixel-widgets.js"></script>
   <script type="module" src="src/i18n.js"></script>
   <script>
 

@@ -156,7 +156,7 @@ html,body{overflow:hidden;}
     .menu.show{ display:block; }
     .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
     .menu .value{ text-align:center; }
-    .menu .row.wide input[type=range]{ flex:1; }
+    .menu .row.wide pixel-range{ flex:1; }
 
     .avatar-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:12;}
     .avatar-overlay.show{display:flex;}
