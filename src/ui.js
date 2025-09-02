@@ -1,10 +1,11 @@
 (function(global){
   'use strict';
   const UI={};
-  UI.score=function(el,label){
+  UI.score=function(el,label,bestLabel){
     return {
       set(value,best){
-        el.textContent=label+': '+value+(best!=null?' (лучший: '+best+')':'');
+        const bl = bestLabel || (global.i18n ? i18n.t('best') : 'best');
+        el.textContent=label+': '+value+(best!=null?' ('+bl+': '+best+')':'');
       }
     };
   };
@@ -22,9 +23,10 @@
   UI.autoHidePad=function(pad){
     if(!pad) return;
     const toggle=document.createElement('button');
-    toggle.textContent='Показать D-pad';
     toggle.className='btn pad-toggle';
+    toggle.dataset.i18n='showDPad';
     pad.parentElement.appendChild(toggle);
+    if(global.i18n) i18n.applyTranslations(toggle);
     const show=()=>{ pad.classList.remove('hidden'); toggle.classList.remove('show'); };
     const hide=()=>{ if(pad.classList.contains('hidden')) return; pad.classList.add('hidden'); toggle.classList.add('show'); };
     toggle.addEventListener('click',e=>{ e.stopPropagation(); show(); });

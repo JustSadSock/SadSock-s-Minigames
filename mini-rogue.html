@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -11,11 +11,11 @@
   <div class="frame">
     <div class="inner">
       <div class="hud">
-        <div class="pill" id="score">Score: 0</div>
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+        <div class="pill" id="score">0</div>
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
         <div class="pill" id="status">—</div>
       </div>
-      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
+      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
@@ -27,22 +27,24 @@
         <div class="k" data-btn="down" style="grid-area:down"></div>
       </div>
     </div>
-    <div class="label">Mini‑Rogue</div>
-    <div class="hint">Пошагово: D‑pad ходит. Сундуки, враги, выход.</div>
+    <div class="label" data-i18n="miniRogue"></div>
+    <div class="hint" data-i18n="miniRogueHint"></div>
   </div>
-  <div class="footer">Мобильный D‑pad • Клавиатура: стрелки/WSAD</div>
+  <div class="footer" data-i18n="miniRogueFooter"></div>
 </div>
 
 <script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
-<script>
+<script type="module">
+import { t } from './src/i18n.js';
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
   const scores=Scores('rogue');
   d('#scoresBtn').onclick=scores.show;
+  const scoreBoard=UI.score(scoreEl,t('score'),t('best'));
   const ctx=cv.getContext('2d');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
@@ -138,20 +140,19 @@
       ctx.fillStyle='#3a2a18'; ctx.fillRect(ox+this.p.x*tile+4, oy+this.p.y*tile+4, tile-8, tile-8);
       ctx.fillStyle='#bf8a3d'; ctx.font='14px "Press Start 2P"'; ctx.textAlign='center';
       ctx.fillText(`HP:${this.hp}  Lvl:${this.lvl}`, SETTINGS.W/2, oy-12);
-      if(this.over) ctx.fillText('Ты пал. Обнови для рестарта', SETTINGS.W/2, SETTINGS.H*0.5);
+      if(this.over) ctx.fillText(t('rogueGameOver'), SETTINGS.W/2, SETTINGS.H*0.5);
       ctx.restore();
     }
   };
   let last=performance.now(), recorded=false;
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
-    game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+    game.draw(); scoreBoard.set(game.score|0); }
   addEventListener('keydown',e=>game.onKey(e));
   game.init();
   loop();
 
 })();
 </script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>
