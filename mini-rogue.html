@@ -33,6 +33,7 @@
   <div class="footer">Мобильный D‑pad • Клавиатура: стрелки/WSAD</div>
 </div>
 
+<script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
 <script>
@@ -71,6 +72,7 @@
       addEventListener('mouseup',off);
       el.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     return {st};
   })();
 

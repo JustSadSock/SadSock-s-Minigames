@@ -77,6 +77,7 @@
       <button class="k" data-dir="right" aria-label="Вправо">►</button>
     </div>
   </div>
+  <script src="src/ui.js"></script>
   <script src="src/audio.js"></script>
   <script src="src/scores.js"></script>
   <script>
@@ -199,6 +200,7 @@
       addEventListener('mouseup',off);
       btn.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     startBtn.addEventListener('click',()=>{
       Sound.fx('start');
       resetGame();

@@ -19,6 +19,18 @@
       timer=setTimeout(()=>el.classList.remove('show'),2000);
     };
   };
+  UI.autoHidePad=function(pad){
+    if(!pad) return;
+    const toggle=document.createElement('button');
+    toggle.textContent='Показать D-pad';
+    toggle.className='btn pad-toggle';
+    pad.parentElement.appendChild(toggle);
+    const show=()=>{ pad.classList.remove('hidden'); toggle.classList.remove('show'); };
+    const hide=()=>{ if(pad.classList.contains('hidden')) return; pad.classList.add('hidden'); toggle.classList.add('show'); };
+    toggle.addEventListener('click',e=>{ e.stopPropagation(); show(); });
+    addEventListener('keydown',hide);
+    addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse' && !pad.contains(e.target) && !toggle.contains(e.target)) hide(); });
+  };
   UI.attachDPad=function(pad,cb){
     const setBtn=(dir,val)=>{
       const btn=pad.querySelector(`[data-dir="${dir}"]`);
@@ -35,6 +47,7 @@
       addEventListener('mouseup',off);
       btn.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     return setBtn;
   };
   global.UI=UI;
