@@ -44,3 +44,9 @@ canvas{width:100%; height:100%; display:block; image-rendering:pixelated}
   .hint,.footer{display:none}
 }
 
+@media (max-width:600px){
+  .hud{flex-direction:column; align-items:center; text-align:center; gap:4px;}
+  .pad{flex-direction:column; align-items:center;}
+  .dpad{width:60vw; max-width:240px;}
+}
+
