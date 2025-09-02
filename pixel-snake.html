@@ -43,6 +43,9 @@
       background:var(--bg2);
       border:4px solid var(--pastel-peach);
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
+      width:clamp(40vw,60vh,90vw);
+      height:auto;
+      aspect-ratio:3/4;
     }
     #score{margin:0;font-size:14px;font-weight:bold;text-shadow:0 1px 0 var(--bg0);}
 
@@ -69,7 +72,7 @@
   <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
   <input id="colorPick" type="color" title="Цвет змейки" style="width:36px;height:36px;border:none;background:none;padding:0">
   <div class="play">
-    <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
+    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
       <div class="dpad" aria-hidden="true">
@@ -93,6 +96,7 @@
     const canvas=document.getElementById('gameCanvas');
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
+    canvas.width=120; canvas.height=160;
     let running=false;
     let lastTime=0, acc=0;
     const baseInterval=150;
@@ -127,19 +131,6 @@
       draw();
     });
 
-    function resize(){
-      const padH=pad.offsetHeight?pad.offsetHeight+16:0;
-      const colorH=colorPick.offsetHeight?colorPick.offsetHeight+8:0;
-      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - colorH - padH - 24;
-      const availableWidth=window.innerWidth;
-      const ratio=canvas.width/canvas.height;
-      let w=availableWidth;
-      let h=w/ratio;
-      if(h>availableHeight){h=availableHeight; w=h*ratio;}
-      canvas.style.width=w+'px';
-      canvas.style.height=h+'px';
-    }
-    window.addEventListener('resize',resize);
 
     function resetGame(){
       snake=[{x:Math.floor(cols/2), y:Math.floor(rows/2)}];
@@ -262,7 +253,6 @@
       }
     },{passive:true});
     startBtn.addEventListener('click',startGame);
-    resize();
     resetGame();
     draw();
   })();

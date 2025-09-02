@@ -72,7 +72,7 @@
     <div class="inner" style="display:flex;align-items:center;justify-content:center;">
       <div class="editor">
   <div class="stage">
-    <canvas id="cv" width="16" height="16" tabindex="0" aria-label="Редактор аватара"></canvas>
+    <canvas id="cv" tabindex="0" aria-label="Редактор аватара"></canvas>
     <div class="gesture" id="gesture"></div>
   </div>
 
@@ -95,6 +95,7 @@
 <script>
 /* ===== base ===== */
 const S=16, cv=document.getElementById('cv'), ctx=cv.getContext('2d',{alpha:true});
+cv.width=cv.height=S;
 ctx.imageSmoothingEnabled=false;
 const UI={tabs:document.getElementById('tabs'), panels:document.getElementById('panels'), gesture:document.getElementById('gesture')};
 

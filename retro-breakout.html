@@ -43,6 +43,9 @@
       border:4px solid var(--pastel-peach);
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
       image-rendering:pixelated;
+      width:clamp(40vw,60vh,90vw);
+      height:auto;
+      aspect-ratio:3/4;
     }
     #score{margin:0;font-size:14px;}
 
@@ -69,7 +72,7 @@
   <div id="lives" class="pill">Жизни: 3</div>
   <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
   <div class="play">
-    <canvas id="gameCanvas" width="120" height="160" tabindex="0" aria-label="Игровое поле"></canvas>
+    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad">
       <button class="k" data-dir="left" aria-label="Влево">◄</button>
@@ -86,6 +89,7 @@
     const canvas=document.getElementById('gameCanvas');
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
+    canvas.width=120; canvas.height=160;
     let gameRunning=false;
     let ball, paddle, bricks, brickRows=4, brickCols=8;
     let score=0, lives=3;
@@ -110,18 +114,6 @@
     let lastTime=0;
     const paddleSpeed=200;
 
-    function resize(){
-      const padH=pad.offsetHeight?pad.offsetHeight+16:0;
-      const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - padH - 24;
-      const availableWidth=window.innerWidth;
-      const ratio=canvas.width/canvas.height;
-      let w=availableWidth;
-      let h=w/ratio;
-      if(h>availableHeight){h=availableHeight; w=h*ratio;}
-      canvas.style.width=w+'px';
-      canvas.style.height=h+'px';
-    }
-    window.addEventListener('resize',resize);
     function resetGame(){
       gameRunning=false;
       score=0; lives=3;
@@ -237,7 +229,6 @@
       gameRunning=true;
       requestAnimationFrame(loop);
     });
-    resize();
     resetGame();
   })();
   </script>

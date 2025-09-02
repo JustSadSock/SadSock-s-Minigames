@@ -82,7 +82,7 @@
         <div class="panel screen">
           <div class="canvasWrap">
             <div id="square" class="square">
-              <canvas id="paint" width="16" height="16" tabindex="0" aria-label="Поле рисования"></canvas>
+              <canvas id="paint" tabindex="0" aria-label="Поле рисования"></canvas>
             </div>
           </div>
         </div>
@@ -173,6 +173,7 @@
   const square = document.getElementById('square');
   const canvas = document.getElementById('paint');
   const ctx = canvas.getContext('2d', {alpha:true});
+  canvas.width = canvas.height = GRID;
   ctx.imageSmoothingEnabled = false;
   function fitSquare(){
     const parent = square.parentElement;

@@ -9,6 +9,7 @@ import { initSettings } from './settings.js';
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const nickDisplay = $('#nickDisplay');
       const avatarCanvas = $('#avatarCanvas');
+      avatarCanvas.width = avatarCanvas.height = 48;
       const avatarBtn = $('#avatarBtn');
       const avatarOverlay = $('#avatarOverlay');
       const reel = $('.reel');
@@ -41,7 +42,9 @@ import { initSettings } from './settings.js';
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
-      const gearCtx = $('#settingsCanvas').getContext('2d',{alpha:false});
+      const settingsCanvas = $('#settingsCanvas');
+      settingsCanvas.width = settingsCanvas.height = 32;
+      const gearCtx = settingsCanvas.getContext('2d',{alpha:false});
       gearCtx.imageSmoothingEnabled=false;
       (function drawGear(){
         const S=2; clear(gearCtx); gearCtx.fillStyle='#2d1600';
@@ -79,6 +82,7 @@ import { initSettings } from './settings.js';
       // инициализация анимированных значков
       tiles.forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
+        cv.width = cv.height = 16;
         Icons.animate(cv, drawers[i%drawers.length]);
       });
 
