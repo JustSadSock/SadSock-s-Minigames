@@ -9,10 +9,14 @@
     };
   };
   UI.makeToast=function(el){
+    let timer;
     return function(text){
       el.textContent=text;
-      el.style.display='block';
-      setTimeout(()=>{el.style.display='none';},2000);
+      el.classList.remove('show');
+      void el.offsetWidth;
+      el.classList.add('show');
+      clearTimeout(timer);
+      timer=setTimeout(()=>el.classList.remove('show'),2000);
     };
   };
   UI.attachDPad=function(pad,cb){

@@ -56,7 +56,6 @@
       border-radius:8px;
       padding:12px 16px;
       font-size:14px;
-      display:none;
       color:var(--ink);
     }
     .pad{position:static;margin-top:8px;}
@@ -96,8 +95,10 @@
 
     function toast(text){
       toastEl.textContent=text;
-      toastEl.style.display='block';
-      setTimeout(()=> toastEl.style.display='none',2000);
+      toastEl.classList.remove('show');
+      void toastEl.offsetWidth;
+      toastEl.classList.add('show');
+      setTimeout(()=> toastEl.classList.remove('show'),2000);
     }
     function resize(){
       const padH=pad.offsetHeight?pad.offsetHeight+16:0;

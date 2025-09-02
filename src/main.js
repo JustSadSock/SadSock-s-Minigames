@@ -267,7 +267,7 @@ import { initSettings } from './settings.js';
         clone.getContext('2d').drawImage(canvas,0,0);
         gameOverlay.innerHTML='';
         gameOverlay.appendChild(clone);
-        gameOverlay.style.display='block';
+        gameOverlay.classList.add('show');
         const scaleX = rect.width/srect.width;
         const scaleY = rect.height/srect.height;
         const offsetX = rect.left - srect.left;
@@ -294,7 +294,7 @@ import { initSettings } from './settings.js';
           frame.style.display='none';
           document.body.appendChild(frame);
         }
-        gameOverlay.style.display='none';
+        gameOverlay.classList.remove('show');
         gameOverlay.innerHTML='';
         gameOverlay.style.transform='';
       }

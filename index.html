@@ -21,7 +21,7 @@
             </button>
             <h2 class="title" data-i18n="title"></h2>
             <div class="topright">
-              <span id="nickDisplay" data-i18n="player">Player</span>
+              <span id="nickDisplay" data-i18n="player">Player</span><span class="cursor"></span>
               <button class="avatar" id="settingsBtn" data-i18n-aria-label="settings">
                 <canvas id="settingsCanvas" width="32" height="32"></canvas>
               </button>
@@ -74,8 +74,8 @@
               </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
-          <div id="avatarOverlay" class="avatar-overlay"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
-          <div id="gameOverlay" class="game-overlay"></div>
+          <div id="avatarOverlay" class="avatar-overlay popup"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
+          <div id="gameOverlay" class="game-overlay popup"></div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="static" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>
