@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root{
+  --bg0:#f0e4d0;
+  --bg1:#ffd9a3;
+  --bg2:#fff1cc;
+  --ink:#2d1600;
+  --dim:#714f34;
+  --pastel-pink:#ff5f9c;
+  --pastel-lav:#ff8cc6;
+  --pastel-mint:#00d9b8;
+  --pastel-blue:#46a0ff;
+  --pastel-peach:#ffca3a;
+  --accent:#ff595e;
+  --accent2:#00bbf9;
+  --accent3:#ffca3a;
+  --bezel-hi:#fff2d4;
+  --bezel:#ffe0b3;
+  --bezel-lo:#ffce91;
+  --tile-bg:#fffbe8;
+  --tile-bg-dim:#d9c7a5;
+  --tile-shadow:0 10px 24px rgba(0,0,0,.45);
+  --tile-shadow-active:0 18px 40px rgba(0,0,0,.6);
+  --shadow:rgba(0,0,0,.25);
+  --bg:var(--bg0);
+  --bg2:var(--bg1);
+  --panel:var(--tile-bg);
+  --hi:var(--pastel-mint);
+  --warn:var(--accent3);
+  --r:8px;
+}
+
+*{box-sizing:border-box}
+html,body{
+  height:100%;margin:0;font-size:18px;color-scheme:light dark;
+  background:var(--bg0);
+  color:var(--ink);
+  font-family:'Press Start 2P', ui-monospace, monospace;
+  letter-spacing:.45px;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+button,input,textarea,select{font-family:'Press Start 2P', ui-monospace, monospace}
+
+input,select,textarea{
+  appearance:none;
+  border:2px solid var(--bezel);
+  border-radius:var(--r);
+  background:var(--tile-bg);
+  padding:8px 10px;
+  color:var(--ink);
+  box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent)}
+
+select{
+  padding-right:28px;
+  background:
+    var(--tile-bg)
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path fill="%23714f34" d="M0 0h10L5 6z"/></svg>')
+    no-repeat right 8px center/10px 6px;
+}
+
+input[type=checkbox]{
+  appearance:none;
+  width:20px;height:20px;margin:0;cursor:pointer;padding:0;
+  border:2px solid var(--bezel);
+  border-radius:4px;
+  background:var(--tile-bg);
+  box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
+  vertical-align:middle;
+}
+input[type=checkbox]:checked{background:var(--accent)}
+
+input[type=range]{
+  appearance:none; height:16px; padding:0;
+  border:2px solid var(--bezel); border-radius:var(--r);
+  background:var(--tile-bg);
+  box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
+}
+input[type=range]::-webkit-slider-thumb{
+  appearance:none; width:18px;height:18px;border-radius:6px;
+  background:var(--bezel-hi);
+  border:2px solid var(--bezel);
+  box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--tile-bg);
+}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:6px;
+  background:var(--bezel-hi);
+  border:2px solid var(--bezel);
+  box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--tile-bg);
+}
+
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background:
+    radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
+    radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
+  opacity:.15;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]){
+    --bg0:#121212; --bg1:#1e1e1e; --bg2:#2a2a2a;
+    --ink:#f5f5f5; --dim:#888;
+    --pastel-pink:#ff79c6; --pastel-lav:#bd93f9;
+    --pastel-mint:#50fa7b; --pastel-blue:#8be9fd;
+    --pastel-peach:#ffb86c; --accent:#ff5555;
+    --accent2:#8be9fd; --accent3:#ffb86c;
+    --bezel-hi:#2e2e2e; --bezel:#262626; --bezel-lo:#1b1b1b;
+    --tile-bg:#2a2a2a; --tile-bg-dim:#555;
+    color-scheme:dark;
+  }
+  :root:not([data-theme]) body::before{ background:none; }
+  html,body{background:var(--bg0);color:var(--ink);}
+  :root:not([data-theme]){ --warn:#ff5555; }
+}
+
+:root[data-theme='dark']{
+  --bg0:#121212; --bg1:#1e1e1e; --bg2:#2a2a2a;
+  --ink:#f5f5f5; --dim:#888;
+  --pastel-pink:#ff79c6; --pastel-lav:#bd93f9;
+  --pastel-mint:#50fa7b; --pastel-blue:#8be9fd;
+  --pastel-peach:#ffb86c; --accent:#ff5555;
+  --accent2:#8be9fd; --accent3:#ffb86c;
+  --bezel-hi:#2e2e2e; --bezel:#262626; --bezel-lo:#1b1b1b;
+  --tile-bg:#2a2a2a; --tile-bg-dim:#555;
+  color-scheme:dark;
+  --warn:#ff5555;
+}
+:root[data-theme='light']{ color-scheme:light; }
+
