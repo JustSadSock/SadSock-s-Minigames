@@ -101,26 +101,26 @@
 </head>
 <body>
   <div id="modeSelect" class="screen">
-    <div class="card" id="btn1p" data-i18n="singlePlayer"></div>
-    <div class="card" id="btn2p" data-i18n="twoPlayers"></div>
-    <div class="card" id="rulesBtnInitial" data-i18n="rules"></div>
+    <div class="card" id="btn1p" data-i18n="singlePlayer">1P</div>
+    <div class="card" id="btn2p" data-i18n="twoPlayers">2P</div>
+    <div class="card" id="rulesBtnInitial" data-i18n="rules">Rules</div>
   </div>
   <div id="difficultySelect" class="screen" style="display:none;">
-    <div class="card" data-level="easy" data-i18n="easy"></div>
-    <div class="card" data-level="medium" data-i18n="medium"></div>
-    <div class="card" data-level="hard" data-i18n="hard"></div>
-    <div class="card" data-level="expert" data-i18n="expert"></div>
-    <div class="card" data-level="insane" data-i18n="insane"></div>
+    <div class="card" data-level="easy" data-i18n="easy">Easy</div>
+    <div class="card" data-level="medium" data-i18n="medium">Medium</div>
+    <div class="card" data-level="hard" data-i18n="hard">Hard</div>
+    <div class="card" data-level="expert" data-i18n="expert">Expert</div>
+    <div class="card" data-level="insane" data-i18n="insane">Insane</div>
   </div>
   <div id="gameArea" style="display:none;">
     <div id="outerFrame">
       <div id="playArea">
         <div id="scoreboard">
           <span id="scoreA">0</span> : <span id="scoreB">0</span>
-          <button id="scoreReset" data-i18n="resetScore"></button>
+          <button id="scoreReset" data-i18n="resetScore">Reset</button>
           <button id="settingsBtn">⚙</button>
-          <button id="menuBtn" data-i18n="toMenu"></button>
-          <button id="btnReplay" data-i18n="replay"></button>
+          <button id="menuBtn" data-i18n="toMenu">Menu</button>
+          <button id="btnReplay" data-i18n="replay">Replay</button>
         </div>
         <div id="board"></div>
       </div>
@@ -143,8 +143,8 @@
         <button data-act="shield">🛡</button>
       </div>
       <div id="navButtons">
-        <button id="btn-del" data-i18n="deleteBtn"></button>
-        <button id="btn-next" data-i18n="nextBtn"></button>
+        <button id="btn-del" data-i18n="deleteBtn">Delete</button>
+        <button id="btn-next" data-i18n="nextBtn">Next</button>
       </div>
     </div>
   </div>
@@ -163,8 +163,8 @@
       <li data-i18n="rule7"></li>
       <li data-i18n="rule8"></li>
     </ul>
-    <button id="rulesClose" data-i18n="close"></button>
-    <button id="rulesTutorial" data-i18n="tutorial"></button>
+    <button id="rulesClose" data-i18n="close">Close</button>
+    <button id="rulesTutorial" data-i18n="tutorial">Tutorial</button>
   </div>
   <div id="settingsModal" class="modal">
     <h2>⚙</h2>
@@ -176,18 +176,18 @@
       <option value="ru" data-i18n="selectRussian">Русский</option>
       <option value="uk" data-i18n="selectUkrainian">Українська</option>
     </select></pixel-select>
-    <button id="settingsClose" data-i18n="close"></button>
+    <button id="settingsClose" data-i18n="close">Close</button>
   </div>
   <div id="tutorialOverlay" class="modal">
     <h2 data-i18n="tutorial"></h2>
     <p id="tutorialContent"></p>
-    <button id="tutorialNext" data-i18n="nextBtn"></button>
-    <button id="tutorialClose" data-i18n="close"></button>
+    <button id="tutorialNext" data-i18n="nextBtn">Next</button>
+    <button id="tutorialClose" data-i18n="close">Close</button>
   </div>
   <div id="replayOverlay">
     <div id="replayControls">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button id="replayClose" data-i18n="close"></button>
+        <button id="replayClose" data-i18n="close">Close</button>
         <button id="replayPlay">▶</button>
         <button id="replayPause" style="display:none;">❚❚</button>
       </div>
@@ -204,7 +204,7 @@
   <div id="msgOverlay" class="modal">
     <h2 id="msgTitle"></h2>
     <p id="msgContent"></p>
-    <button id="msgClose" data-i18n="close"></button>
+    <button id="msgClose" data-i18n="close">Close</button>
   </div>
   <script type="module" src="src/pixel-widgets.js"></script>
   <script type="module" src="src/i18n.js"></script>
