@@ -84,7 +84,7 @@
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
     let running=false;
-    let player, objects, spawnTimer, score;
+    let player, objects, spawnTimer, score, difficulty;
     const scoreEl=document.getElementById('score');
     const startBtn=document.getElementById('startBtn');
     const header=document.querySelector('h1');
@@ -117,6 +117,7 @@
       objects=[];
       spawnTimer=0;
       score=0;
+      difficulty=1;
       scoreEl.textContent='Счёт: '+score;
       draw();
     }
@@ -134,12 +135,13 @@
       if(left) player.x=Math.max(0,player.x-2);
       if(right) player.x=Math.min(canvas.width-player.w,player.x+2);
       spawnTimer++;
-      if(spawnTimer>20){
+      difficulty+=0.001;
+      if(spawnTimer>Math.max(5,20-difficulty*2)){
         spawnObject();
         spawnTimer=0;
       }
       for(const o of objects){
-        o.y+=o.vy;
+        o.y+=o.vy*difficulty;
       }
       objects = objects.filter(o=>{
         if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreEl.textContent='Счёт: '+score; return false; }

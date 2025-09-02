@@ -83,7 +83,7 @@
   
   const game = {
     score:0, started:true, over:false,
-    init(){ this.reset(); addEventListener('keydown',e=>this.onKey(e)); loop(); },
+    init(){ this.reset(); },
     reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
@@ -144,8 +144,9 @@
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
     game.draw(); scoreEl.textContent='Score: '+(game.score|0); }
+  addEventListener('keydown',e=>game.onKey(e));
   game.init();
-
+  loop();
 
 })();
 </script>
