@@ -1,70 +1,67 @@
-import anim from './icon-data/anim.json';
-import arena from './icon-data/arena.json';
-import breakout from './icon-data/breakout.json';
-import cards from './icon-data/cards.json';
-import music from './icon-data/music.json';
-import pong from './icon-data/pong.json';
-import rain from './icon-data/rain.json';
-import rhythm from './icon-data/rhythm.json';
-import rogue from './icon-data/rogue.json';
-import snake from './icon-data/snake.json';
-import tower from './icon-data/tower.json';
+(function(){
+  'use strict';
 
-const raw = {anim, arena, breakout, cards, music, pong, rain, rhythm, rogue, snake, tower};
+  const cache = {}, pending = {}, items = [];
+  let frame = 0, last = 0, fps = 12, animating = false;
 
-const cache = {}, items = [];
-let frame = 0, last = 0, fps = 12, animating = false;
+  async function load(name){
+    if(cache[name]) return cache[name];
+    if(pending[name]) return pending[name];
+    pending[name] = fetch(`src/icon-data/${name}.json`)
+      .then(r=>r.json())
+      .then(sets=>{
+        const canvases = sets.map(data=>{
+          const cv = document.createElement('canvas');
+          cv.width = 16; cv.height = 16;
+          const ctx = cv.getContext('2d',{alpha:false});
+          ctx.imageSmoothingEnabled = false;
+          let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+          data.forEach(p=>{ if(p.x<minX) minX=p.x; if(p.y<minY) minY=p.y; if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y; });
+          const w=maxX-minX+1, h=maxY-minY+1;
+          const offX=Math.floor((16-w)/2), offY=Math.floor((16-h)/2);
+          data.forEach(p=>{
+            ctx.fillStyle=p.c;
+            ctx.fillRect(p.x-minX+offX, p.y-minY+offY,1,1);
+          });
+          return cv;
+        });
+        while(canvases.length < 10 && canvases.length > 0){
+          canvases.push(...canvases);
+        }
+        cache[name] = canvases.slice(0, Math.max(10, canvases.length));
+        delete pending[name];
+        return cache[name];
+      });
+    return pending[name];
+  }
 
-function build(name){
-  if(cache[name]) return cache[name];
-  const sets = raw[name] || [];
-  const canvases = sets.map(data=>{
-    const cv = document.createElement('canvas');
-    cv.width = 16; cv.height = 16;
-    const ctx = cv.getContext('2d',{alpha:false});
+  function draw(ctx,name,frame){
+    const set = cache[name];
+    if(!set) return;
+    const img = set[frame % set.length];
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+    ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
+  }
+
+  function loop(t){
+    if(t - last > 1000 / fps){
+      frame++;
+      items.forEach(it=>draw(it.ctx,it.name,frame));
+      last = t;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function animate(canvas,name){
+    const ctx = canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled = false;
-    let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
-    data.forEach(p=>{ if(p.x<minX) minX=p.x; if(p.y<minY) minY=p.y; if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y; });
-    const w=maxX-minX+1, h=maxY-minY+1;
-    const offX=Math.floor((16-w)/2), offY=Math.floor((16-h)/2);
-    data.forEach(p=>{
-      ctx.fillStyle=p.c;
-      ctx.fillRect(p.x-minX+offX, p.y-minY+offY,1,1);
-    });
-    return cv;
-  });
-  while(canvases.length<10 && canvases.length>0){
-    canvases.push(...canvases);
+    items.push({ctx,name});
+    (cache[name] ? Promise.resolve(cache[name]) : load(name)).then(()=>draw(ctx,name,frame));
+    if(!animating){ animating = true; requestAnimationFrame(loop); }
   }
-  cache[name] = canvases.slice(0, Math.max(10, canvases.length));
-  return cache[name];
-}
 
-function draw(ctx,name,frame){
-  const set = build(name);
-  if(!set || !set.length) return;
-  const img = set[frame % set.length];
-  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-  ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
-}
+  function redraw(){ items.forEach(it=>draw(it.ctx,it.name,frame)); }
 
-function loop(t){
-  if(t - last > 1000 / fps){
-    frame++;
-    items.forEach(it=>draw(it.ctx, it.name, frame));
-    last = t;
-  }
-  requestAnimationFrame(loop);
-}
+  window.Icons = { animate, redraw };
+})();
 
-function animate(canvas,name){
-  const ctx = canvas.getContext('2d',{alpha:false});
-  ctx.imageSmoothingEnabled = false;
-  items.push({ctx,name});
-  draw(ctx,name,frame);
-  if(!animating){ animating = true; requestAnimationFrame(loop); }
-}
-
-function redraw(){ items.forEach(it=>draw(it.ctx,it.name,frame)); }
-
-window.Icons = { animate, redraw };
