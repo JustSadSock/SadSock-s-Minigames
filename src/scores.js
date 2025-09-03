@@ -19,8 +19,8 @@
     }
     function show(){
       const list = load();
-      if(!list.length){ alert('Пока нет рекордов'); return; }
-      alert(list.map((s,i)=>`${i+1}. ${s.name}: ${format(s.score)}`).join('\n'));
+      if(!list.length){ UI.alert('Пока нет рекордов'); return; }
+      UI.alert(list.map((s,i)=>`${i+1}. ${s.name}: ${format(s.score)}`).join('\n'));
     }
     return {add, show, load};
   }

@@ -178,12 +178,27 @@ pixel-range .thumb{position:absolute;top:50%;width:14px;height:14px;background:v
 }
 
 .popup{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.4);
   opacity:0;
   pointer-events:none;
 }
 .popup.show{
   pointer-events:auto;
   animation:popup .25s forwards;
+}
+.popup .box{
+  background:var(--tile-bg);
+  border:2px solid var(--bezel);
+  border-radius:var(--r);
+  padding:20px;
+  box-shadow:0 4px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
+  text-align:center;
+  white-space:pre-line;
 }
 
 @keyframes btn-press{

@@ -112,6 +112,7 @@ html,body{overflow:hidden;}
       perspective:var(--persp);
       perspective-origin:50% 50%;
       transform-style:preserve-3d;
+      transition:transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
       -webkit-mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 10%, rgba(0,0,0,1) 90%, transparent 100%);
               mask-image:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 10%, rgba(0,0,0,1) 90%, transparent 100%);
     }
@@ -122,6 +123,10 @@ html,body{overflow:hidden;}
     }
     .reel::before{ left:0; }
     .reel::after{ right:0; }
+
+    .reel.zoom{ transform:translateZ(60px) scale(1.15); }
+
+    .screen.playing .reel{ opacity:0; pointer-events:none; }
 
     .pbtn{
       font-size:12px; letter-spacing:1px; color:var(--ink);
@@ -159,11 +164,12 @@ html,body{overflow:hidden;}
     .menu .row.wide pixel-range{ flex:1; }
 
     .avatar-overlay{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:12;}
-    .avatar-overlay iframe{width:100%; max-width:420px; height:90vh; border:none; background:transparent;}
+    .avatar-overlay iframe{width:100%; max-width:420px; height:90svh; border:none; background:transparent;}
 
     /* CRT-слои */
     .scanlines, .vignette, .glass, .phosphor{
       pointer-events:none; position:absolute; inset:0; border-radius:var(--crt-curve);
+      opacity:0; transition:opacity var(--dur) var(--ease);
     }
     .scanlines{
       background: repeating-linear-gradient(
@@ -204,14 +210,20 @@ html,body{overflow:hidden;}
         radial-gradient(80% 60% at 50% 48%, rgba(201,244,228,.035), transparent 55%);
       mix-blend-mode:screen;
     }
+    .screen.playing .scanlines,
+    .screen.playing .vignette,
+    .screen.playing .glass,
+    .screen.playing .phosphor{
+      opacity:1;
+    }
     .static{
       background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12P4//8/Az7w+PHjY2BgAACh1A9TJS3BMgAAAABJRU5ErkJggg==');
       image-rendering:pixelated;
-      opacity:.08;
-      mix-blend-mode:overlay;
+      opacity:0; mix-blend-mode:overlay;
       animation:staticShift .2s steps(2) infinite;
-      pointer-events:none;
+      pointer-events:none; transition:opacity var(--dur) var(--ease);
     }
+    .screen.playing .static{ opacity:.08; }
 
     @keyframes scanMove{ from{background-position:0 0;} to{background-position:0 4px;} }
     @keyframes tileFlash{ 0%{opacity:1;} 100%{opacity:0;} }

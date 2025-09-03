@@ -6,17 +6,6 @@
   <title data-i18n="retroBreakout"></title>
   <link rel="stylesheet" href="styles/shell.css">
   <style>
-    :root{
-      --bg0:var(--bg);
-      --bg1:var(--bg2);
-      --bg2:var(--panel);
-      --ink:var(--ink);
-      --pastel-pink:var(--accent);
-      --pastel-blue:var(--accent2);
-      --pastel-mint:var(--hi);
-      --pastel-peach:var(--panel);
-      --accent:var(--accent2);
-    }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
       display:flex;
@@ -43,7 +32,7 @@
       border:4px solid var(--pastel-peach);
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
       image-rendering:pixelated;
-      width:clamp(40vw,60vh,90vw);
+      width:clamp(60vw,80svh,96vw);
       height:auto;
       aspect-ratio:3/4;
     }
@@ -66,7 +55,7 @@
 
   </style>
 </head>
-<body>
+<body class="theme-blue">
   <h1>Retro Breakout</h1>
   <div id="score" class="pill">Счёт: 0</div>
   <div id="lives" class="pill">Жизни: 3</div>

@@ -1,0 +1,11 @@
+/* Theme palettes for games */
+.theme-blue {
+  --bg0: var(--bg);
+  --bg1: var(--bg2);
+  --bg2: var(--panel);
+  --pastel-pink: var(--accent);
+  --pastel-blue: var(--accent2);
+  --pastel-mint: var(--hi);
+  --pastel-peach: var(--panel);
+  --accent: var(--accent2);
+}

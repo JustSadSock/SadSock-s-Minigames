@@ -6,17 +6,6 @@
   <title data-i18n="pixelSnake"></title>
   <link rel="stylesheet" href="styles/shell.css">
   <style>
-    :root{
-      --bg0:var(--bg);
-      --bg1:var(--bg2);
-      --bg2:var(--panel);
-      --ink:var(--ink);
-      --pastel-pink:var(--accent);
-      --pastel-blue:var(--accent2);
-      --pastel-mint:var(--hi);
-      --pastel-peach:var(--panel);
-      --accent:var(--accent2);
-    }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
       display:flex;
@@ -43,7 +32,7 @@
       background:var(--bg2);
       border:4px solid var(--pastel-peach);
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
-      width:clamp(40vw,60vh,90vw);
+      width:clamp(60vw,80svh,96vw);
       height:auto;
       aspect-ratio:3/4;
     }
@@ -64,13 +53,22 @@
 
     .pad{position:static;margin-top:8px;}
 
+    .color-pick{display:flex;gap:4px;}
+    .color-pick button{width:36px;height:36px;border:2px solid var(--bezel);border-radius:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi);cursor:pointer;}
+    .color-pick button.sel{outline:2px solid var(--accent);}
+
   </style>
 </head>
-<body>
+<body class="theme-blue">
   <h1>Pixel Snake</h1>
   <div id="score" class="pill">Счёт: 0</div>
   <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  <input id="colorPick" type="color" title="Цвет змейки" style="width:36px;height:36px;border:none;background:none;padding:0">
+  <div id="colorPick" class="color-pick" title="Цвет змейки">
+    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Зелёный"></button>
+    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Синий"></button>
+    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Розовый"></button>
+    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Персиковый"></button>
+  </div>
   <div class="play">
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
@@ -124,11 +122,17 @@
       const m=col.match(/(\d+),\s*(\d+),\s*(\d+)/);
       return m? '#' + [1,2,3].map(i=>('0'+parseInt(m[i]).toString(16)).slice(-2)).join('') : '#3fbf75';
     }
-    colorPick.value=toHex(snakeColor);
-    colorPick.addEventListener('input',e=>{
-      snakeColor=e.target.value;
-      localStorage.setItem('snakeColor',snakeColor);
-      draw();
+    const colorBtns=colorPick.querySelectorAll('button');
+    colorBtns.forEach(btn=>{
+      const getCol=()=>getComputedStyle(document.documentElement).getPropertyValue(btn.dataset.col);
+      if(toHex(getCol())===toHex(snakeColor)) btn.classList.add('sel');
+      btn.addEventListener('click',()=>{
+        snakeColor=getCol().trim();
+        localStorage.setItem('snakeColor',snakeColor);
+        colorBtns.forEach(b=>b.classList.remove('sel'));
+        btn.classList.add('sel');
+        draw();
+      });
     });
 
 
