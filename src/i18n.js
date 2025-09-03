@@ -38,7 +38,10 @@ export function applyTranslations(root=document){
   root.querySelectorAll('*').forEach(el=>{
     for(const [k,v] of Object.entries(el.dataset)){
       if(k.startsWith('i18n') && k !== 'i18n'){
-        const attr = k.slice(4).replace(/([A-Z])/g,'-$1').toLowerCase();
+        const attr = k.slice(4)
+          .replace(/([A-Z])/g,'-$1')
+          .replace(/^-/,'')
+          .toLowerCase();
         const val = dict[v];
         if(val !== undefined){
           el.setAttribute(attr, val);
