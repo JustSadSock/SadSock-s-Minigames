@@ -87,7 +87,12 @@ import { t } from './src/i18n.js';
   
   const game = {
     score:0, started:true, over:false,
-    init(){ this.reset(); },
+    init(){
+      this._onKey = e=>this.onKey(e);
+      addEventListener('keydown', this._onKey);
+      this.reset();
+    },
+    destroy(){ removeEventListener('keydown', this._onKey); },
     reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
@@ -148,8 +153,8 @@ import { t } from './src/i18n.js';
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
     game.draw(); scoreBoard.set(game.score|0); }
-  addEventListener('keydown',e=>game.onKey(e));
   game.init();
+  addEventListener('beforeunload',()=>game.destroy());
   loop();
 
 })();

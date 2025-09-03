@@ -98,13 +98,7 @@
     document.getElementById('scoresBtn').onclick=scores.show;
     let left=false,right=false;
 
-    function toast(text){
-      toastEl.textContent=text;
-      toastEl.classList.remove('show');
-      void toastEl.offsetWidth;
-      toastEl.classList.add('show');
-      setTimeout(()=> toastEl.classList.remove('show'),2000);
-    }
+    const toast = UI.makeToast(toastEl);
     function resetGame(){
       running=false;
       player={x:canvas.width/2-5,y:canvas.height-10,w:10,h:5};

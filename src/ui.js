@@ -9,18 +9,28 @@
       }
     };
   };
-  UI.makeToast=function(el){
-    let timer;
-    return function(text){
-      el.textContent=text;
-      el.classList.remove('show');
-      void el.offsetWidth;
-      el.classList.add('show');
-      clearTimeout(timer);
-      timer=setTimeout(()=>el.classList.remove('show'),2000);
+    UI.makeToast=function(el){
+      let timer;
+      return function(text){
+        el.textContent=text;
+        el.classList.remove('show');
+        void el.offsetWidth;
+        el.classList.add('show');
+        clearTimeout(timer);
+        timer=setTimeout(()=>el.classList.remove('show'),2000);
+      };
     };
-  };
-  UI.autoHidePad=function(pad){
+    UI.tabs=function(nav,sections){
+      const btns=nav.querySelectorAll('[data-tab]');
+      const panels=Array.from(sections);
+      function activate(id){
+        btns.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+        panels.forEach(p=>p.classList.toggle('active',p.id===id));
+      }
+      btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+      if(btns[0]) activate(btns[0].dataset.tab);
+    };
+    UI.autoHidePad=function(pad){
     if(!pad) return;
     const toggle=document.createElement('button');
     toggle.className='btn pad-toggle';
