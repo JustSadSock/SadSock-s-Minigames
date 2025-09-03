@@ -9,17 +9,38 @@
       }
     };
   };
-    UI.makeToast=function(el){
-      let timer;
-      return function(text){
-        el.textContent=text;
-        el.classList.remove('show');
-        void el.offsetWidth;
-        el.classList.add('show');
-        clearTimeout(timer);
-        timer=setTimeout(()=>el.classList.remove('show'),2000);
-      };
+  UI.makeToast=function(el){
+    let timer;
+    return function(text){
+      el.textContent=text;
+      el.classList.remove('show');
+      void el.offsetWidth;
+      el.classList.add('show');
+      clearTimeout(timer);
+      timer=setTimeout(()=>el.classList.remove('show'),2000);
     };
+  };
+  UI.alert=function(text){
+    const wrap=document.createElement('div');
+    wrap.className='popup';
+    const box=document.createElement('div');
+    box.className='box';
+    const p=document.createElement('p');
+    p.textContent=text;
+    const btn=document.createElement('button');
+    btn.className='btn';
+    btn.textContent=global.i18n ? i18n.t('close') : 'OK';
+    btn.dataset.i18n='close';
+    if(global.i18n) i18n.applyTranslations(btn);
+    btn.addEventListener('click',()=>wrap.remove());
+    box.appendChild(p);
+    box.appendChild(btn);
+    wrap.appendChild(box);
+    document.body.appendChild(wrap);
+    void wrap.offsetWidth;
+    wrap.classList.add('show');
+    btn.focus();
+  };
     UI.tabs=function(nav,sections){
       const btns=nav.querySelectorAll('[data-tab]');
       const panels=Array.from(sections);

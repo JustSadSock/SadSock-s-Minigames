@@ -17,15 +17,7 @@ import { initSettings } from './settings.js';
       const indicator = $('.indicator');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
-      const preloaded={};
-      tiles.forEach(t=>{
-        const src=t.dataset.game;
-        const iframe=document.createElement('iframe');
-        iframe.src=src;
-        iframe.style.display='none';
-        document.body.appendChild(iframe);
-        preloaded[src]=iframe;
-      });
+      let activeFrame=null;
       let DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
@@ -263,7 +255,6 @@ import { initSettings } from './settings.js';
 
       function openGame(tile){
         const gameSrc = tile.dataset.game;
-        const frame = preloaded[gameSrc];
         const rect = tile.getBoundingClientRect();
         const srect = screenEl.getBoundingClientRect();
         const canvas = tile.querySelector('canvas');
@@ -281,7 +272,9 @@ import { initSettings } from './settings.js';
         gameOverlay.addEventListener('transitionend', function handler(){
           gameOverlay.removeEventListener('transitionend', handler);
           gameOverlay.innerHTML='';
-          frame.style.display='block';
+          const frame=document.createElement('iframe');
+          frame.src=gameSrc;
+          activeFrame=frame;
           gameOverlay.appendChild(frame);
           const close=document.createElement('button');
           close.className='pbtn close';
@@ -293,10 +286,9 @@ import { initSettings } from './settings.js';
       }
 
       function closeGame(){
-        const frame=gameOverlay.querySelector('iframe');
-        if(frame){
-          frame.style.display='none';
-          document.body.appendChild(frame);
+        if(activeFrame){
+          activeFrame.remove();
+          activeFrame=null;
         }
         gameOverlay.classList.remove('show');
         gameOverlay.innerHTML='';

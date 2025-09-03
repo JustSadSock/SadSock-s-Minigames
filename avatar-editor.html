@@ -63,8 +63,21 @@
   @media (max-height:600px){
     .stage{max-width:120px}
   }
+  .toast{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--pastel-pink);
+    border:2px solid var(--accent);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--ink);
+  }
 </style>
 <script type="module" src="src/pixel-widgets.js"></script>
+<script src="src/ui.js"></script>
 </head>
 <body>
 <div class="cabinet">
@@ -92,12 +105,15 @@
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
 /* ===== base ===== */
 const S=16, cv=document.getElementById('cv'), ctx=cv.getContext('2d',{alpha:true});
 cv.width=cv.height=S;
 ctx.imageSmoothingEnabled=false;
 const UI={tabs:document.getElementById('tabs'), panels:document.getElementById('panels'), gesture:document.getElementById('gesture')};
+const toast=UI.makeToast(document.getElementById('toast'));
 
 /* offscreen: вся отрисовка здесь */
 const off=document.createElement('canvas'); off.width=off.height=S;
@@ -364,7 +380,7 @@ document.getElementById('importJson').onclick = ()=>{
     const f=e.target.files[0];
     if(!f) return;
     const r=new FileReader();
-    r.onload=ev=>{ try{ state=JSON.parse(ev.target.result); render(); }catch(err){ alert('Ошибка импорта'); } };
+    r.onload=ev=>{ try{ state=JSON.parse(ev.target.result); render(); }catch(err){ toast('Ошибка импорта'); } };
     r.readAsText(f);
   };
   inp.click();

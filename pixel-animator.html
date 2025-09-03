@@ -60,6 +60,8 @@
   textarea.code{font-family:ui-monospace,monospace}
   .codeBox{background:#0c0f12;color:#cbe4ff;border:2px solid #2a405b;border-radius:12px;padding:10px;overflow:auto;max-height:220px;font-family:ui-monospace,monospace}
 
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--amber);border:2px solid var(--bezel);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink);}
+
   @media (max-width:600px){
     .workspace{grid-template-columns:1fr;grid-template-rows:1fr auto}
     .tools{max-height:50vh;overflow:auto}
@@ -151,11 +153,14 @@
       </div>
     </div>
   </div>
+
+  <div id="toast" class="toast"></div>
 <script src="src/ui.js"></script>
 <script>
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;
+  const toast=UI.makeToast(document.getElementById('toast'));
   document.querySelectorAll('details.accordion').forEach(d=>{
     if(window.matchMedia('(max-width:600px)').matches) d.removeAttribute('open');
   });
@@ -316,7 +321,7 @@
   function saveLS(){ localStorage.setItem('ss_pixel_animator', JSON.stringify(pack())); }
   function loadLS(){ const data=localStorage.getItem('ss_pixel_animator'); if(data){ try{unpack(JSON.parse(data));}catch(e){} } }
   document.getElementById('btn-export').onclick = ()=>{ io.value = JSON.stringify(pack()); io.scrollTop=0; };
-  document.getElementById('btn-import').onclick = ()=>{ try{ const data = JSON.parse(io.value); unpack(data); }catch(e){ alert('Ошибка импорта: '+e.message); } };
+  document.getElementById('btn-import').onclick = ()=>{ try{ const data = JSON.parse(io.value); unpack(data); }catch(e){ toast('Ошибка импорта: '+e.message); } };
   document.getElementById('btn-copy').onclick   = async()=>{ try{ await navigator.clipboard.writeText(io.value); }catch{} };
   document.getElementById('btn-gencode').onclick = ()=>{
     const data = JSON.stringify(pack());
@@ -331,7 +336,7 @@
   };
   document.getElementById('btn-upload').onclick = ()=>{
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-    inp.onchange=e=>{const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{unpack(JSON.parse(ev.target.result));}catch(err){alert('Ошибка импорта');} }; r.readAsText(f);};
+    inp.onchange=e=>{const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{unpack(JSON.parse(ev.target.result));}catch(err){toast('Ошибка импорта');} }; r.readAsText(f);};
     inp.click();
   };
   document.getElementById('btn-png').onclick = ()=>{
@@ -341,7 +346,7 @@
   };
   loadLS();
   document.getElementById('btn-record').onclick = async()=>{
-    if(!('MediaRecorder' in window)) { alert('MediaRecorder не поддерживается'); return; }
+    if(!('MediaRecorder' in window)) { toast('MediaRecorder не поддерживается'); return; }
     const seconds = Math.max(1, Math.ceil(frames.length / Math.max(1,fps)));
     const stream = canvas.captureStream(Math.max(1,fps)); const rec = new MediaRecorder(stream, {mimeType:'video/webm;codecs=vp9'});
     const chunks=[]; rec.ondataavailable=e=>e.data && chunks.push(e.data); const p=new Promise(r=>rec.onstop=r);

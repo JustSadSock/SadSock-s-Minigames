@@ -1,4 +1,5 @@
 @import url('base.css');
+@import url('themes.css');
 
 .cabinet{min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;}
 .frame{width:min(520px,94vw); height:min(84vh, 86svh);
