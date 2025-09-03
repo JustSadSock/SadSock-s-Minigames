@@ -17,7 +17,7 @@ import { initSettings } from './settings.js';
       const indicator = $('.indicator');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
-      let activeFrame=null;
+      let activeFrame=null, currentTile=null;
       let DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
@@ -254,7 +254,9 @@ import { initSettings } from './settings.js';
       }
 
       function openGame(tile){
+        currentTile = tile;
         const gameSrc = tile.dataset.game;
+        reel.classList.add('zoom');
         const rect = tile.getBoundingClientRect();
         const srect = screenEl.getBoundingClientRect();
         const canvas = tile.querySelector('canvas');
@@ -282,17 +284,47 @@ import { initSettings } from './settings.js';
           close.textContent='×';
           gameOverlay.appendChild(close);
           $('#gameClose').addEventListener('click', closeGame);
+          screenEl.classList.add('playing');
         }, {once:true});
       }
 
       function closeGame(){
+        screenEl.classList.remove('playing');
         if(activeFrame){
           activeFrame.remove();
           activeFrame=null;
         }
-        gameOverlay.classList.remove('show');
-        gameOverlay.innerHTML='';
-        gameOverlay.style.transform='';
+        const tile=currentTile;
+        if(tile){
+          const rect = tile.getBoundingClientRect();
+          const srect = screenEl.getBoundingClientRect();
+          const canvas = tile.querySelector('canvas');
+          const clone = canvas.cloneNode(true);
+          clone.getContext('2d').drawImage(canvas,0,0);
+          gameOverlay.innerHTML='';
+          gameOverlay.appendChild(clone);
+          const scaleX = rect.width/srect.width;
+          const scaleY = rect.height/srect.height;
+          const offsetX = rect.left - srect.left;
+          const offsetY = rect.top - srect.top;
+          gameOverlay.style.transform='translate(0px,0px) scale(1)';
+          requestAnimationFrame(()=>{
+            gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
+          });
+          gameOverlay.addEventListener('transitionend', function handler(){
+            gameOverlay.removeEventListener('transitionend', handler);
+            gameOverlay.classList.remove('show');
+            gameOverlay.style.transform='';
+            gameOverlay.innerHTML='';
+            currentTile=null;
+            focusTile();
+          }, {once:true});
+        }else{
+          gameOverlay.classList.remove('show');
+          gameOverlay.innerHTML='';
+          gameOverlay.style.transform='';
+        }
+        requestAnimationFrame(()=> reel.classList.remove('zoom'));
       }
 
       // стартовая подсказка
