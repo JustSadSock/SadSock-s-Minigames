@@ -209,9 +209,8 @@
   <script type="module" src="src/pixel-widgets.js"></script>
   <script type="module" src="src/i18n.js"></script>
   <script>
-
+  window.addEventListener('DOMContentLoaded',()=>{
   // Main game logic
-  (function(){
     const STEPS=5;
     const DXY={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
     let single=false; let aiLevel='medium'; let round=1; let phase='planA';
@@ -304,7 +303,7 @@
     i18n.applyTranslations();
     bindUI();
     langSelect.value=i18n.lang;
-  })();
+  });
   </script>
 </body>
 </html>
