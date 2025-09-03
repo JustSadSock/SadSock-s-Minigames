@@ -1,19 +1,47 @@
 (function(global){
   'use strict';
   const UI={};
-  UI.score=function(el,label){
+  UI.score=function(el,label,bestLabel){
     return {
       set(value,best){
-        el.textContent=label+': '+value+(best!=null?' (лучший: '+best+')':'');
+        const bl = bestLabel || (global.i18n ? i18n.t('best') : 'best');
+        el.textContent=label+': '+value+(best!=null?' ('+bl+': '+best+')':'');
       }
     };
   };
-  UI.makeToast=function(el){
-    return function(text){
-      el.textContent=text;
-      el.style.display='block';
-      setTimeout(()=>{el.style.display='none';},2000);
+    UI.makeToast=function(el){
+      let timer;
+      return function(text){
+        el.textContent=text;
+        el.classList.remove('show');
+        void el.offsetWidth;
+        el.classList.add('show');
+        clearTimeout(timer);
+        timer=setTimeout(()=>el.classList.remove('show'),2000);
+      };
     };
+    UI.tabs=function(nav,sections){
+      const btns=nav.querySelectorAll('[data-tab]');
+      const panels=Array.from(sections);
+      function activate(id){
+        btns.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+        panels.forEach(p=>p.classList.toggle('active',p.id===id));
+      }
+      btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+      if(btns[0]) activate(btns[0].dataset.tab);
+    };
+    UI.autoHidePad=function(pad){
+    if(!pad) return;
+    const toggle=document.createElement('button');
+    toggle.className='btn pad-toggle';
+    toggle.dataset.i18n='showDPad';
+    pad.parentElement.appendChild(toggle);
+    if(global.i18n) i18n.applyTranslations(toggle);
+    const show=()=>{ pad.classList.remove('hidden'); toggle.classList.remove('show'); };
+    const hide=()=>{ if(pad.classList.contains('hidden')) return; pad.classList.add('hidden'); toggle.classList.add('show'); };
+    toggle.addEventListener('click',e=>{ e.stopPropagation(); show(); });
+    addEventListener('keydown',hide);
+    addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse' && !pad.contains(e.target) && !toggle.contains(e.target)) hide(); });
   };
   UI.attachDPad=function(pad,cb){
     const setBtn=(dir,val)=>{
@@ -31,6 +59,7 @@
       addEventListener('mouseup',off);
       btn.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     return setBtn;
   };
   global.UI=UI;

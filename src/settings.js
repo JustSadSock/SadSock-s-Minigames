@@ -1,4 +1,5 @@
 import { setLang, getLang, applyTranslations } from './i18n.js';
+import './pixel-widgets.js';
 
 // Apply saved preferences early
 const savedTheme = localStorage.getItem('theme');
@@ -19,33 +20,33 @@ export function initSettings(onSpeedChange){
   menu.innerHTML = `
     <div class="row wide">
       <span data-i18n="volume"></span>
-      <input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" data-i18n-aria-label="volume" />
+      <pixel-range><input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" data-i18n-aria-label="volume" /></pixel-range>
     </div>
     <div class="row wide">
       <span data-i18n="screen"></span>
-      <button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen"></button>
+      <button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen">Fullscreen</button>
     </div>
     <div class="row wide">
       <label for="langSelect" data-i18n="language"></label>
-      <select id="langSelect">
+      <pixel-select><select id="langSelect">
         <option value="en" data-i18n="selectEnglish">English</option>
         <option value="ru" data-i18n="selectRussian">Русский</option>
         <option value="uk" data-i18n="selectUkrainian">Українська</option>
-      </select>
+      </select></pixel-select>
     </div>
     <div class="row wide">
       <label for="themeSelect" data-i18n="theme"></label>
-      <select id="themeSelect">
+      <pixel-select><select id="themeSelect">
         <option value="auto" data-i18n="themeAuto">Auto</option>
         <option value="light" data-i18n="themeLight">Light</option>
         <option value="dark" data-i18n="themeDark">Dark</option>
-      </select>
+      </select></pixel-select>
     </div>
     <div class="row wide">
       <span data-i18n="scrollSpeed"></span>
-      <input id="speed" type="range" min="100" max="500" step="20" value="180" data-i18n-aria-label="scrollSpeed" />
+      <pixel-range><input id="speed" type="range" min="100" max="500" step="20" value="180" data-i18n-aria-label="scrollSpeed" /></pixel-range>
     </div>
-    <div style="text-align:center"><button id="settingsOk" class="pbtn" data-i18n="ok" data-i18n-aria-label="close"></button></div>
+    <div style="text-align:center"><button id="settingsOk" class="pbtn" data-i18n="ok" data-i18n-aria-label="close">OK</button></div>
   `;
   document.body.appendChild(menu);
   applyTranslations(menu);

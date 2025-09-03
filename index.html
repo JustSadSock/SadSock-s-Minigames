@@ -17,65 +17,65 @@
         <div class="screen">
       <header class="topbar">
             <button class="avatar" id="avatarBtn" data-i18n-aria-label="profile">
-              <canvas id="avatarCanvas" width="48" height="48"></canvas>
+              <canvas id="avatarCanvas"></canvas>
             </button>
             <h2 class="title" data-i18n="title"></h2>
             <div class="topright">
-              <span id="nickDisplay" data-i18n="player">Player</span>
+              <span id="nickDisplay" data-i18n="player">Player</span><span class="cursor"></span>
               <button class="avatar" id="settingsBtn" data-i18n-aria-label="settings">
-                <canvas id="settingsCanvas" width="32" height="32"></canvas>
+                <canvas id="settingsCanvas"></canvas>
               </button>
             </div>
           </header>
           <div class="reel" role="listbox" data-i18n-aria-label="menu">
               <button class="tile" role="option" data-idx="0" data-color="#ff9eb8" data-game="music-box.html" data-i18n-aria-label="musicBox" data-i18n-title="musicBoxDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="musicBox"></span>
               </button>
               <button class="tile" role="option" data-idx="1" data-color="#00d9b8" data-game="pixel-snake.html" data-i18n-aria-label="pixelSnake" data-i18n-title="pixelSnakeDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="pixelSnake"></span>
               </button>
               <button class="tile" role="option" data-idx="2" data-color="#46a0ff" data-game="memory-flip.html" data-i18n-aria-label="memoryFlip" data-i18n-title="memoryFlipDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="memoryFlip"></span>
               </button>
               <button class="tile" role="option" data-idx="3" data-color="#ffca3a" data-game="dodge-rain.html" data-i18n-aria-label="dodgeRain" data-i18n-title="dodgeRainDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="dodgeRain"></span>
               </button>
               <button class="tile" role="option" data-idx="4" data-color="#ff5f9c" data-game="retro-breakout.html" data-i18n-aria-label="retroBreakout" data-i18n-title="retroBreakoutDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="retroBreakout"></span>
               </button>
               <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" data-i18n-aria-label="pixelAnimator" data-i18n-title="pixelAnimatorDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="pixelAnimator"></span>
               </button>
               <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" data-i18n-aria-label="miniRogue" data-i18n-title="miniRogueDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="miniRogue"></span>
               </button>
               <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" data-i18n-aria-label="pixelPong" data-i18n-title="pixelPongDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="pixelPong"></span>
               </button>
               <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" data-i18n-aria-label="rhythm" data-i18n-title="rhythmDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="rhythm"></span>
               </button>
               <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" data-i18n-aria-label="tower" data-i18n-title="towerDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="tower"></span>
               </button>
               <button class="tile" role="option" data-idx="10" data-color="#81c784" data-game="arena.html" data-i18n-aria-label="arena" data-i18n-title="arenaDesc">
-              <canvas width="120" height="120" aria-hidden="true"></canvas>
+              <canvas aria-hidden="true"></canvas>
               <span class="label" data-i18n="arena"></span>
               </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
-          <div id="avatarOverlay" class="avatar-overlay"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
-          <div id="gameOverlay" class="game-overlay"></div>
+          <div id="avatarOverlay" class="avatar-overlay popup"><iframe src="avatar-editor.html" id="avatarFrame"></iframe></div>
+          <div id="gameOverlay" class="game-overlay popup"></div>
           <div class="scanlines" aria-hidden="true"></div>
           <div class="static" aria-hidden="true"></div>
           <div class="vignette" aria-hidden="true"></div>

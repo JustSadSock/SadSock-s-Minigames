@@ -30,6 +30,7 @@
   <div class="footer">Мобильные стрелки • Клавиатура: ↑/↓, Space — рывок</div>
 </div>
 
+<script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
 <script>
@@ -68,6 +69,7 @@
       addEventListener('mouseup',off);
       el.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     return {st};
   })();
 
@@ -79,13 +81,13 @@
   // ===== Game specific code =====
   
   const game = {
-    name:'Pong', score:0, over:false, started:false,
+    name:'Pong', score:0, over:false, started:false, level:0,
     init(){ this.pw=10; this.ph=80; this.reset(); loop(); },
-    reset(){ this.score=0; this.over=false; this.started=false;
-      this.b={x:SETTINGS.W/2,y:SETTINGS.H/2,vx:180*(Math.random()<.5?1:-1),vy:rnd(-140,140),r:6};
+    reset(){ this.score=0; this.over=false; this.started=false; this.level=0;
       this.p1={x:18,y:SETTINGS.H/2-this.ph/2,s:260};
       this.p2={x:SETTINGS.W-18-this.pw,y:SETTINGS.H/2-this.ph/2,s:240};
       this.s1=0; this.s2=0;
+      this.resetBall(Math.random()<.5?1:-1);
     },
     step(dt){
       const I=Input.st;
@@ -113,7 +115,13 @@
       this.score=Math.max(this.s1,this.s2);
       if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; scores.add(this.score); }
     },
-    resetBall(dir){ const b=this.b; b.x=SETTINGS.W/2; b.y=SETTINGS.H/2; b.vx=dir*180; b.vy=rnd(-140,140); },
+    resetBall(dir){
+      const speed=180 + this.level*20;
+      this.b={x:SETTINGS.W/2,y:SETTINGS.H/2,vx:dir*speed,vy:rnd(-140,140),r:6};
+      this.p1.s=260 + this.level*10;
+      this.p2.s=240 + this.level*10;
+      this.level++;
+    },
     draw(){
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
       ctx.fillStyle='#e6c28a'; for(let y=10;y<SETTINGS.H;y+=18) ctx.fillRect(SETTINGS.W/2-2,y,4,10);

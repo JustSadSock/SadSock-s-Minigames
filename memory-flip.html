@@ -76,8 +76,7 @@
     .front{background:linear-gradient(180deg,var(--pastel-blue),#3a94ef);}
     .back{background:linear-gradient(180deg,var(--pastel-peach),#e3a228);transform:rotateY(180deg);}
     .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
-    #score{margin:0;font-size:14px;text-align:center;}
-    #timer{margin:0;font-size:14px;text-align:center;}
+    #score,#timer,#moves{margin:0;font-size:clamp(16px,4vw,20px);text-align:center;}
 
     .toast{
       position:absolute;
@@ -89,7 +88,6 @@
       border-radius:8px;
       padding:12px 16px;
       font-size:14px;
-      display:none;
       color:var(--ink);
     }
     .pad{position:static;margin-top:8px;}
@@ -97,14 +95,14 @@
 </head>
 <body>
   <h1>Memory Flip</h1>
-  <div id="score">Найдено пар: 0/8</div>
-  <div id="timer"></div>
-  <div id="moves"></div>
-  <button id="scoresBtn" class="k" aria-label="Рекорды">🏆</button>
+  <div id="score" class="pill">Найдено пар: 0/8</div>
+  <div id="timer" class="pill">Время: 0.0с</div>
+  <div id="moves" class="pill">Ходы: 0</div>
+  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
   <div class="play">
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad"><button class="k" id="startBtn" aria-label="Начать игру">START</button></div>
+    <div id="pad" class="pad"><button class="btn" id="startBtn" aria-label="Начать игру">START</button></div>
   </div>
 <script src="src/audio.js"></script>
 <script src="src/ui.js"></script>

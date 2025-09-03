@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title data-i18n="tower"></title>
 <link rel="stylesheet" href="styles/shell.css">
+<script type="module" src="src/pixel-widgets.js"></script>
 </head>
 <body>
 <div class="cabinet">
@@ -19,15 +20,16 @@
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
-      <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;"></button>
+      <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;">A</button>
     </div>
-    <input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Ширина башни" style="margin-top:8px;width:60%;">
+    <pixel-range style="margin-top:8px;width:60%;"><input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Ширина башни"></pixel-range>
     <div class="label">Башня</div>
     <div class="hint">Жми A, чтобы уронить блок.</div>
   </div>
   <div class="footer">Кнопка A • Клавиатура: пробел</div>
 </div>
 
+<script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
 <script>
@@ -70,6 +72,7 @@
       addEventListener('mouseup',off);
       el.addEventListener('mouseleave',off);
     });
+    UI.autoHidePad(pad);
     return {st};
   })();
 

@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <title data-i18n="musicBox"></title>
+<link rel="stylesheet" href="styles/base.css">
 <style>
   :root{
     /* палитра под твой сайт */
@@ -20,11 +21,23 @@
     --cell-on:#ffe6a6;
     --shadow:rgba(0,0,0,.35);
     --r:16px;
+    --btn-bg:var(--cream-2);
+    --btn-border:#e3c17a;
+    --btn-shadow:#d9b16b;
+    --tab-bg:var(--cream-2);
+    --tab-border:#e0ba75;
+    --tab-shadow:#cfa360;
+    --tab-active-bg:var(--cell-on);
+    --pill-bg:var(--cream-2);
+    --pill-border:#e3c17a;
+    --pill-shadow:#d9b16b;
+    --pill-ink:var(--sub);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; color:var(--ink); font:14px/1.35 ui-monospace, Menlo, Consolas, "SF Mono", monospace;
+    margin:0; color:var(--ink); font-size:14px; line-height:1.35;
+    font-family:'Press Start 2P', ui-monospace, monospace;
     background:
       radial-gradient(120% 160% at 50% -20%, #f9e1b3 0%, #f4d6a1 50%, #f2d29a 70%, #efc782 100%);
   }
@@ -52,20 +65,14 @@
   .topbar{display:flex; flex-direction:column; gap:8px}
   .transport{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:6px}
   .left,.right{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  button, select, input, textarea{
+  textarea{
     border-radius:10px; border:1px solid #d9b16b; background:var(--cream);
     color:var(--ink); padding:10px 12px; font:inherit; outline:none;
     box-shadow:0 2px 0 rgba(255,255,255,.6) inset;
   }
-  button{cursor:pointer}
-  button:active{transform:translateY(1px)}
-  .btn{background:var(--cream-2)}
-  .btn.primary{background:var(--cell-on); border-color:#e3ad56}
-  .pill{
-    display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
-    background:var(--cream-2); border:1px solid #e3c17a; color:var(--sub)
-  }
-  .pill input[type="range"]{width:130px}
+  .btn.primary{--btn-bg:var(--cell-on); --btn-border:#e3ad56}
+  .pill{display:flex; align-items:center; gap:8px;}
+  .pill pixel-range{width:130px}
   details.opts>summary{cursor:pointer; list-style:none}
   details.opts>summary::-webkit-details-marker{display:none}
   details.opts>.right{display:flex}
@@ -73,8 +80,8 @@
   details.accordion>summary::-webkit-details-marker{display:none}
 
   .tabs{display:flex; gap:8px; padding:6px}
-  .tabs button{flex:1; border:1px solid #e0ba75; background:var(--cream-2)}
-  .tabs button.active{background:var(--cell-on); color:#5b421f; border-color:#e3a651}
+  .tabs .tab{flex:1}
+  .tabs .tab.active{--tab-active-ink:#5b421f; --tab-border:#e3a651}
 
   .section{display:none; padding:8px}
   .section.active{display:block}
@@ -106,6 +113,7 @@
   .drums .cell{aspect-ratio:1/0.55}
 
   textarea{width:100%; min-height:170px; background:var(--cream); border:1px solid #e3c17a; border-radius:12px}
+  textarea.code{font-family:ui-monospace,monospace; border:2px solid var(--gold-2)}
 
   @media (max-width:600px){
     .transport{flex-direction:column; align-items:flex-start}
@@ -155,24 +163,24 @@
             <summary class="pill">⚙ Options</summary>
             <div class="right">
               <div class="pill">BPM
-                <input type="range" id="bpm" min="60" max="200" value="120"><b id="bpmv">120</b>
+                <pixel-range><input type="range" id="bpm" min="60" max="200" value="120"></pixel-range><b id="bpmv">120</b>
               </div>
               <label class="pill">Root
-                <select id="root"></select>
+                <pixel-select><select id="root"></select></pixel-select>
               </label>
               <label class="pill">Scale
-                <select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select>
+                <pixel-select><select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select></pixel-select>
               </label>
               <label class="pill">Steps
-                <select id="steps"><option>8</option><option selected>16</option><option>32</option></select>
+                <pixel-select><select id="steps"><option>8</option><option selected>16</option><option>32</option></select></pixel-select>
               </label>
             </div>
           </details>
         </div>
         <div class="tabs">
-          <button class="active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
-          <button data-tab="code">📤 Import / Export</button>
-          <button data-tab="info">ℹ Info</button>
+          <button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
+          <button class="tab" data-tab="code">📤 Import / Export</button>
+          <button class="tab" data-tab="info">ℹ Info</button>
         </div>
       </div>
 
@@ -183,10 +191,10 @@
               <strong>Lead</strong>
               <div class="row">
                 <label class="pill">Wave
-                  <select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select>
+                  <pixel-select><select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select></pixel-select>
                 </label>
-                <label class="pill">A<input type="range" id="leadA" min="0" max="200" value="15"></label>
-                <label class="pill">R<input type="range" id="leadR" min="0" max="400" value="80"></label>
+                <label class="pill">A<pixel-range><input type="range" id="leadA" min="0" max="200" value="15"></pixel-range></label>
+                <label class="pill">R<pixel-range><input type="range" id="leadR" min="0" max="400" value="80"></pixel-range></label>
               </div>
             </div>
             <div class="legend" id="leadLegend"></div>
@@ -198,10 +206,10 @@
               <strong>Bass</strong>
               <div class="row">
                 <label class="pill">Wave
-                  <select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select>
+                  <pixel-select><select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select></pixel-select>
                 </label>
-                <label class="pill">A<input type="range" id="bassA" min="0" max="200" value="10"></label>
-                <label class="pill">R<input type="range" id="bassR" min="0" max="400" value="60"></label>
+                <label class="pill">A<pixel-range><input type="range" id="bassA" min="0" max="200" value="10"></pixel-range></label>
+                <label class="pill">R<pixel-range><input type="range" id="bassR" min="0" max="400" value="60"></pixel-range></label>
               </div>
             </div>
             <div class="legend" id="bassLegend"></div>
@@ -225,7 +233,7 @@
             <button class="btn" id="copyOut">Copy</button>
             <button class="btn" id="saveFile">Save file</button>
           </div>
-          <textarea id="out" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
+          <textarea id="out" class="code" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
         </div>
         <div class="panel">
           <strong>Import</strong>
@@ -235,7 +243,7 @@
             <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
             <button class="btn" id="loadFile">Load file</button>
           </div>
-          <textarea id="inp" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
+          <textarea id="inp" class="code" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
         </div>
       </div>
 
@@ -428,13 +436,7 @@ $('leadR').oninput = (e)=> state.lead.R = (+e.target.value)/1000;
 $('bassA').oninput = (e)=> state.bass.A = (+e.target.value)/1000;
 $('bassR').oninput = (e)=> state.bass.R = (+e.target.value)/1000;
 
-document.querySelectorAll('.tabs button').forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    btn.classList.add('active'); $(btn.dataset.tab).classList.add('active');
-  };
-});
+ UI.tabs(document.querySelector('.tabs'), document.querySelectorAll('.section'));
 
 /* ======= Audio ======= */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -578,7 +580,8 @@ $('loadFile').onclick=()=>{
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
-  </script>
-  <script type="module" src="src/i18n.js"></script>
+</script>
+<script type="module" src="src/pixel-widgets.js"></script>
+<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

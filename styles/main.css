@@ -1,58 +1,18 @@
-    :root{
-      /* Пастельная ретро-палитра (без неона) */
-      --bg0:#f0e4d0;     /* более тёмный фон вокруг автомата */
-      --bg1:#ffd9a3;     /* яркий корпус */
-      --bg2:#fff1cc;     /* светлый экран */
-      --ink:#2d1600;     /* тёмный текст */
-      --dim:#714f34;     /* приглушённый */
-      --pastel-pink:#ff5f9c;
-      --pastel-lav:#ff8cc6;
-      --pastel-mint:#00d9b8;
-      --pastel-blue:#46a0ff;
-      --pastel-peach:#ffca3a;
-      --accent:#ff595e;  /* коралл */
-      --accent2:#00bbf9; /* ярко-голубой */
-      --accent3:#ffca3a; /* тёплая подсветка */
-      --bezel-hi:#fff2d4;
-      --bezel:#ffe0b3;
-      --bezel-lo:#ffce91;
+@import url('base.css');
 
-      --tile-bg:#fffbe8;
-      --tile-bg-dim:#d9c7a5;
-      --tile-shadow:0 10px 24px rgba(0,0,0,.45);
-      --tile-shadow-active:0 18px 40px rgba(0,0,0,.6);
+:root{
+  --scan:0.06;
+  --crt-curve:24px;
+  --tile:220px;
+  --px:1px;
+  --gap: clamp(16px, 3.8vmin, 28px);
+  --persp:1200px;
+  --radius:180px;
+  --dur:180ms;
+  --ease:cubic-bezier(.2,.9,.1,1.15);
+}
 
-      --scan:0.06;        /* сканлайны мягче */
-      --crt-curve:24px;   /* скругление «стекла» */
-      --tile:220px;       /* базовый размер иконок (CSS) — ещё крупнее */
-      --px:1px;
-      --gap: clamp(16px, 3.8vmin, 28px);
-      --persp:1200px;     /* перспектива барабана */
-      --radius:180px;     /* базовый радиус цилиндра */
-      --dur:180ms;        /* прокрутка побыстрее по умолчанию */
-      --ease:cubic-bezier(.2,.9,.1,1.15);
-    }
-    *{box-sizing:border-box}
-    html,body{
-      height:100%; margin:0; color:var(--ink); font-size:18px; color-scheme:light dark;
-      background:var(--bg0);
-      font-family:'Press Start 2P', ui-monospace, Consolas, monospace;
-      letter-spacing:.45px;
-      overflow:hidden;
-      touch-action:manipulation;
-      -webkit-user-select:none;
-      user-select:none;
-    }
-
-    /* мелкий пастельный «пиксельный» узор на фоне */
-    body::before{
-      content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-      background:
-        radial-gradient(var(--pastel-peach) 1px, transparent 1px) 0 0/6px 6px,
-        radial-gradient(var(--pastel-pink) 1px, transparent 1px) 3px 3px/6px 6px;
-      opacity:.15;
-    }
-
+html,body{overflow:hidden;}
 
     /* центрируем «кабинет», растягиваем почти на весь экран */
     .cabinet{
@@ -128,8 +88,8 @@
     }
     .topbar .title{ flex:1; text-align:center; font-size:12px; }
     .topright{ display:flex; align-items:center; gap:8px; }
-    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:48px; height:48px; }
-    .avatar canvas{ width:48px; height:48px; image-rendering:pixelated; display:block; }
+    .avatar{ border:none; background:transparent; padding:0; cursor:pointer; border-radius:50%; overflow:hidden; width:clamp(32px,10vw,48px); height:clamp(32px,10vw,48px); }
+    .avatar canvas{ width:100%; height:100%; image-rendering:pixelated; display:block; }
     .avatar{ position:relative; transition:transform .2s ease, filter .2s ease; }
     .avatar::after{
       content:""; position:absolute; inset:-2px; border-radius:50%;
@@ -140,8 +100,8 @@
     .avatar:hover::after{ opacity:.9; }
     .avatar:active{ transform:scale(.94); }
     #nickDisplay{ font-size:10px; }
-    #settingsBtn{ width:32px; height:32px; }
-    #settingsBtn canvas{ width:32px; height:32px; }
+    #settingsBtn{ width:clamp(24px,8vw,32px); height:clamp(24px,8vw,32px); }
+    #settingsBtn canvas{ width:100%; height:100%; }
 
     /* барабан со значками — цилиндр с маской и бликами */
     .reel{
@@ -178,7 +138,12 @@
       pointer-events:none;
     }
     .pbtn:hover{ filter:brightness(1.1); }
-    .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink), inset 0 1px 0 rgba(0,0,0,.35); }
+    .pbtn:active{ transform:translateY(4px); box-shadow:0 0 0 var(--ink), inset 0 1px 0 rgba(0,0,0,.35); animation:pbtn-glitch .2s steps(2) infinite; }
+
+    @keyframes pbtn-glitch{
+      0%,100%{filter:brightness(1);}
+      50%{filter:brightness(1.3);}
+    }
 
     .menu{
       position:absolute; top:50%; left:50%;
@@ -191,10 +156,9 @@
     .menu.show{ display:block; }
     .menu .row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
     .menu .value{ text-align:center; }
-    .menu .row.wide input[type=range]{ flex:1; }
+    .menu .row.wide pixel-range{ flex:1; }
 
-    .avatar-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:12;}
-    .avatar-overlay.show{display:flex;}
+    .avatar-overlay{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:12;}
     .avatar-overlay iframe{width:100%; max-width:420px; height:90vh; border:none; background:transparent;}
 
     /* CRT-слои */
@@ -252,6 +216,12 @@
     @keyframes scanMove{ from{background-position:0 0;} to{background-position:0 4px;} }
     @keyframes tileFlash{ 0%{opacity:1;} 100%{opacity:0;} }
     @keyframes staticShift{ from{background-position:0 0;} to{background-position:4px 4px;} }
+    @keyframes tileGlitch{
+      0%,100%{transform:scale(1.05) translate(0);}
+      25%{transform:scale(1.05) translate(-2px,0);}
+      50%{transform:scale(1.05) translate(2px,0);}
+      75%{transform:scale(1.05) translate(-1px,0);}
+    }
     .tile.flash::after{ opacity:.8; animation:tileFlash .3s steps(1) forwards; }
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
@@ -324,12 +294,25 @@
       border-radius:12px;
       border:2px solid #ffbd69;
       box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
+      transform:scale(1);
+      transition:transform .2s var(--ease), filter .2s linear;
     }
     .tile canvas::after{
       content:""; position:absolute; inset:0; border-radius:inherit;
       background:linear-gradient(145deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%);
       mix-blend-mode:screen; opacity:.4;
       pointer-events:none;
+    }
+
+    .tile:hover canvas,
+    .tile:focus-visible canvas,
+    .tile[data-active="1"] canvas{
+      transform:scale(1.05);
+      filter:brightness(1.15);
+    }
+    .tile:active canvas{
+      animation:tileGlitch .3s steps(2);
+      filter:brightness(1.25);
     }
 
     .tile .label{
@@ -385,7 +368,6 @@
       position:absolute;
       inset:0;
       background:#000;
-      display:none;
       z-index:10;
       transform-origin:0 0;
       transition:transform var(--dur) var(--ease);
@@ -404,30 +386,3 @@
       .tile{ transition:none !important; filter:brightness(1); }
     }
 
-    @media (prefers-color-scheme: dark){
-      :root:not([data-theme]){
-        --bg0:#121212; --bg1:#1e1e1e; --bg2:#2a2a2a;
-        --ink:#f5f5f5; --dim:#888;
-        --pastel-pink:#ff79c6; --pastel-lav:#bd93f9;
-        --pastel-mint:#50fa7b; --pastel-blue:#8be9fd;
-        --pastel-peach:#ffb86c; --accent:#ff5555;
-        --accent2:#8be9fd; --accent3:#ffb86c;
-        --bezel-hi:#2e2e2e; --bezel:#262626; --bezel-lo:#1b1b1b;
-        --tile-bg:#2a2a2a; --tile-bg-dim:#555;
-        color-scheme:dark;
-      }
-      :root:not([data-theme]) body::before{ background:none; }
-    }
-
-    :root[data-theme='dark']{
-      --bg0:#121212; --bg1:#1e1e1e; --bg2:#2a2a2a;
-      --ink:#f5f5f5; --dim:#888;
-      --pastel-pink:#ff79c6; --pastel-lav:#bd93f9;
-      --pastel-mint:#50fa7b; --pastel-blue:#8be9fd;
-      --pastel-peach:#ffb86c; --accent:#ff5555;
-      --accent2:#8be9fd; --accent3:#ffb86c;
-      --bezel-hi:#2e2e2e; --bezel:#262626; --bezel-lo:#1b1b1b;
-      --tile-bg:#2a2a2a; --tile-bg-dim:#555;
-      color-scheme:dark;
-    }
-    :root[data-theme='light']{ color-scheme:light; }

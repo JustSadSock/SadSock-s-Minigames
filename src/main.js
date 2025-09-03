@@ -9,6 +9,7 @@ import { initSettings } from './settings.js';
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const nickDisplay = $('#nickDisplay');
       const avatarCanvas = $('#avatarCanvas');
+      avatarCanvas.width = avatarCanvas.height = 48;
       const avatarBtn = $('#avatarBtn');
       const avatarOverlay = $('#avatarOverlay');
       const reel = $('.reel');
@@ -41,7 +42,9 @@ import { initSettings } from './settings.js';
       /* ---------- Пиксель-рисовалки (пастель) ---------- */
       function px(ctx,x,y,s=2,c='#fff'){ ctx.fillStyle=c; ctx.fillRect(x*s,y*s,s,s); }
       function clear(ctx){ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height); }
-      const gearCtx = $('#settingsCanvas').getContext('2d',{alpha:false});
+      const settingsCanvas = $('#settingsCanvas');
+      settingsCanvas.width = settingsCanvas.height = 32;
+      const gearCtx = settingsCanvas.getContext('2d',{alpha:false});
       gearCtx.imageSmoothingEnabled=false;
       (function drawGear(){
         const S=2; clear(gearCtx); gearCtx.fillStyle='#2d1600';
@@ -76,21 +79,12 @@ import { initSettings } from './settings.js';
 
       initSettings(ms=>{ DUR = ms; });
 
-      // инициализация 4 значков
-      const items=[];
+      // инициализация анимированных значков
       tiles.forEach((tile, i)=>{
         const cv = tile.querySelector('canvas');
-        const ctx = cv.getContext('2d',{alpha:false});
-        ctx.imageSmoothingEnabled = false;
-        items.push({ctx, name: drawers[i%drawers.length]});
+        cv.width = cv.height = 16;
+        Icons.animate(cv, drawers[i%drawers.length]);
       });
-      let frame=0;
-      function animateIcons(){
-        frame++;
-        items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
-        requestAnimationFrame(animateIcons);
-      }
-      animateIcons();
 
       /* ---------- Барабан и навигация ---------- */
       const total = tiles.length;
@@ -277,7 +271,7 @@ import { initSettings } from './settings.js';
         clone.getContext('2d').drawImage(canvas,0,0);
         gameOverlay.innerHTML='';
         gameOverlay.appendChild(clone);
-        gameOverlay.style.display='block';
+        gameOverlay.classList.add('show');
         const scaleX = rect.width/srect.width;
         const scaleY = rect.height/srect.height;
         const offsetX = rect.left - srect.left;
@@ -304,7 +298,7 @@ import { initSettings } from './settings.js';
           frame.style.display='none';
           document.body.appendChild(frame);
         }
-        gameOverlay.style.display='none';
+        gameOverlay.classList.remove('show');
         gameOverlay.innerHTML='';
         gameOverlay.style.transform='';
       }
@@ -324,9 +318,9 @@ import { initSettings } from './settings.js';
           }
         });
         // перерисовать
-          items.forEach(it=> Icons.draw(it.ctx, it.name, frame));
-          recalcSteps();
-          render();
+        Icons.redraw();
+        recalcSteps();
+        render();
       }
       addEventListener('resize', fixDPR, {passive:true});
       // чуть позже, чтобы успели примениться CSS-размеры
