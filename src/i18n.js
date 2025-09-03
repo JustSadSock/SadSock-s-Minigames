@@ -9,8 +9,14 @@ export async function setLang(lang){
     applyTranslations();
     return;
   }
-  const res = await fetch(`i18n/${lang}.json`);
-  cache[lang] = await res.json();
+  try{
+    const res = await fetch(`i18n/${lang}.json`);
+    if(!res.ok) throw new Error(res.statusText);
+    cache[lang] = await res.json();
+  }catch(err){
+    console.error('i18n: failed to load', lang, err);
+    return;
+  }
   currentLang = lang;
   document.documentElement.lang = lang;
   localStorage.setItem('lang', lang);
