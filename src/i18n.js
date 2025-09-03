@@ -9,8 +9,14 @@ export async function setLang(lang){
     applyTranslations();
     return;
   }
-  const res = await fetch(`i18n/${lang}.json`);
-  cache[lang] = await res.json();
+  try{
+    const res = await fetch(`i18n/${lang}.json`);
+    if(!res.ok) throw new Error(res.statusText);
+    cache[lang] = await res.json();
+  }catch(err){
+    console.error('i18n: failed to load', lang, err);
+    return;
+  }
   currentLang = lang;
   document.documentElement.lang = lang;
   localStorage.setItem('lang', lang);
@@ -38,7 +44,10 @@ export function applyTranslations(root=document){
   root.querySelectorAll('*').forEach(el=>{
     for(const [k,v] of Object.entries(el.dataset)){
       if(k.startsWith('i18n') && k !== 'i18n'){
-        const attr = k.slice(4).replace(/([A-Z])/g,'-$1').toLowerCase();
+        const attr = k.slice(4)
+          .replace(/([A-Z])/g,'-$1')
+          .replace(/^-/,'')
+          .toLowerCase();
         const val = dict[v];
         if(val !== undefined){
           el.setAttribute(attr, val);
