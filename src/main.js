@@ -271,8 +271,11 @@ import { initSettings } from './settings.js';
         const offsetY = rect.top - srect.top;
         gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
         requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
-        gameOverlay.addEventListener('transitionend', function handler(){
-          gameOverlay.removeEventListener('transitionend', handler);
+        let started=false;
+        function launch(){
+          if(started) return;
+          started=true;
+          gameOverlay.removeEventListener('transitionend', launch);
           gameOverlay.innerHTML='';
           const frame=document.createElement('iframe');
           frame.src=gameSrc;
@@ -285,7 +288,9 @@ import { initSettings } from './settings.js';
           gameOverlay.appendChild(close);
           $('#gameClose').addEventListener('click', closeGame);
           screenEl.classList.add('playing');
-        }, {once:true});
+        }
+        gameOverlay.addEventListener('transitionend', launch);
+        setTimeout(launch, DUR+50);
       }
 
       function closeGame(){
@@ -311,14 +316,19 @@ import { initSettings } from './settings.js';
           requestAnimationFrame(()=>{
             gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
           });
-          gameOverlay.addEventListener('transitionend', function handler(){
-            gameOverlay.removeEventListener('transitionend', handler);
+          let finished=false;
+          function end(){
+            if(finished) return;
+            finished=true;
+            gameOverlay.removeEventListener('transitionend', end);
             gameOverlay.classList.remove('show');
             gameOverlay.style.transform='';
             gameOverlay.innerHTML='';
             currentTile=null;
             focusTile();
-          }, {once:true});
+          }
+          gameOverlay.addEventListener('transitionend', end);
+          setTimeout(end, DUR+50);
         }else{
           gameOverlay.classList.remove('show');
           gameOverlay.innerHTML='';
