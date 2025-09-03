@@ -31,9 +31,6 @@
     const img=set[frame%set.length];
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
     ctx.drawImage(img,0,0,img.width,img.height,0,0,ctx.canvas.width,ctx.canvas.height);
-    const twX=frame%16, twY=((frame/16)|0)%16;
-    ctx.fillStyle='#fff';
-    ctx.fillRect(twX,twY,1,1);
   }
 
   function loop(t){
