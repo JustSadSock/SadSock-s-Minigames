@@ -6,10 +6,6 @@
 <title data-i18n="pixelPong"></title>
 <link rel="stylesheet" href="styles/shell.css">
 <style>
-  .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;}
-  #score{justify-self:center;}
-  #scoresBtn{justify-self:start;}
-  #status{justify-self:end;}
   #startScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);gap:8px;}
   #startScreen.hidden{display:none;}
   .color-pick{display:flex;gap:4px;}
@@ -21,10 +17,10 @@
 <div class="cabinet">
   <div class="frame">
     <div class="inner">
-      <div class="hud">
-        <div class="pill" id="score">0 : 0</div>
+      <div class="hud hud-3">
         <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
-        <div class="pill" id="status">—</div>
+        <div class="counter" id="score">0 : 0</div>
+        <div class="counter" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>

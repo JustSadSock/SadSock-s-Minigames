@@ -81,7 +81,6 @@
       font-size:14px;
       color:var(--ink);
     }
-    .pad{position:static;margin-top:8px;}
     @keyframes match{
       0%,100%{transform:rotateY(180deg) scale(1);}
       50%{transform:rotateY(180deg) scale(1.1);}
@@ -95,14 +94,16 @@
 </head>
 <body class="theme-blue">
   <h1>Memory Flip</h1>
-  <div id="score" class="pill">Найдено пар: 0/8</div>
-  <div id="timer" class="pill">Время: 0.0с</div>
-  <div id="moves" class="pill">Ходы: 0</div>
-  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  <div class="hud hud-inline">
+    <div id="score" class="counter">Найдено пар: 0/8</div>
+    <div id="timer" class="counter">Время: 0.0с</div>
+    <div id="moves" class="counter">Ходы: 0</div>
+    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  </div>
   <div class="play">
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad"><button class="btn" id="startBtn" aria-label="Начать игру">PLAY</button></div>
+    <div id="pad" class="pad pad-inline"><button class="btn" id="startBtn" aria-label="Начать игру">PLAY</button></div>
   </div>
 <script src="src/audio.js"></script>
 <script src="src/ui.js"></script>

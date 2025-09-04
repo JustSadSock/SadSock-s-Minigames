@@ -6,8 +6,6 @@
 <title data-i18n="rhythm"></title>
 <link rel="stylesheet" href="styles/shell.css">
 <style>
-  .hud{position:static;display:flex;justify-content:center;gap:8px;padding:4px;}
-  #status,#combo{min-width:80px;text-align:center;}
   #startScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);gap:12px;color:#fff;font-family:'Press Start 2P',ui-monospace,monospace;font-size:12px;text-align:center;}
   #startScreen.hidden{display:none;}
   .lanes-demo{display:flex;gap:8px;}
@@ -30,11 +28,11 @@
         <button id="playBtn" class="pill">PLAY</button>
       </div>
     </div>
-    <div class="hud">
+    <div class="hud hud-inline">
       <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
-      <div class="pill" id="score">Score: 0</div>
-      <div class="pill" id="combo">Combo: 0</div>
-      <div class="pill" id="status">—</div>
+      <div class="counter" id="score">Score: 0</div>
+      <div class="counter" id="combo">Combo: 0</div>
+      <div class="counter" id="status">—</div>
     </div>
     <div class="pad" id="pad" aria-hidden="true">
       <div class="k" data-btn="a"></div>

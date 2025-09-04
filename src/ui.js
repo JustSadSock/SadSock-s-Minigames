@@ -2,6 +2,7 @@
   'use strict';
   const UI={};
   UI.score=function(el,label,bestLabel){
+    if(el) el.classList.add('counter');
     return {
       set(value,best){
         const bl = bestLabel || (global.i18n ? i18n.t('best') : 'best');

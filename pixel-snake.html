@@ -51,7 +51,6 @@
       color:var(--ink);
     }
 
-    .pad{position:static;margin-top:8px;}
 
     .color-pick{display:flex;gap:4px;}
     .color-pick button{width:36px;height:36px;border:2px solid var(--bezel);border-radius:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi);cursor:pointer;}
@@ -61,8 +60,10 @@
 </head>
 <body class="theme-blue">
   <h1>Pixel Snake</h1>
-  <div id="score" class="pill">Счёт: 0</div>
-  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  <div class="hud hud-inline">
+    <div id="score" class="counter">Счёт: 0</div>
+    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  </div>
   <div id="colorPick" class="color-pick" title="Цвет змейки">
     <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Зелёный"></button>
     <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Синий"></button>
@@ -72,7 +73,7 @@
   <div class="play">
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
-    <div id="pad" class="pad">
+    <div id="pad" class="pad pad-inline">
       <div class="dpad" aria-hidden="true">
         <div class="k" data-dir="up" style="grid-area:up">▲</div>
         <div class="k" data-dir="left" style="grid-area:left">◄</div>

@@ -50,24 +50,18 @@
       font-size:14px;
       color:var(--ink);
     }
-    .pad{
-      position:absolute;
-      bottom:0;
-      left:50%;
-      transform:translateX(-50%);
-      display:flex;
-      gap:8px;
-    }
   </style>
 </head>
 <body class="theme-blue">
   <h1>Dodge Rain</h1>
-  <div id="score" class="pill">Счёт: 0</div>
-  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  <div class="hud hud-inline">
+    <div id="score" class="counter">Счёт: 0</div>
+    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  </div>
   <div class="play">
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
-    <div id="pad" class="pad">
+    <div id="pad" class="pad pad-center">
       <button class="k" data-dir="left" aria-label="Влево">◄</button>
       <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
       <button class="k" data-dir="right" aria-label="Вправо">►</button>

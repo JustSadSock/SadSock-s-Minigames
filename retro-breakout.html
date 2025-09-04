@@ -51,26 +51,19 @@
       color:var(--ink);
     }
 
-    .pad{
-      position:absolute;
-      bottom:0;
-      left:50%;
-      transform:translateX(-50%);
-      display:flex;
-      gap:8px;
-    }
-
   </style>
 </head>
 <body class="theme-blue">
   <h1 data-i18n="retroBreakout"></h1>
-  <div id="score" class="pill"></div>
-  <div id="lives" class="pill"></div>
-  <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+  <div class="hud hud-inline">
+    <div id="score" class="counter"></div>
+    <div id="lives" class="counter"></div>
+    <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+  </div>
   <div class="play">
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad">
+    <div id="pad" class="pad pad-center">
       <button class="k" data-dir="left">◄</button>
       <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
       <button class="k" data-dir="right">►</button>
