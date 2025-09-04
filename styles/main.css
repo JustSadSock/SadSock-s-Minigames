@@ -124,7 +124,7 @@ html,body{overflow:hidden;}
     .reel::before{ left:0; }
     .reel::after{ right:0; }
 
-    .reel.zoom{ transform:translateZ(60px) scale(1.15); }
+    .reel.zoom{ transform:translateZ(100px) scale(1.25); }
 
     .screen.playing .reel{ opacity:0; pointer-events:none; }
 

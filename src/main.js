@@ -247,40 +247,48 @@ import { initSettings } from './settings.js';
         currentTile = tile;
         const gameSrc = tile.dataset.game;
         reel.classList.add('zoom');
-        const rect = tile.getBoundingClientRect();
-        const srect = screenEl.getBoundingClientRect();
-        const canvas = tile.querySelector('canvas');
-        const clone = canvas.cloneNode(true);
-        clone.getContext('2d').drawImage(canvas,0,0);
-        gameOverlay.innerHTML='';
-        gameOverlay.appendChild(clone);
-        gameOverlay.classList.add('show');
-        const scaleX = rect.width/srect.width;
-        const scaleY = rect.height/srect.height;
-        const offsetX = rect.left - srect.left;
-        const offsetY = rect.top - srect.top;
-        gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
-        requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
-        let started=false;
-        function launch(){
-          if(started) return;
-          started=true;
-          gameOverlay.removeEventListener('transitionend', launch);
+
+        function startExpand(){
+          reel.removeEventListener('transitionend', startExpand);
+          const rect = tile.getBoundingClientRect();
+          const srect = screenEl.getBoundingClientRect();
+          const canvas = tile.querySelector('canvas');
+          const clone = canvas.cloneNode(true);
+          clone.getContext('2d').drawImage(canvas,0,0);
+          tile.style.visibility='hidden';
           gameOverlay.innerHTML='';
-          const frame=document.createElement('iframe');
-          frame.src=gameSrc;
-          activeFrame=frame;
-          gameOverlay.appendChild(frame);
-          const close=document.createElement('button');
-          close.className='pbtn close';
-          close.id='gameClose';
-          close.textContent='×';
-          gameOverlay.appendChild(close);
-          $('#gameClose').addEventListener('click', closeGame);
-          screenEl.classList.add('playing');
+          gameOverlay.appendChild(clone);
+          gameOverlay.classList.add('show');
+          const scaleX = rect.width/srect.width;
+          const scaleY = rect.height/srect.height;
+          const offsetX = rect.left - srect.left;
+          const offsetY = rect.top - srect.top;
+          gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
+          requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
+          let started=false;
+          function launch(){
+            if(started) return;
+            started=true;
+            gameOverlay.removeEventListener('transitionend', launch);
+            gameOverlay.innerHTML='';
+            const frame=document.createElement('iframe');
+            frame.src=gameSrc;
+            activeFrame=frame;
+            gameOverlay.appendChild(frame);
+            const close=document.createElement('button');
+            close.className='pbtn close';
+            close.id='gameClose';
+            close.textContent='×';
+            gameOverlay.appendChild(close);
+            $('#gameClose').addEventListener('click', closeGame);
+            screenEl.classList.add('playing');
+          }
+          gameOverlay.addEventListener('transitionend', launch);
+          setTimeout(launch, DUR+50);
         }
-        gameOverlay.addEventListener('transitionend', launch);
-        setTimeout(launch, DUR+50);
+
+        reel.addEventListener('transitionend', startExpand);
+        setTimeout(startExpand, DUR+50);
       }
 
       function closeGame(){
@@ -314,6 +322,7 @@ import { initSettings } from './settings.js';
             gameOverlay.classList.remove('show');
             gameOverlay.style.transform='';
             gameOverlay.innerHTML='';
+            tile.style.visibility='';
             currentTile=null;
             focusTile();
           }
