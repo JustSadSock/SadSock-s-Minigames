@@ -117,14 +117,14 @@ import('./src/i18n.js').catch(e=>{
   // ===== Game specific code =====
   
   const game = {
-    score:0, started:true, over:false,
+    score:0, started:true, over:false, recorded:false,
     init(){
       this._onKey = e=>this.onKey(e);
       addEventListener('keydown', this._onKey);
       this.reset();
     },
     destroy(){ removeEventListener('keydown', this._onKey); },
-    reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
+    reset(){ this.score=0; this.over=false; this.recorded=false; Sound.fx('start');
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
@@ -185,12 +185,12 @@ import('./src/i18n.js').catch(e=>{
       ctx.restore();
     }
   };
-  let last=performance.now(), recorded=false;
+  let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt);
-    if(game.over && !recorded){
+    if(game.over && !game.recorded){
       scores.add(game.score);
-      recorded=true;
+      game.recorded=true;
       if(game.score>best){ best=game.score; localStorage.setItem('rogueBest',best); }
     }
     game.draw(); scoreBoard.set(game.score|0,best); }
