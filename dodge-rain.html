@@ -54,14 +54,14 @@
 </head>
   <body class="theme-blue">
     <canvas class="icon" data-icon="rain" aria-hidden="true"></canvas>
-    <h1>Dodge Rain</h1>
+    <h1 data-i18n="dodgeRain"></h1>
   <div class="play">
     <div class="hud">
-      <div id="score" class="counter">Счёт: 0</div>
-      <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+      <div id="score" class="counter">0</div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
       <div id="status" class="counter" style="visibility:hidden"></div>
     </div>
-    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
+    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
       <div class="dpad" aria-hidden="true">
@@ -71,7 +71,7 @@
         <div class="k" data-dir="right" style="grid-area:right">►</div>
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
-      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
+      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
     </div>
   </div>
     <script src="src/ui.js"></script>
@@ -95,7 +95,7 @@
     const scores=Scores('rain');
     document.getElementById('scoresBtn').onclick=scores.show;
     let best=parseInt(localStorage.getItem('rainBest')||'0',10);
-    const scoreBoard=UI.score(scoreEl,'Счёт');
+    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
     scoreBoard.set(0,best);
     let left=false,right=false;
 
@@ -176,7 +176,7 @@
         if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){
           running=false;
           Sound.fx('error');
-          toast('Счёт: '+score);
+          toast('Score: '+score);
           if(score>best){ best=score; localStorage.setItem('rainBest',best); }
           scores.add(score);
           resetGame();

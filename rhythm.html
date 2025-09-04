@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -18,14 +18,14 @@
     <div class="inner">
       <canvas class="icon" data-icon="rhythm" aria-hidden="true"></canvas>
       <div class="hud">
-        <div class="counter" id="score">Score: 0</div>
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+        <div class="counter" id="score">0</div>
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
         <div style="display:flex;gap:4px;">
-          <div class="counter" id="combo">Combo: 0</div>
+          <div class="counter" id="combo">0</div>
           <div class="counter" id="status">—</div>
         </div>
       </div>
-      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
+      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
         <div class="lanes-demo">
@@ -34,7 +34,7 @@
           <div style="background:var(--pastel-mint)">K</div>
           <div style="background:var(--pastel-peach)">L</div>
         </div>
-        <button id="playBtn" class="pill">PLAY</button>
+        <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
     <div class="pad" id="pad" aria-hidden="true">
@@ -43,9 +43,9 @@
       <div class="k" data-btn="left"></div>
       <div class="k" data-btn="right"></div>
     </div>
-    <div class="label">Ритм</div>
+    <div class="label">Rhythm</div>
   </div>
-  <div class="footer">Мобильные A/S/K/L • Клавиатура: A/S/K/L</div>
+  <div class="footer">Mobile A/S/K/L • Keyboard: A/S/K/L</div>
 </div>
 
 <script src="src/ui.js"></script>
@@ -69,8 +69,9 @@
     .map(v=>cs.getPropertyValue(v).trim()+"33");
   const noteCols=['#ff5f9c','#46a0ff','#00d9b8','#ffca3a'];
   let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
-  const scoreBoard=UI.score(scoreEl,'Score');
+  const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
   scoreBoard.set(0,best);
+  const comboLabel=globalThis.i18n?.t('combo')||'Combo';
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
@@ -116,7 +117,7 @@
     reset(){ this.score=0; this.started=false; this.over=false;
       best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
       scoreBoard.set(0,best);
-      comboEl.textContent='Combo: 0';
+      comboEl.textContent=comboLabel+': 0';
       statusEl.textContent='—';
       this.lanes=4; this.speed=180; this.barY=SETTINGS.H-120;
       const pattern=[0,1,2,3, 0,1,2,3, 0,2,1,3, 0,1,2,3];
@@ -130,13 +131,13 @@
       if(bd<=this.winPerf/2){ this.score+=300; this.combo++; statusEl.textContent='PERFECT'; best.hit=true; Sound.fx('coin'); }
       else if(bd<=this.winGood/2){ this.score+=100; this.combo++; statusEl.textContent='GOOD'; best.hit=true; Sound.fx('coin'); }
       else { this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); }
-      comboEl.textContent='Combo: '+this.combo;
+      comboEl.textContent=comboLabel+': '+this.combo;
     },
     step(dt){
       const I=Input.st;
       if(this.over){ if(I.a||I.b||I.left||I.right){ this.reset(); } return; }
       if(!this.started){ if(I.a||I.b||I.left||I.right){ this.started=true; startScreen.classList.add('hidden'); Sound.fx('start'); } else return; }
-      for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; comboEl.textContent='Combo: 0'; Sound.fx('error'); } }
+          for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; comboEl.textContent=comboLabel+': 0'; Sound.fx('error'); } }
       if(I.a) this.tryHit(0); if(I.b) this.tryHit(1); if(I.left) this.tryHit(2); if(I.right) this.tryHit(3);
       if(this.notes.every(n=>n.hit)){ this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('rhythmBest',best); } scores.add(this.score); }
     },
@@ -149,7 +150,7 @@
       const prog=this.notes.filter(n=>n.hit).length/this.total;
       ctx.fillStyle='#d18f3f'; ctx.fillRect(0,8,SETTINGS.W*prog,8);
       ctx.strokeStyle='#bf8a3d'; ctx.strokeRect(0,8,SETTINGS.W,8);
-      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Трек окончен. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Track over. A to retry', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };

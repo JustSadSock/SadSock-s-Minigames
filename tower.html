@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -18,16 +18,16 @@
       <div class="inner">
         <canvas class="icon" data-icon="tower" aria-hidden="true"></canvas>
         <div class="hud">
-        <div class="counter" id="score">Score: 0</div>
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+        <div class="counter" id="score">0</div>
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
         <div class="counter" id="status">—</div>
       </div>
-      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
+      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div id="overlay" data-i18n="dropBlock"></div>
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
-      <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;">A</button>
+      <button class="k" data-btn="a" data-i18n-aria-label="dropBlock" style="width:40vw;max-width:160px;">A</button>
     </div>
     <div class="options" style="margin-top:8px;width:70%;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
       <label class="pill" style="flex:1;display:flex;gap:6px;align-items:center;justify-content:center;">
@@ -37,9 +37,9 @@
       <div class="pill" id="mode">∞</div>
       <button class="pill" id="diffBtn" data-i18n="easy" data-i18n-title="difficulty" title="Difficulty"></button>
     </div>
-    <div class="label" data-i18n="tower">Башня</div>
+    <div class="label" data-i18n="tower"></div>
   </div>
-  <div class="footer">Кнопка A • Клавиатура: пробел</div>
+  <div class="footer">Button A • Keyboard: Space</div>
 </div>
 
 <script src="src/ui.js"></script>
@@ -112,7 +112,7 @@
     init(){ this.reset(); loop(); },
     reset(){
       this.score=0; this.started=false; this.over=false;
-      scoreEl.textContent='Score: 0 (best: '+best+')';
+      scoreEl.textContent=t('score')+': 0 ('+t('best')+': '+best+')';
       this.baseY=SETTINGS.H-60; this.speed=120+difficulty*30; this.g=900+difficulty*150;
       const startW=parseInt(widthRange.value)/100*SETTINGS.W;
       const startX=(SETTINGS.W-startW)/2;
@@ -154,13 +154,13 @@
       this.layers.forEach(L=>drawB(L,'#cbe7aa'));
       drawB(this.prev,'#ffd88a'); drawB(this.active,'#9be0c0');
       if(this.slice) drawB(this.slice,'#ffb590');
-      if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Промах. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Miss. A to retry', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); if(game.started) overlay.textContent=t('height')+': '+game.score; scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
+    game.step(dt); game.draw(); if(game.started) overlay.textContent=t('height')+': '+game.score; scoreEl.textContent=t('score')+': '+(game.score|0)+' ('+t('best')+': '+best+')'; }
   game.init();
 
 

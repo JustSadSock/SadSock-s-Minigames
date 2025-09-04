@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -20,13 +20,13 @@
       <canvas class="icon" data-icon="pong" aria-hidden="true"></canvas>
       <div class="hud hud-3">
         <div class="counter" id="score">0 : 0</div>
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
         <div class="counter" id="status">—</div>
       </div>
-      <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
+      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
-        <div id="colorPick" class="color-pick" title="Цвет ракетки">
+        <div id="colorPick" class="color-pick" title="Paddle color">
           <button data-col="--pastel-mint" style="background:var(--pastel-mint)"></button>
           <button data-col="--pastel-blue" style="background:var(--pastel-blue)"></button>
           <button data-col="--pastel-pink" style="background:var(--pastel-pink)"></button>
@@ -39,7 +39,7 @@
             <option value="2">Hard</option>
           </select>
         </label>
-        <button id="playBtn" class="pill">PLAY</button>
+        <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
     <div class="pad" id="pad" aria-hidden="true">
@@ -49,9 +49,9 @@
       </div>
     </div>
     <div class="label">Pixel Pong</div>
-    <div class="hint">Pong: ↑/↓. Space — рывок.</div>
+    <div class="hint">Pong: ↑/↓. Space to dash.</div>
   </div>
-  <div class="footer">Мобильные стрелки • Клавиатура: ↑/↓, Space — рывок</div>
+  <div class="footer">Mobile arrows • Keyboard: ↑/↓, Space to dash</div>
 </div>
 
 <script src="src/ui.js"></script>
@@ -68,7 +68,7 @@
   const scores=Scores('pong');
   d('#scoresBtn').onclick=scores.show;
   let best=parseInt(localStorage.getItem('pongBest')||'0',10);
-  const scoreBoard=UI.score(scoreEl,'Счёт');
+  const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
   scoreBoard.set('0 : 0',best);
   const ctx=cv.getContext('2d');
   const styles=getComputedStyle(document.documentElement);
@@ -82,7 +82,9 @@
   let difficulty=parseInt(localStorage.getItem('pongAI')||'1',10);
   aiSelect.value=difficulty;
   aiSelect.addEventListener('change',()=>{difficulty=parseInt(aiSelect.value,10); localStorage.setItem('pongAI',aiSelect.value);});
-  function showStart(text='PLAY'){ startScreen.classList.remove('hidden'); playBtn.textContent=text; }
+  const startLabel=globalThis.i18n?.t('start')||'Start';
+  const restartLabel=globalThis.i18n?.t('restart')||'Restart';
+  function showStart(text=startLabel){ startScreen.classList.remove('hidden'); playBtn.textContent=text; }
   function startGame(){ startScreen.classList.add('hidden'); if(hint) hint.style.display='none'; game.started=true; Sound.fx('start'); }
   playBtn.addEventListener('click',()=>{ if(game.over) game.reset(); startGame(); });
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
@@ -159,7 +161,7 @@
       if(b.x<-20){ this.s2++; Sound.fx('coin'); this.resetBall(-1); }
       if(b.x>SETTINGS.W+20){ this.s1++; Sound.fx('coin'); this.resetBall(+1); }
       this.score=Math.max(this.s1,this.s2);
-      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; if(this.score>best){best=this.score; localStorage.setItem('pongBest',best);} scores.add(this.score); showStart('RESTART'); }
+  if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; if(this.score>best){best=this.score; localStorage.setItem('pongBest',best);} scores.add(this.score); showStart(restartLabel); }
     },
     resetBall(dir){
       const speed=180 + this.level*20 + this.difficulty*20;

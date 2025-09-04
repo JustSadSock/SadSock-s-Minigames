@@ -59,21 +59,21 @@
   </style>
 </head>
   <body class="theme-blue">
-    <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
-    <h1>Pixel Snake</h1>
-  <div id="colorPick" class="color-pick" title="Цвет змейки">
-    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Зелёный"></button>
-    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Синий"></button>
-    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Розовый"></button>
-    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Персиковый"></button>
+  <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
+  <h1>Pixel Snake</h1>
+  <div id="colorPick" class="color-pick" title="Snake color">
+    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
+    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
+    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
+    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
   </div>
   <div class="play">
     <div class="hud">
-      <div id="score" class="counter">Счёт: 0</div>
-      <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+      <div id="score" class="counter">0</div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
       <div id="status" class="counter" style="visibility:hidden"></div>
     </div>
-    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
+    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-inline">
       <div class="dpad" aria-hidden="true">
@@ -84,7 +84,7 @@
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
       <div class="ab">
-        <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
+        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
   </div>
@@ -112,7 +112,7 @@
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
     const colorPick=document.getElementById('colorPick');
-    const scoreBoard=UI.score(scoreEl,'Счёт');
+    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
     const scores=Scores('snake');
     document.getElementById('scoresBtn').onclick=scores.show;
     const toast=UI.makeToast(toastEl);
@@ -161,7 +161,7 @@
       best=parseInt(localStorage.getItem('snakeBest')||'0',10);
       scoreBoard.set(score,best);
       running=false;
-      startBtn.textContent='START';
+      startBtn.textContent=globalThis.i18n?.t('start')||'Start';
     }
     function spawnApple(){
       let pos;
@@ -179,9 +179,9 @@
         if(score>best){
           best=score;
           localStorage.setItem('snakeBest',best);
-          toast('Новый рекорд: '+score);
+          toast('New record: '+score);
         }else{
-          toast('Счёт: '+score);
+          toast('Score: '+score);
         }
         scores.add(score);
         resetGame();
@@ -223,12 +223,12 @@
     function startGame(){
       if(running){
         running=false;
-        startBtn.textContent='START';
+        startBtn.textContent=globalThis.i18n?.t('start')||'Start';
         return;
       }
       running=true;
       lastTime=0; acc=0;
-      startBtn.textContent='PAUSE';
+      startBtn.textContent='Pause';
       Sound.fx('start');
       requestAnimationFrame(loop);
     }

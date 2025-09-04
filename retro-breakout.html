@@ -72,7 +72,7 @@
         <div class="k" data-dir="right" style="grid-area:right">►</div>
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
-      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
+      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
     </div>
   </div>
   <script src="src/audio.js"></script>
@@ -206,7 +206,7 @@
       Sound.fx('start');
       resetGame();
       gameRunning=true;
-      startBtn.textContent=globalThis.i18n?.t('restart')||'RESTART';
+          startBtn.textContent=globalThis.i18n?.t('restart')||'Restart';
       requestAnimationFrame(loop);
     }
     const setBtn=UI.attachDPad(pad,dir=>{
