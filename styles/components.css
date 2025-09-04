@@ -21,6 +21,13 @@
   align-items:center;
 }
 
+.icon{
+  width:16px;
+  height:16px;
+  display:block;
+  image-rendering:pixelated;
+}
+
 .pad{
   position:absolute;
   left:10px;

@@ -47,9 +47,6 @@ import { initSettings } from './settings.js';
         });
       })();
 
-      // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower','arena'];
-
       /* ---------- Профиль ---------- */
       function loadProfile(){
         const ctx = avatarCanvas.getContext('2d',{alpha:false});
@@ -70,13 +67,6 @@ import { initSettings } from './settings.js';
       window.addEventListener('message', e=>{ if(e.data && e.data.type==='avatarSaved'){ avatarOverlay.classList.remove('show'); loadProfile(); } });
 
       initSettings(ms=>{ DUR = ms; });
-
-      // инициализация анимированных значков
-      tiles.forEach((tile, i)=>{
-        const cv = tile.querySelector('canvas');
-        cv.width = cv.height = 16;
-        Icons.animate(cv, drawers[i%drawers.length]);
-      });
 
       /* ---------- Барабан и навигация ---------- */
       const total = tiles.length;
