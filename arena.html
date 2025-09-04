@@ -4,125 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="arena"></title>
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/shell.css">
   <style>
-    :root {
-      --bg-color: var(--bg0);
-      --card-bg: var(--tile-bg);
-      --card-border: var(--bezel);
-      --board-bg: var(--tile-bg);
-      --board-border: var(--bezel);
-      --cell-bg: var(--tile-bg);
-      --cell-border: var(--bezel);
-      --cell-collapsed-bg: var(--accent);
-      --playerA-color: #4A90E2;
-      --playerB-color: #E46472;
-      --attack-color: #EF6C57;
-      --shield-color: #81C784;
-      --text-color: var(--ink);
-      --btn-bg: var(--tile-bg);
-      --btn-hover: var(--accent3);
-      --btn-disabled: var(--tile-bg-dim);
+    :root{
+      --playerA-color:var(--pastel-blue);
+      --playerB-color:var(--pastel-pink);
+      --attack-color:var(--accent);
+      --shield-color:var(--accent2);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; font-family: 'Press Start 2P', monospace; }
-    body { background: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; align-items: center; }
-    button, select, input, .card { font-family: inherit; }
-    .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; width: 100%; height: 100svh; }
-    .card { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px 40px; min-width: 200px; text-align: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.15s, box-shadow 0.15s; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-    .card:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    #gameArea { width: 100%; max-width: 480px; margin: 20px auto; position: relative; }
-    #outerFrame { background: var(--panel); border: 6px solid var(--card-border); border-radius: 28px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 4px 8px rgba(0,0,0,0.1); width: fit-content; margin: 0 auto; }
-    #playArea { display: flex; flex-direction: column; align-items: center; background: var(--board-bg); border: none; border-radius: 16px; padding: 12px; gap: 12px; }
-    #board { display: grid; grid-template-columns: repeat(5, 60px); grid-template-rows: repeat(5, 60px); gap: 4px; margin: 0; background: var(--board-bg); border: none; border-radius: 12px; padding: 0; position: relative; }
-    .cell { width: 60px; height: 60px; background: var(--cell-bg); border: 2px solid var(--cell-border); border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 36px; user-select: none; }
-    .cell.preview-move { outline: 2px dashed var(--text-color); }
-    .cell.preview-attack { outline: 2px dashed var(--attack-color); }
-    .cell.preview-shield { outline: 2px dashed var(--shield-color); }
-    .cell.collapsed { background: var(--cell-collapsed-bg); opacity: 0.6; }
-    .token { width: 60%; height: 60%; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; }
-    .token.A { background: var(--playerA-color); }
-    .token.B { background: var(--playerB-color); }
-    .action-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; pointer-events: none; z-index: 4; animation: pop 0.5s ease-out forwards; }
-    .preview-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; pointer-events: none; z-index: 3; opacity: 0.6; }
-    @keyframes pop { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
-    #ui { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 0 0 12px 12px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: none; flex-direction: column; gap: 10px; width: fit-content; margin: 0 auto; }
-    #ui.show { display: flex; }
-    #phase { text-align: center; font-size: 16px; min-height: 24px; }
-    #planCells { display: flex; justify-content: space-between; }
-    .planCell { width: 18%; height: 40px; border: 3px solid var(--card-border); background: var(--board-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100svh;gap:8px;color:var(--ink);}
+    .screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;}
+    .screen .btn{min-width:160px;}
+    #gameArea{position:relative;width:100%;max-width:300px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;}
+    #scoreboard{display:flex;align-items:center;gap:6px;}
+    #board{display:grid;grid-template-columns:repeat(5,16px);grid-template-rows:repeat(5,16px);gap:2px;background:var(--panel);padding:4px;border:2px solid var(--bezel);}
+    .cell{width:16px;height:16px;background:var(--tile-bg);border:1px solid var(--bezel);position:relative;}
+    .cell.preview-move{outline:1px dashed var(--ink);}
+    .cell.preview-attack{outline:1px dashed var(--attack-color);}
+    .cell.preview-shield{outline:1px dashed var(--shield-color);}
+    .cell.collapsed{background:var(--accent);opacity:.5;}
+    .token{width:12px;height:12px;border:1px solid var(--bezel);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);image-rendering:pixelated;}
+    .token.A{background:var(--playerA-color);}
+    .token.B{background:var(--playerB-color);}
+    .action-icon,.preview-icon{font-size:12px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+    #ui{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:6px;padding:8px;background:var(--panel);border-top:2px solid var(--bezel);transform:translateY(100%);transition:transform .2s;}
+    #ui.show{transform:translateY(0);}
+    #phase{text-align:center;font-size:12px;}
+    #planCells{display:flex;justify-content:space-between;}
+    .planCell{width:16px;height:16px;border:1px solid var(--bezel);background:var(--tile-bg);display:flex;align-items:center;justify-content:center;font-size:12px;}
     #pad .k[data-act="attack"]{color:var(--attack-color);}
     #pad .k[data-act="shield"]{color:var(--shield-color);}
-    #navButtons { display: flex; gap: 10px; justify-content: space-between; }
-    #navButtons button { flex: 1; padding: 14px; font-size: 20px; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; color: var(--text-color); }
-    #navButtons button:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-    #navButtons button:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    #navButtons button:disabled { background: var(--btn-disabled); cursor: default; color: #999; box-shadow: none; }
-    #scoreboard { width: fit-content; margin: 0 auto; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px 12px 0 0; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    #scoreboard button { padding: 4px 10px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; font-size: 16px; }
-    #scoreboard button:hover { background: var(--btn-hover); }
-    #atkOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 50; }
-    #atkOverlay.show { display: flex; }
-    #atkOverlay .atkBox { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; display: grid; grid-template-areas: " . up . " " left center right" " . down . " " ok ok ok " " cancel cancel cancel"; gap: 10px; }
-    #atkOverlay button { padding: 12px; font-size: 24px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; text-align: center; }
-    #atkOverlay button.sel { background: var(--btn-hover); }
-    #atkOverlay .up { grid-area: up; }
-    #atkOverlay .down { grid-area: down; }
-    #atkOverlay .left { grid-area: left; }
-    #atkOverlay .right { grid-area: right; }
-    #atkOverlay .ok { grid-area: ok; }
-    #atkOverlay .cancel { grid-area: cancel; }
-    #atkOverlay .center { grid-area: center; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--attack-color); pointer-events: none; }
-    .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; max-width: 90%; max-height: 80%; overflow-y: auto; z-index: 60; display: none; }
-    .modal.show { display: block; }
-    .modal h2 { margin-bottom: 10px; font-size: 20px; }
-    .modal p { margin-bottom: 8px; line-height: 1.4; font-size: 14px; }
-    .modal button { margin-top: 12px; padding: 8px 12px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
-    .modal button:hover { background: var(--btn-hover); }
-    .modal label { display: block; margin-top: 10px; font-size: 14px; }
-    .modal pixel-select, .modal pixel-range { width: 100%; margin-top: 4px; display:block; }
-    #replayOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 70; }
-    #replayOverlay.show { display: flex; }
-    #replayControls { background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
-    #replayControls button { padding: 6px 10px; font-size: 14px; background: var(--btn-bg); border: 2px solid var(--card-border); border-radius: 6px; cursor: pointer; }
-    #replayControls button:hover { background: var(--btn-hover); }
-    #replayControls pixel-range { width: 100%; }
-    #speedButtons { display: flex; gap: 4px; justify-content: center; }
-    #speedButtons button.active { background: var(--btn-hover); }
-    @media (max-width: 420px) { #board { grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px); } .cell { width: 50px; height: 50px; font-size: 24px; } }
+    #navButtons{display:flex;gap:8px;}
+    #navButtons .btn{flex:1;}
+    #atkOverlay,#replayOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:50;}
+    #atkOverlay.show,#replayOverlay.show{display:flex;}
+    #atkOverlay .atkBox{background:var(--panel);border:2px solid var(--bezel);padding:8px;display:grid;grid-template-areas:" . up . " " left center right" " . down . " " ok ok ok " " cancel cancel cancel";gap:4px;}
+    #atkOverlay button{font-size:16px;}
+    #replayControls{background:var(--panel);border:2px solid var(--bezel);padding:8px;display:flex;flex-direction:column;gap:4px;}
+    .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:2px solid var(--bezel);padding:8px;display:none;z-index:60;}
+    .modal.show{display:block;}
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <canvas class="icon" data-icon="arena" aria-hidden="true"></canvas>
   <div id="modeSelect" class="screen">
-    <div class="card" id="btn1p" data-i18n="singlePlayer">1P</div>
-    <div class="card" id="btn2p" data-i18n="twoPlayers">2P</div>
-    <div class="card" id="rulesBtnInitial" data-i18n="rules">Rules</div>
+    <button class="btn" id="btn1p" data-i18n="singlePlayer">1P</button>
+    <button class="btn" id="btn2p" data-i18n="twoPlayers">2P</button>
+    <button class="btn" id="rulesBtnInitial" data-i18n="rules">Rules</button>
   </div>
   <div id="difficultySelect" class="screen" style="display:none;">
-    <div class="card" data-level="easy" data-i18n="easy">Easy</div>
-    <div class="card" data-level="medium" data-i18n="medium">Medium</div>
-    <div class="card" data-level="hard" data-i18n="hard">Hard</div>
-    <div class="card" data-level="expert" data-i18n="expert">Expert</div>
-    <div class="card" data-level="insane" data-i18n="insane">Insane</div>
+    <button class="btn" data-level="easy" data-i18n="easy">Easy</button>
+    <button class="btn" data-level="medium" data-i18n="medium">Medium</button>
+    <button class="btn" data-level="hard" data-i18n="hard">Hard</button>
+    <button class="btn" data-level="expert" data-i18n="expert">Expert</button>
+    <button class="btn" data-level="insane" data-i18n="insane">Insane</button>
   </div>
   <div id="gameArea" style="display:none;">
-    <div id="outerFrame">
-      <div id="playArea">
-        <div id="scoreboard">
-          <span id="scoreA">0</span> : <span id="scoreB">0</span>
-          <button id="scoreReset" data-i18n="resetScore">Reset</button>
-          <button id="settingsBtn">⚙</button>
-          <button id="menuBtn" data-i18n="toMenu">Menu</button>
-          <button id="btnReplay" data-i18n="replay">Replay</button>
-        </div>
-        <div id="board"></div>
-      </div>
+    <div id="scoreboard">
+      <span id="scoreA" class="counter">0</span>
+      <span>:</span>
+      <span id="scoreB" class="counter">0</span>
+      <button id="scoreReset" class="btn" data-i18n="resetScore">Reset</button>
+      <button id="menuBtn" class="btn" data-i18n="toMenu">Menu</button>
+      <button id="btnReplay" class="btn" data-i18n="replay">Replay</button>
     </div>
-    <div id="ui">
+    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙</button>
+    <div id="board"></div>
+    <div id="ui" class="panel">
       <div id="phase"></div>
       <div id="planCells">
         <div id="pc0" class="planCell"></div>
@@ -131,7 +80,7 @@
         <div id="pc3" class="planCell"></div>
         <div id="pc4" class="planCell"></div>
       </div>
-      <div id="pad" class="pad pad-center">
+      <div id="pad" class="pad pad-inline">
         <div class="dpad" aria-hidden="true">
           <div class="k" data-act="up" data-dir="up" style="grid-area:up">▲</div>
           <div class="k" data-act="left" data-dir="left" style="grid-area:left">◀</div>
@@ -145,8 +94,8 @@
         </div>
       </div>
       <div id="navButtons">
-        <button id="btn-del" data-i18n="deleteBtn">Delete</button>
-        <button id="btn-next" data-i18n="nextBtn">Next</button>
+        <button id="btn-del" class="btn" data-i18n="deleteBtn">Delete</button>
+        <button id="btn-next" class="btn" data-i18n="nextBtn">Next</button>
       </div>
     </div>
   </div>
@@ -279,9 +228,9 @@
     const replaySlider=document.getElementById('replaySlider');
     const speedButtons=document.querySelectorAll('#speedButtons button');
     function drawBoard(){boardEl.innerHTML=''; for(let y=0;y<5;y++){for(let x=0;x<5;x++){const cell=document.createElement('div'); cell.className='cell'; cell.id=`c${x}${y}`; if(edgesCollapsed&&(x===0||x===4||y===0||y===4)) cell.classList.add('collapsed'); boardEl.appendChild(cell);}} updateUnitsOnBoard();}
-    function updateUnitsOnBoard(){document.querySelectorAll('.token').forEach(tok=>tok.remove()); ['A','B'].forEach(p=>{const u=units[p]; if(!u.alive) return; const cell=document.getElementById('c'+u.x+u.y); if(cell){const tok=document.createElement('div'); tok.className='token '+p; tok.textContent=p; cell.appendChild(tok);}});}
+    function updateUnitsOnBoard(){document.querySelectorAll('.token').forEach(tok=>tok.remove()); ['A','B'].forEach(p=>{const u=units[p]; if(!u.alive) return; const cell=document.getElementById('c'+u.x+u.y); if(cell){const tok=document.createElement('div'); tok.className='token '+p; cell.appendChild(tok);}});}
     function resetRound(){plans={A:[],B:[]}; usedMove={A:new Set(),B:new Set()}; usedAtkDirs={A:new Set(),B:new Set()}; usedAtk={A:0,B:0}; usedShield={A:0,B:0}; if(fullReset){units={A:{x:0,y:2,alive:true},B:{x:4,y:2,alive:true}}; edgesCollapsed=false; fullReset=false;} replayFrames=[]; replayIndex=0; clearActionIcons(); clearPreviewIcons(); drawBoard(); phase='planA'; updateUI(); initPreviewPositions();}
-    function startGame(){modeSel.style.display='none'; diffSel.style.display='none'; gameArea.style.display='block'; ui.classList.add('show'); round=1; score={A:0,B:0}; updateScore(); fullReset=true; resetRound(); initPreviewPositions();}
+    function startGame(){modeSel.style.display='none'; diffSel.style.display='none'; gameArea.style.display='block'; round=1; score={A:0,B:0}; updateScore(); fullReset=true; resetRound(); initPreviewPositions();}
     function updateScore(){scoreA.textContent=score.A; scoreB.textContent=score.B;}
     function recordAction(player,action){const plan=plans[player]; if(plan.length>=STEPS) return; if(typeof action==='string'){if(action==='shield'){if(usedShield[player]>=1) return; usedShield[player]++; plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;} if(DXY[action]){if(usedAtkDirs[player].has(action)) return; usedMove[player].add(action); plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;}} else if(typeof action==='object'){if(usedAtk[player]>=1) return; for(const d of action.dirs){if(usedMove[player].has(d)||usedAtkDirs[player].has(d)) return;} usedAtk[player]++; action.dirs.forEach(d=>usedAtkDirs[player].add(d)); plan.push(action); drawPlan(player); updateUI(); updatePreviewIcons(player); return;}}
     function deleteLast(){const player=(phase==='planA')?'A':'B'; const plan=plans[player]; if(!plan.length) return; const a=plan.pop(); if(typeof a==='string'){if(a==='shield') usedShield[player]--; if(DXY[a]){const hasOther=plan.some(item=>item===a); if(!hasOther) usedMove[player].delete(a);}} else {usedAtk[player]--; a.dirs.forEach(d=>usedAtkDirs[player].delete(d));} drawPlan(player); updateUI(); updatePreviewIcons(player);}
@@ -296,7 +245,7 @@
     function showMessage(text){msgTitle.textContent=i18n.t('internalMsg'); msgContent.textContent=text; msgOverlay.classList.add('show');}
     if(msgClose){msgClose.onclick=()=>{msgOverlay.classList.remove('show');};}
     function addActionIcon(x,y,char,color){const cell=document.getElementById('c'+x+y); if(!cell) return; const span=document.createElement('span'); span.className='action-icon'; span.textContent=char; if(color) span.style.color=color; cell.appendChild(span); actionIcons.push(span);}
-    function updateUI(){if(!phaseEl) return; if(phase==='planA'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerA')||'A');} else if(phase==='planB'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerB')||'B');} else if(phase==='execute'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('executeBtn');} if(phase==='planA'){btnNext.textContent=i18n.t('nextBtn');} else if(phase==='planB'){btnNext.textContent=i18n.t('executeBtn');} else {btnNext.textContent=i18n.t('nextBtn');} const currentPlan=(phase==='planA')?plans.A:plans.B; if(phase==='planA'&&single){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planB'){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planA'){btnNext.disabled=currentPlan.length<STEPS;} else {btnNext.disabled=false;} btnDel.disabled=!currentPlan.length;}
+    function updateUI(){if(!phaseEl) return; if(phase==='execute'){ui.classList.remove('show');} else {ui.classList.add('show');} if(phase==='planA'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerA')||'A');} else if(phase==='planB'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('plan')+' '+(i18n.t('playerB')||'B');} else if(phase==='execute'){phaseEl.textContent=i18n.t('round')+' '+round+': '+i18n.t('executeBtn');} if(phase==='planA'){btnNext.textContent=i18n.t('nextBtn');} else if(phase==='planB'){btnNext.textContent=i18n.t('executeBtn');} else {btnNext.textContent=i18n.t('nextBtn');} const currentPlan=(phase==='planA')?plans.A:plans.B; if(phase==='planA'&&single){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planB'){btnNext.disabled=currentPlan.length<STEPS;} else if(phase==='planA'){btnNext.disabled=currentPlan.length<STEPS;} else {btnNext.disabled=false;} btnDel.disabled=!currentPlan.length;}
     function executePlans(){let step=0; function stepExec(){if(step>=STEPS){endRound(); return;} const actA=plans.A[step]||null; const actB=plans.B[step]||null; const shieldA=(actA==='shield'); const shieldB=(actB==='shield'); applyMove(units.A,actA); applyMove(units.B,actB); if(actA&&typeof actA==='object'&&units.A.alive){applyAttack(units.A,actA.dirs,units.B,shieldB);} if(actB&&typeof actB==='object'&&units.B.alive){applyAttack(units.B,actB.dirs,units.A,shieldA);} if(round>=4&&step===1&&!edgesCollapsed){collapseEdges();} recordFrame(actA,actB); updateUnitsOnBoard(); clearActionIcons(); if(actA){if(typeof actA==='string'){if(actA==='shield'){addActionIcon(units.A.x,units.A.y,'🛡',varToRGB('--shield-color'));} else if(DXY[actA]){const icon={up:'▲',down:'▼',left:'◀',right:'▶'}[actA]; addActionIcon(units.A.x,units.A.y,icon);}} else {addActionIcon(units.A.x,units.A.y,'⚔',varToRGB('--attack-color')); actA.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=units.A.x+dx,ty=units.A.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});}} if(actB){if(typeof actB==='string'){if(actB==='shield'){addActionIcon(units.B.x,units.B.y,'🛡',varToRGB('--shield-color'));} else if(DXY[actB]){const iconB={up:'▲',down:'▼',left:'◀',right:'▶'}[actB]; addActionIcon(units.B.x,units.B.y,iconB);}} else {addActionIcon(units.B.x,units.B.y,'⚔',varToRGB('--attack-color')); actB.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=units.B.x+dx,ty=units.B.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});}} const outcome=getOutcome(); step++; if(outcome){endRound(outcome); return;} setTimeout(stepExec,500);} stepExec();}
     function applyMove(unit,action){if(!unit.alive) return; if(typeof action==='string'&&DXY[action]){const dx=DXY[action][0],dy=DXY[action][1]; unit.x=Math.max(0,Math.min(4,unit.x+dx)); unit.y=Math.max(0,Math.min(4,unit.y+dy)); if(edgesCollapsed&&(unit.x===0||unit.x===4||unit.y===0||unit.y===4)) unit.alive=false;}}
     function applyAttack(attacker,dirs,opponent,opponentShield){const ax=attacker.x,ay=attacker.y; if(!opponentShield&&opponent.alive&&opponent.x===ax&&opponent.y===ay) opponent.alive=false; dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const nx=ax+dx,ny=ay+dy; if(nx<0||nx>4||ny<0||ny>4) return; if(!opponentShield&&opponent.alive&&opponent.x===nx&&opponent.y===ny) opponent.alive=false;});}
@@ -313,7 +262,7 @@
       btnNext.onclick=()=>{if(phase==='planA'){if(plans.A.length<STEPS) return; if(single){clearPreviewIcons(); aiPlan(); phase='execute'; updateUI(); executePlans();} else {clearPreviewIcons(); hidePlanCells(); phase='planB'; updateUI(); initPreviewPositions();}} else if(phase==='planB'){if(plans.B.length<STEPS) return; clearPreviewIcons(); phase='execute'; updateUI(); executePlans();}};
       document.getElementById('btn1p').onclick=()=>{single=true; modeSel.style.display='none'; diffSel.style.display='flex';};
       document.getElementById('btn2p').onclick=()=>{single=false; startGame();};
-      Array.from(diffSel.querySelectorAll('.card')).forEach(card=>{card.onclick=()=>{aiLevel=card.dataset.level; startGame();};});
+      Array.from(diffSel.querySelectorAll('.btn')).forEach(btn=>{btn.onclick=()=>{aiLevel=btn.dataset.level; startGame();};});
       rulesBtnInitial.onclick=()=>{rulesOv.classList.add('show');};
       rulesClose.onclick=()=>{rulesOv.classList.remove('show');};
       let tutorialIndex=0; const tutorialScript=['tutorial1','tutorial2','tutorial3'];
