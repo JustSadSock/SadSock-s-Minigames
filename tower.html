@@ -54,6 +54,9 @@
   d('#scoresBtn').onclick=scores.show;
   const widthRange=d('#widthRange');
   const ctx=cv.getContext('2d');
+  const styles=getComputedStyle(document.documentElement);
+  const BG=styles.getPropertyValue('--bg0');
+  const STRIPE=styles.getPropertyValue('--bezel');
   const diffKeys=['easy','medium','hard'];
   let difficulty=parseInt(localStorage.getItem('towerDiff')||'0',10);
   function t(k){ return window.i18n?window.i18n.t(k):k; }
@@ -66,8 +69,8 @@
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle='#d8f1ff'; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.05; const s=8; ctx.fillStyle='#ffffff';
+  function clear(){ ctx.fillStyle=BG; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle=STRIPE;
     for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
     ctx.restore();
   }

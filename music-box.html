@@ -7,51 +7,50 @@
 <link rel="stylesheet" href="styles/base.css">
 <style>
   :root{
-    /* палитра под твой сайт */
-    --cream:#fff4cf;
-    --cream-2:#f6e7c0;
-    --paper:#f2dba9;
-    --gold:#e6a84a;
-    --gold-2:#d79031;
-    --ink:#3a2c1b;
-    --sub:#6e5a3f;
-    --grid:#e7c888;
-    --cell:#f7e8c7;
-    --cell-dim:#ebd7a6;
-    --cell-on:#ffe6a6;
-    --shadow:rgba(0,0,0,.35);
+    /* unified palette */
+    --cream:var(--tile-bg);
+    --cream-2:var(--tile-bg);
+    --paper:var(--tile-bg-dim);
+    --gold:var(--accent3);
+    --gold-2:var(--accent);
+    --ink:var(--ink);
+    --sub:var(--dim);
+    --grid:var(--bezel);
+    --cell:var(--tile-bg);
+    --cell-dim:var(--tile-bg-dim);
+    --cell-on:var(--accent3);
+    --shadow:var(--shadow);
     --r:16px;
-    --btn-bg:var(--cream-2);
-    --btn-border:#e3c17a;
-    --btn-shadow:#d9b16b;
-    --tab-bg:var(--cream-2);
-    --tab-border:#e0ba75;
-    --tab-shadow:#cfa360;
-    --tab-active-bg:var(--cell-on);
-    --pill-bg:var(--cream-2);
-    --pill-border:#e3c17a;
-    --pill-shadow:#d9b16b;
-    --pill-ink:var(--sub);
+    --btn-bg:var(--tile-bg);
+    --btn-border:var(--bezel);
+    --btn-shadow:var(--bezel-lo);
+    --tab-bg:var(--tile-bg);
+    --tab-border:var(--bezel);
+    --tab-shadow:var(--bezel-lo);
+    --tab-active-bg:var(--accent3);
+    --pill-bg:var(--tile-bg);
+    --pill-border:var(--bezel);
+    --pill-shadow:var(--bezel-lo);
+    --pill-ink:var(--ink);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; color:var(--ink); font-size:14px; line-height:1.35;
     font-family:'Press Start 2P', ui-monospace, monospace;
-    background:
-      radial-gradient(120% 160% at 50% -20%, #f9e1b3 0%, #f4d6a1 50%, #f2d29a 70%, #efc782 100%);
+    background:var(--bg0);
   }
 
   /* рамка дисплея под твой стиль */
   .frame{
     max-width:920px; margin:10px auto; padding:10px;
-    background:linear-gradient(#f2cf90,#f0c77c);
-    border:4px solid #e3a651; border-radius:22px;
-    box-shadow: 0 14px 40px var(--shadow), inset 0 10px 24px rgba(255,210,120,.25);
+    background:var(--panel);
+    border:4px solid var(--bezel); border-radius:22px;
+    box-shadow: 0 14px 40px var(--shadow), inset 0 10px 24px rgba(255,255,255,.25);
   }
   .screen{
     position:relative; border-radius:18px; padding:10px 10px 4px;
-    background:linear-gradient(#f8eac8,#f5e1b6);
+    background:var(--tile-bg);
     box-shadow: inset 0 2px 0 rgba(255,255,255,.55), inset 0 -8px 22px rgba(0,0,0,.08);
     overflow:hidden;
   }
@@ -66,13 +65,13 @@
   .transport{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:6px}
   .left,.right{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
   textarea{
-    border-radius:10px; border:1px solid #d9b16b; background:var(--cream);
+    border-radius:10px; border:1px solid var(--bezel); background:var(--cream);
     color:var(--ink); padding:10px 12px; font:inherit; outline:none;
     box-shadow:0 2px 0 rgba(255,255,255,.6) inset;
   }
   .btn{box-shadow:0 4px 0 var(--btn-shadow),0 8px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6);}
   .btn:active{box-shadow:0 2px 0 var(--btn-shadow),0 4px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6);}
-  .btn.primary{--btn-bg:var(--cell-on); --btn-border:#e3ad56}
+  .btn.primary{--btn-bg:var(--cell-on); --btn-border:var(--bezel)}
   #playBtn{--btn-bg:var(--gold); --btn-border:var(--gold-2); font-size:16px;}
   .pill{display:flex; align-items:center; gap:8px;}
   .pill pixel-range{width:130px}
@@ -84,13 +83,13 @@
 
   .tabs{display:flex; gap:8px; padding:6px}
   .tabs .tab{flex:1}
-  .tabs .tab.active{--tab-active-ink:#5b421f; --tab-border:#e3a651}
+  .tabs .tab.active{--tab-active-ink:var(--ink); --tab-border:var(--bezel)}
 
   .section{display:none; padding:8px}
   .section.active{display:block}
   .panel{
     background:var(--cream); border-radius:var(--r); padding:10px; margin-bottom:10px;
-    border:1px solid #e3c17a; box-shadow: 0 6px 12px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6);
+    border:1px solid var(--bezel); box-shadow: 0 6px 12px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.6);
   }
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between}
   .legend{color:var(--sub); font-size:12px; padding:4px}
@@ -115,7 +114,7 @@
   .drums{--rows:3}
   .drums .cell{aspect-ratio:1/0.55}
 
-  textarea{width:100%; min-height:170px; background:var(--cream); border:1px solid #e3c17a; border-radius:12px}
+  textarea{width:100%; min-height:170px; background:var(--cream); border:1px solid var(--bezel); border-radius:12px}
   textarea.code{font-family:ui-monospace,monospace; border:2px solid var(--gold-2)}
 
   @media (max-width:600px){

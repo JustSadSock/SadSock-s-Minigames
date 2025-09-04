@@ -7,22 +7,22 @@
   <link rel="stylesheet" href="styles/base.css">
   <style>
     :root {
-      --bg-color: #FAF3E0;
-      --card-bg: #FFFDE7;
-      --card-border: #E0C097;
-      --board-bg: #F5E8C7;
-      --board-border: #D8AE71;
-      --cell-bg: #FFF9C4;
-      --cell-border: #E0C097;
-      --cell-collapsed-bg: #F0B7A4;
+      --bg-color: var(--bg0);
+      --card-bg: var(--tile-bg);
+      --card-border: var(--bezel);
+      --board-bg: var(--tile-bg);
+      --board-border: var(--bezel);
+      --cell-bg: var(--tile-bg);
+      --cell-border: var(--bezel);
+      --cell-collapsed-bg: var(--accent);
       --playerA-color: #4A90E2;
       --playerB-color: #E46472;
       --attack-color: #EF6C57;
       --shield-color: #81C784;
-      --text-color: #3E2723;
-      --btn-bg: #FFE0B2;
-      --btn-hover: #FFD180;
-      --btn-disabled: #E0E0E0;
+      --text-color: var(--ink);
+      --btn-bg: var(--tile-bg);
+      --btn-hover: var(--accent3);
+      --btn-disabled: var(--tile-bg-dim);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; height: 100%; font-family: 'Press Start 2P', monospace; }
@@ -33,7 +33,7 @@
     .card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
     .card:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #gameArea { width: 100%; max-width: 480px; margin: 20px auto; position: relative; }
-    #outerFrame { background: linear-gradient(135deg, #FBE8C6, #FDDCCB); border: 6px solid var(--card-border); border-radius: 28px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 4px 8px rgba(0,0,0,0.1); width: fit-content; margin: 0 auto; }
+    #outerFrame { background: var(--panel); border: 6px solid var(--card-border); border-radius: 28px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 4px 8px rgba(0,0,0,0.1); width: fit-content; margin: 0 auto; }
     #playArea { display: flex; flex-direction: column; align-items: center; background: var(--board-bg); border: none; border-radius: 16px; padding: 12px; gap: 12px; }
     #board { display: grid; grid-template-columns: repeat(5, 60px); grid-template-rows: repeat(5, 60px); gap: 4px; margin: 0; background: var(--board-bg); border: none; border-radius: 12px; padding: 0; position: relative; }
     .cell { width: 60px; height: 60px; background: var(--cell-bg); border: 2px solid var(--cell-border); border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 36px; user-select: none; }

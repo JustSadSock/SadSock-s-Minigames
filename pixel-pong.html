@@ -67,6 +67,8 @@
   d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   const styles=getComputedStyle(document.documentElement);
+  const BG=styles.getPropertyValue('--bg0');
+  const STRIPE=styles.getPropertyValue('--bezel');
   const storedCol=localStorage.getItem('pongColor')||'--pastel-mint';
   let paddleColor='';
   function setColor(v){ paddleColor=styles.getPropertyValue(v).trim(); localStorage.setItem('pongColor',v); colorPick.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.col===v)); }
@@ -81,8 +83,8 @@
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
+  function clear(){ ctx.fillStyle=BG; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle=STRIPE;
     for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
     ctx.restore();
   }
