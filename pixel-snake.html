@@ -117,6 +117,18 @@
     const bgColor=styles.getPropertyValue('--bg2');
     const appleColor=styles.getPropertyValue('--pastel-peach');
     let snakeColor=localStorage.getItem('snakeColor')||styles.getPropertyValue('--pastel-mint');
+    const bgCanvas=document.createElement('canvas');
+    bgCanvas.width=canvas.width;
+    bgCanvas.height=canvas.height;
+    const bgCtx=bgCanvas.getContext('2d');
+    function drawBG(){
+      bgCtx.fillStyle=bgColor;
+      bgCtx.fillRect(0,0,bgCanvas.width,bgCanvas.height);
+      bgCtx.fillStyle='rgba(0,0,0,0.05)';
+      for(let x=0;x<=bgCanvas.width;x+=cellSize) bgCtx.fillRect(x,0,1,bgCanvas.height);
+      for(let y=0;y<=bgCanvas.height;y+=cellSize) bgCtx.fillRect(0,y,bgCanvas.width,1);
+    }
+    drawBG();
 
     function toHex(col){
       if(col.startsWith('#')) return col.trim();
@@ -184,11 +196,7 @@
       }
     }
     function draw(){
-      ctx.fillStyle=bgColor;
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle='rgba(0,0,0,0.05)';
-      for(let x=0;x<=canvas.width;x+=cellSize) ctx.fillRect(x,0,1,canvas.height);
-      for(let y=0;y<=canvas.height;y+=cellSize) ctx.fillRect(0,y,canvas.width,1);
+      ctx.drawImage(bgCanvas,0,0);
       ctx.fillStyle=appleColor;
       ctx.fillRect(apple.x*cellSize, apple.y*cellSize, cellSize, cellSize);
       ctx.fillStyle=snakeColor;
