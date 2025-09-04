@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title data-i18n="tower"></title>
 <link rel="stylesheet" href="styles/shell.css">
+<style>
+  #overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);color:#fff;font-family:'Press Start 2P',ui-monospace,monospace;text-align:center;padding:8px;}
+  #overlay.play{background:none;color:#000;justify-content:flex-start;align-items:flex-start;font-size:12px;pointer-events:none;}
+</style>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/pixel-widgets.js"></script>
 </head>
 <body>
@@ -12,19 +17,26 @@
   <div class="frame">
     <div class="inner">
       <div class="hud">
-        <div class="pill" id="score">Score: 0</div>
+        <div class="counter" id="score">Score: 0</div>
         <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
-        <div class="pill" id="status">—</div>
+        <div class="counter" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
+      <div id="overlay" data-i18n="dropBlock"></div>
       <div class="scanlines"></div>
     </div>
     <div class="pad" id="pad">
       <button class="k" data-btn="a" aria-label="Бросить блок" style="width:40vw;max-width:160px;">A</button>
     </div>
-    <pixel-range style="margin-top:8px;width:60%;"><input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Ширина башни"></pixel-range>
-    <div class="label">Башня</div>
-    <div class="hint">Жми A, чтобы уронить блок.</div>
+    <div class="options" style="margin-top:8px;width:70%;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+      <label class="pill" style="flex:1;display:flex;gap:6px;align-items:center;justify-content:center;">
+        <span data-i18n="width">Width</span>
+        <pixel-range style="flex:1"><input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Width"></pixel-range>
+      </label>
+      <div class="pill" id="mode">∞</div>
+      <button class="pill" id="diffBtn" data-i18n="easy" data-i18n-title="difficulty" title="Difficulty"></button>
+    </div>
+    <div class="label" data-i18n="tower">Башня</div>
   </div>
   <div class="footer">Кнопка A • Клавиатура: пробел</div>
 </div>
@@ -37,18 +49,25 @@
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const overlay=d('#overlay'), diffBtn=d('#diffBtn');
   const scores=Scores('tower');
   d('#scoresBtn').onclick=scores.show;
   const widthRange=d('#widthRange');
   const ctx=cv.getContext('2d');
+  const diffKeys=['easy','medium','hard'];
+  let difficulty=parseInt(localStorage.getItem('towerDiff')||'0',10);
+  function t(k){ return window.i18n?window.i18n.t(k):k; }
+  function updateDiff(){ const key=diffKeys[difficulty]; diffBtn.dataset.i18n=key; diffBtn.textContent=t(key); }
+  diffBtn.addEventListener('click',()=>{ difficulty=(difficulty+1)%diffKeys.length; localStorage.setItem('towerDiff',difficulty); updateDiff(); });
+  updateDiff();
   let best=parseInt(localStorage.getItem('towerBest')||'0',10);
   widthRange.value=localStorage.getItem('towerWidth')||'60';
   widthRange.addEventListener('change',e=>localStorage.setItem('towerWidth',e.target.value));
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
+  function clear(){ ctx.fillStyle='#d8f1ff'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.save(); ctx.globalAlpha=.05; const s=8; ctx.fillStyle='#ffffff';
     for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
     ctx.restore();
   }
@@ -84,22 +103,23 @@
   // ===== Game specific code =====
   
   const game = {
-    score:0, started:false, over:false,
+    score:0, started:false, over:false, slice:null,
     init(){ this.reset(); loop(); },
     reset(){
       this.score=0; this.started=false; this.over=false;
       scoreEl.textContent='Score: 0 (best: '+best+')';
-      this.baseY=SETTINGS.H-60; this.speed=120; this.g=900;
+      this.baseY=SETTINGS.H-60; this.speed=120+difficulty*30; this.g=900+difficulty*150;
       const startW=parseInt(widthRange.value)/100*SETTINGS.W;
       const startX=(SETTINGS.W-startW)/2;
       this.active={x:startX,w:startW,y:this.baseY-20,dir:+1,vy:0,falling:false};
       this.prev={x:startX,w:startW,y:this.baseY,fixed:true};
-      this.layers=[];
+      this.layers=[]; this.slice=null;
+      overlay.textContent=t('dropBlock'); overlay.classList.remove('play');
     },
     step(dt){
       const I=Input.st;
       if(this.over){ if(I.a){ this.reset(); } return; }
-      if(!this.started){ if(I.a||I.b){ this.started=true; Sound.fx('start'); } else return; }
+      if(!this.started){ if(I.a||I.b){ this.started=true; overlay.classList.add('play'); Sound.fx('start'); } else return; }
       const a=this.active;
       if(!a.falling){
         a.x+=a.dir*this.speed*dt;
@@ -111,12 +131,16 @@
         if(a.y>=this.prev.y-20){
           const L=Math.max(a.x,this.prev.x), R=Math.min(a.x+a.w,this.prev.x+this.prev.w), ov=R-L;
           if(ov<=2){ Sound.fx('error'); this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('towerBest',best); statusEl.textContent='New record!'; } scores.add(this.score); return; }
+          const left=a.x<L?{x:a.x,w:L-a.x,y:a.y,vy:a.vy}:null;
+          const right=a.x+a.w>R?{x:R,w:a.x+a.w-R,y:a.y,vy:a.vy}:null;
           this.layers.push({...this.prev});
           this.prev={x:L,w:ov,y:a.y+20,fixed:true};
           this.active={x:this.prev.x-60,w:this.prev.w,y:this.prev.y-20,dir:+1,vy:0,falling:false};
+          this.slice=left||right;
           this.baseY-=10; this.speed+=3+Math.random()*3; this.score=this.layers.length; Sound.fx('coin');
         }
       }
+      if(this.slice){ this.slice.vy+=this.g*dt; this.slice.y+=this.slice.vy*dt; if(this.slice.y>SETTINGS.H) this.slice=null; }
     },
     draw(){
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
@@ -124,14 +148,14 @@
       const drawB=(b,col)=>{ ctx.fillStyle=col; ctx.fillRect(b.x,b.y,b.w,20); ctx.strokeStyle='#deb780'; ctx.lineWidth=2; ctx.strokeRect(b.x+1,b.y+1,b.w-2,18); };
       this.layers.forEach(L=>drawB(L,'#cbe7aa'));
       drawB(this.prev,'#ffd88a'); drawB(this.active,'#9be0c0');
-      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A — ронять блок', SETTINGS.W/2, SETTINGS.H*0.5); }
+      if(this.slice) drawB(this.slice,'#ffb590');
       if(this.over){ ctx.fillStyle='#bf5a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Промах. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
+    game.step(dt); game.draw(); if(game.started) overlay.textContent=t('height')+': '+game.score; scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
   game.init();
 
 

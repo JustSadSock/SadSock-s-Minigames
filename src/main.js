@@ -13,8 +13,9 @@ import { initSettings } from './settings.js';
       const avatarBtn = $('#avatarBtn');
       const avatarOverlay = $('#avatarOverlay');
       const reel = $('.reel');
-      const tiles = $$('.reel .tile');
+      const allTiles = $$('.reel .tile');
       const indicator = $('.indicator');
+      const catBtns = $$('#catNav button');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
       let activeFrame=null, currentTile=null;
@@ -47,9 +48,6 @@ import { initSettings } from './settings.js';
         });
       })();
 
-      // Значки отрисовываются из набора кадров в icons.js
-      const drawers=['music','snake','cards','rain','breakout','anim','rogue','pong','rhythm','tower','arena'];
-
       /* ---------- Профиль ---------- */
       function loadProfile(){
         const ctx = avatarCanvas.getContext('2d',{alpha:false});
@@ -71,19 +69,12 @@ import { initSettings } from './settings.js';
 
       initSettings(ms=>{ DUR = ms; });
 
-      // инициализация анимированных значков
-      tiles.forEach((tile, i)=>{
-        const cv = tile.querySelector('canvas');
-        cv.width = cv.height = 16;
-        Icons.animate(cv, drawers[i%drawers.length]);
-      });
-
       /* ---------- Барабан и навигация ---------- */
-      const total = tiles.length;
+      let tiles = [];
       const cols = 2;
-      const rows = Math.ceil(total/cols);
-      indicator.innerHTML = '<i></i>'.repeat(rows);
-      const dots = [...indicator.children];
+      let total = 0;
+      let rows = 0;
+      let dots = [];
       let colIdx = 0;
       let index = 0; // верхний видимый ряд
       let frac = 0;  // прогресс анимации
@@ -140,6 +131,19 @@ import { initSettings } from './settings.js';
         for(let i=0;i<dots.length;i++){
           dots[i].classList.toggle('active', i===active);
         }
+      }
+
+      function switchCategory(cat){
+        catBtns.forEach(b=>b.classList.toggle('active', b.dataset.cat===cat));
+        allTiles.forEach(t=>{ t.style.display = t.dataset.cat===cat ? '' : 'none'; });
+        tiles = allTiles.filter(t=>t.dataset.cat===cat);
+        total = tiles.length;
+        rows = Math.ceil(total/cols) || 1;
+        indicator.innerHTML = '<i></i>'.repeat(rows);
+        dots = [...indicator.children];
+        index = 0; colIdx = 0; frac = 0; activeRow = 0;
+        recalcSteps();
+        focusTile();
       }
 
       let snapping = false;
@@ -223,7 +227,7 @@ import { initSettings } from './settings.js';
         e.preventDefault();
       },{passive:false});
 
-      tiles.forEach((t,i)=>{
+      allTiles.forEach((t,i)=>{
         t.addEventListener('click',()=>{
           const row = Math.floor(i/cols);
           colIdx = i % cols;
@@ -241,9 +245,15 @@ import { initSettings } from './settings.js';
         tiles[idx]?.focus();
       }
 
-      recalcSteps();
-      focusTile();
+      switchCategory('game');
       addEventListener('resize', ()=> requestAnimationFrame(recalcSteps));
+
+      catBtns.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          if(btn.dataset.cat==='settings'){ $('#settingsBtn').click(); return; }
+          switchCategory(btn.dataset.cat);
+        });
+      });
 
       function selectCurrent(){
         const idx = (Math.round(index)%rows)*cols + colIdx;
@@ -257,40 +267,49 @@ import { initSettings } from './settings.js';
         currentTile = tile;
         const gameSrc = tile.dataset.game;
         reel.classList.add('zoom');
-        const rect = tile.getBoundingClientRect();
-        const srect = screenEl.getBoundingClientRect();
-        const canvas = tile.querySelector('canvas');
-        const clone = canvas.cloneNode(true);
-        clone.getContext('2d').drawImage(canvas,0,0);
-        gameOverlay.innerHTML='';
-        gameOverlay.appendChild(clone);
-        gameOverlay.classList.add('show');
-        const scaleX = rect.width/srect.width;
-        const scaleY = rect.height/srect.height;
-        const offsetX = rect.left - srect.left;
-        const offsetY = rect.top - srect.top;
-        gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
-        requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
-        let started=false;
-        function launch(){
-          if(started) return;
-          started=true;
-          gameOverlay.removeEventListener('transitionend', launch);
+
+        function startExpand(){
+          reel.removeEventListener('transitionend', startExpand);
+          const rect = tile.getBoundingClientRect();
+          const srect = screenEl.getBoundingClientRect();
+          const canvas = tile.querySelector('canvas');
+          const clone = canvas.cloneNode(true);
+          clone.getContext('2d').drawImage(canvas,0,0);
+          tile.style.visibility='hidden';
           gameOverlay.innerHTML='';
-          const frame=document.createElement('iframe');
-          frame.src=gameSrc;
-          activeFrame=frame;
-          gameOverlay.appendChild(frame);
-          const close=document.createElement('button');
-          close.className='pbtn close';
-          close.id='gameClose';
-          close.textContent='×';
-          gameOverlay.appendChild(close);
-          $('#gameClose').addEventListener('click', closeGame);
-          screenEl.classList.add('playing');
+          gameOverlay.appendChild(clone);
+          gameOverlay.classList.add('show');
+          const scaleX = rect.width/srect.width;
+          const scaleY = rect.height/srect.height;
+          const offsetX = rect.left - srect.left;
+          const offsetY = rect.top - srect.top;
+          gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
+          requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
+          let started=false;
+          function launch(){
+            if(started) return;
+            started=true;
+            gameOverlay.removeEventListener('transitionend', launch);
+            gameOverlay.innerHTML='';
+            const frame=document.createElement('iframe');
+            frame.src=gameSrc;
+            activeFrame=frame;
+            gameOverlay.appendChild(frame);
+            const close=document.createElement('button');
+            close.className='pbtn close';
+            close.id='gameClose';
+            close.dataset.i18n='home';
+            close.textContent=t('home');
+            gameOverlay.appendChild(close);
+            $('#gameClose').addEventListener('click', closeGame);
+            screenEl.classList.add('playing');
+          }
+          gameOverlay.addEventListener('transitionend', launch);
+          setTimeout(launch, DUR+50);
         }
-        gameOverlay.addEventListener('transitionend', launch);
-        setTimeout(launch, DUR+50);
+
+        reel.addEventListener('transitionend', startExpand);
+        setTimeout(startExpand, DUR+50);
       }
 
       function closeGame(){
@@ -324,6 +343,7 @@ import { initSettings } from './settings.js';
             gameOverlay.classList.remove('show');
             gameOverlay.style.transform='';
             gameOverlay.innerHTML='';
+            tile.style.visibility='';
             currentTile=null;
             focusTile();
           }

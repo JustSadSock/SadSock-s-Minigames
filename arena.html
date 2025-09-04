@@ -206,10 +206,16 @@
     <p id="msgContent"></p>
     <button id="msgClose" data-i18n="close">Close</button>
   </div>
-  <script type="module" src="src/pixel-widgets.js"></script>
-  <script type="module" src="src/i18n.js"></script>
-  <script>
-  window.addEventListener('DOMContentLoaded',()=>{
+  <script type="module" src="src/serve-warning.js"></script>
+<script type="module">
+  import('./src/pixel-widgets.js');
+  (async()=>{
+    try{
+      await import('./src/i18n.js');
+    }catch(e){
+      console.warn('i18n load failed',e);
+      window.i18n={t:s=>s,setLang:()=>{},applyTranslations:()=>{},get lang(){return 'en';}};
+    }
   // Main game logic
     const STEPS=5;
     const DXY={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
@@ -303,7 +309,7 @@
     i18n.applyTranslations();
     bindUI();
     langSelect.value=i18n.lang;
-  });
+  })();
   </script>
 </body>
 </html>

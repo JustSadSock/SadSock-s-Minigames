@@ -2,6 +2,7 @@
   'use strict';
   const UI={};
   UI.score=function(el,label,bestLabel){
+    if(el) el.classList.add('counter');
     return {
       set(value,best){
         const bl = bestLabel || (global.i18n ? i18n.t('best') : 'best');
@@ -64,7 +65,7 @@
     addEventListener('keydown',hide);
     addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse' && !pad.contains(e.target) && !toggle.contains(e.target)) hide(); });
   };
-  UI.attachDPad=function(pad,cb){
+  UI.attachDPad=function(pad,cb,surface=document){
     const setBtn=(dir,val)=>{
       const btn=pad.querySelector(`[data-dir="${dir}"]`);
       if(btn) btn.classList.toggle('down',val);
@@ -80,6 +81,18 @@
       addEventListener('mouseup',off);
       btn.addEventListener('mouseleave',off);
     });
+    let sx=0, sy=0;
+    surface.addEventListener('touchstart',e=>{
+      const t=e.changedTouches[0];
+      sx=t.clientX; sy=t.clientY;
+    },{passive:true});
+    surface.addEventListener('touchend',e=>{
+      const t=e.changedTouches[0];
+      const dx=t.clientX-sx, dy=t.clientY-sy;
+      const ax=Math.abs(dx), ay=Math.abs(dy);
+      if(Math.max(ax,ay)<30) return;
+      if(ax>ay) cb(dx>0?'right':'left'); else cb(dy>0?'down':'up');
+    },{passive:true});
     UI.autoHidePad(pad);
     return setBtn;
   };

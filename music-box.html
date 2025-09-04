@@ -70,7 +70,10 @@
     color:var(--ink); padding:10px 12px; font:inherit; outline:none;
     box-shadow:0 2px 0 rgba(255,255,255,.6) inset;
   }
+  .btn{box-shadow:0 4px 0 var(--btn-shadow),0 8px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6);}
+  .btn:active{box-shadow:0 2px 0 var(--btn-shadow),0 4px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6);}
   .btn.primary{--btn-bg:var(--cell-on); --btn-border:#e3ad56}
+  #playBtn{--btn-bg:var(--gold); --btn-border:var(--gold-2); font-size:16px;}
   .pill{display:flex; align-items:center; gap:8px;}
   .pill pixel-range{width:130px}
   details.opts>summary{cursor:pointer; list-style:none}
@@ -100,7 +103,7 @@
     user-select:none; touch-action:manipulation;
   }
   .cell{
-    aspect-ratio:1/1.05; background:var(--cell); border-radius:8px;
+    aspect-ratio:1/1.05; background:var(--cell); border-radius:8px; cursor:pointer;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 0 rgba(0,0,0,.05);
   }
   .cell.on{
@@ -327,35 +330,14 @@ function buildMonoGrid(el, rowsDesc, notesArray){
   }
   function repaintAll(){ for(let x=0;x<C;x++) repaintCol(x); }
 
-  // жесты
-  let down=false, moved=false, startX=0, startY=0, startCell=null, lastTap=0;
-  el.addEventListener('pointerdown', (e)=>{
-    if(!(e.target.classList.contains('cell'))) return;
-    down=true; moved=false; startX=e.clientX; startY=e.clientY; startCell=e.target;
-  }, {passive:true});
-
-  el.addEventListener('pointermove', (e)=>{
-    if(!down) return;
-    if(Math.hypot(e.clientX-startX, e.clientY-startY) > 8) moved=true; // скролл — не ставим ноту
-  }, {passive:true});
-
-  el.addEventListener('pointerup', (e)=>{
-    if(!down){return;}
-    down=false;
-    const now=performance.now();
-    if(now - lastTap < 300){ return; } // игнор дабл-тап
-    lastTap=now;
-    if(moved) return;                  // если был скролл — игнор
-    const t = e.target;
-    if(!(t.classList.contains('cell'))) return;
-    const x=+t.dataset.x, y=+t.dataset.y;
+  el.addEventListener('click', (e)=>{
+    if(!e.target.classList.contains('cell')) return;
+    const x=+e.target.dataset.x, y=+e.target.dataset.y;
     const midi = rowsDesc[y];
     notesArray[x] = (notesArray[x]===midi) ? null : midi; // одна нота в колонке
     repaintCol(x);
     navigator.vibrate?.(8);
-  }, {passive:true});
-
-  el.addEventListener('pointercancel', ()=>{down=false;});
+  });
   repaintAll();
 }
 
@@ -373,28 +355,14 @@ function buildDrums(el, sets){
   }
   const cells=[...el.children];
 
-  // жесты с защитой от дабл-тапа и скролла
-  let down=false, moved=false, startX=0, startY=0, lastTap=0;
-  el.addEventListener('pointerdown', (e)=>{
+  el.addEventListener('click', (e)=>{
     if(!e.target.classList.contains('cell')) return;
-    down=true; moved=false; startX=e.clientX; startY=e.clientY;
-  }, {passive:true});
-  el.addEventListener('pointermove', (e)=>{
-    if(!down) return;
-    if(Math.hypot(e.clientX-startX, e.clientY-startY) > 8) moved=true;
-  }, {passive:true});
-  el.addEventListener('pointerup', (e)=>{
-    if(!down) return; down=false;
-    const now=performance.now(); if(now-lastTap<300) return; lastTap=now;
-    if(moved) return;
-    const t=e.target; if(!t.classList.contains('cell')) return;
-    const r=+t.dataset.row, x=+t.dataset.x;
+    const r=+e.target.dataset.row, x=+e.target.dataset.x;
     const set=[sets.kick, sets.snare, sets.hat][r];
     set.has(x) ? set.delete(x) : set.add(x);
-    t.classList.toggle('on');
+    e.target.classList.toggle('on');
     navigator.vibrate?.(6);
-  }, {passive:true});
-  el.addEventListener('pointercancel', ()=>{down=false;});
+  });
 
   // начальная отрисовка
   for(let r=0;r<3;r++){
@@ -582,6 +550,7 @@ $('loadFile').onclick=()=>{
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
 </script>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/pixel-widgets.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>

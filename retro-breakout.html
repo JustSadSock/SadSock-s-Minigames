@@ -17,7 +17,7 @@
       gap:12px;
       color:var(--ink);
     }
-    h1{margin:0;font-size:18px;}
+    h1{margin:0;font-size:18px;font-family:'Press Start 2P',ui-monospace,monospace;color:var(--accent);}
     .play{
       flex:1;
       width:100%;
@@ -29,10 +29,10 @@
     }
     #gameCanvas{
       background:var(--bg2);
-      border:4px solid var(--pastel-peach);
+      border:4px solid var(--accent);
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
       image-rendering:pixelated;
-      width:clamp(60vw,80svh,96vw);
+      width:min(70svh,96vw);
       height:auto;
       aspect-ratio:3/4;
     }
@@ -51,22 +51,22 @@
       color:var(--ink);
     }
 
-    .pad{position:static;margin-top:8px;}
-
   </style>
 </head>
 <body class="theme-blue">
-  <h1>Retro Breakout</h1>
-  <div id="score" class="pill">Счёт: 0</div>
-  <div id="lives" class="pill">Жизни: 3</div>
-  <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+  <h1 data-i18n="retroBreakout"></h1>
+  <div class="hud hud-inline">
+    <div id="score" class="counter"></div>
+    <div id="lives" class="counter"></div>
+    <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+  </div>
   <div class="play">
-    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
-    <div id="toast" class="toast"></div>
-    <div id="pad" class="pad">
-      <button class="k" data-dir="left" aria-label="Влево">◄</button>
-      <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
-      <button class="k" data-dir="right" aria-label="Вправо">►</button>
+    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <div id="pad" class="pad pad-center">
+      <button class="k" data-dir="left">◄</button>
+      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
+      <button class="k" data-dir="right">►</button>
     </div>
   </div>
   <script src="src/audio.js"></script>
@@ -86,11 +86,11 @@
     const livesEl=document.getElementById('lives');
     const startBtn=document.getElementById('startBtn');
     const paddleWidth=30;
-    const header=document.querySelector('h1');
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
     const showToast=UI.makeToast(toastEl);
-    const scoreBoard=UI.score(scoreEl,'Счёт');
+    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score',globalThis.i18n?.t('best')||'best');
+    const livesLabel=globalThis.i18n?.t('lives')||'Lives';
     const scores=Scores('breakout');
     document.getElementById('scoresBtn').onclick=scores.show;
     let left=false,right=false;
@@ -114,7 +114,7 @@
       const bh=10;
       for(let r=0;r<brickRows;r++){
         for(let c=0;c<brickCols;c++){
-          bricks.push({x:c*bw,y:20+r*(bh+2),w:bw-2,h:bh,alive:true,color:brickPalette[r%brickPalette.length]});
+          bricks.push({x:c*bw,y:20+r*(bh+2),w:bw-2,h:bh,alive:true,color:brickPalette[r%brickPalette.length],hit:0});
         }
       }
       draw();
@@ -122,13 +122,18 @@
     function setBall(){
       ball={x:canvas.width/2,y:canvas.height-20,vx:120,vy:-120,r:2};
     }
-    function updateScore(){scoreBoard.set(score,best); livesEl.textContent='Жизни: '+lives;}
+    function updateScore(){scoreBoard.set(score,best); livesEl.textContent=livesLabel+': '+lives;}
     function draw(){
       ctx.fillStyle=bgColor;
       ctx.fillRect(0,0,canvas.width,canvas.height);
       for(const b of bricks){
-        if(b.alive){
-          ctx.fillStyle=b.color;
+        if(b.alive||b.hit){
+          if(b.hit){
+            ctx.fillStyle=b.hit%2?'#fff':b.color;
+            b.hit--;
+          }else{
+            ctx.fillStyle=b.color;
+          }
           ctx.fillRect(b.x,b.y,b.w,b.h);
         }
       }
@@ -153,7 +158,7 @@
         else {
           Sound.fx('error');
           gameRunning=false;
-          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast('Новый рекорд: '+score);}else{showToast('Счёт: '+score);}
+          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast((globalThis.i18n?.t('best')||'Best')+': '+score);}else{showToast((globalThis.i18n?.t('score')||'Score')+': '+score);}
           scores.add(score);
           return;
         }
@@ -165,7 +170,7 @@
       }
       for(const b of bricks){
         if(b.alive && ball.x>=b.x && ball.x<=b.x+b.w && ball.y>=b.y && ball.y<=b.y+b.h){
-          b.alive=false;
+          b.alive=false; b.hit=6;
           ball.vy*=-1;
           ball.vx*=1.02; ball.vy*=1.02;
           score++;
@@ -190,7 +195,15 @@
       setPaddle(t.clientX-rect.left - paddle.w/2);
       e.preventDefault();
     },{passive:false});
+    function startGame(){
+      Sound.fx('start');
+      resetGame();
+      gameRunning=true;
+      startBtn.textContent=globalThis.i18n?.t('restart')||'RESTART';
+      requestAnimationFrame(loop);
+    }
     const setBtn=UI.attachDPad(pad,dir=>{
+      if(!gameRunning) startGame();
       if(dir==='left'){ left=true; right=false; }
       else if(dir==='right'){ right=true; left=false; }
     });
@@ -206,21 +219,18 @@
       const k=e.key.toLowerCase();
       if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); }
       else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); }
+      if(!gameRunning && (k==='arrowleft' || k==='a' || k==='arrowright' || k==='d' || k===' ')) startGame();
     });
     document.addEventListener('keyup',e=>{
       const k=e.key.toLowerCase();
       if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); }
       else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); }
     });
-    startBtn.addEventListener('click',()=>{
-      Sound.fx('start');
-      resetGame();
-      gameRunning=true;
-      requestAnimationFrame(loop);
-    });
+    startBtn.addEventListener('click',startGame);
     resetGame();
   })();
   </script>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>
 </html>

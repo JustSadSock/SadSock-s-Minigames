@@ -11,9 +11,9 @@
   <div class="frame">
     <div class="inner">
       <div class="hud">
-        <div class="pill" id="score">0</div>
-        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
-        <div class="pill" id="status">—</div>
+      <div class="counter" id="score">0</div>
+      <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
+      <div class="counter" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
@@ -36,8 +36,13 @@
 <script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module">
-import { t } from './src/i18n.js';
+import('./src/i18n.js').catch(e=>{
+  console.error('i18n failed',e);
+  if(window.UI&&UI.alert) UI.alert('Localization failed');
+  return {t:(s)=>s};
+}).then(({t})=>{
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
@@ -83,6 +88,27 @@ import { t } from './src/i18n.js';
   const rnd=(a,b)=>a+Math.random()*(b-a);
   const irnd=(a,b)=>Math.floor(rnd(a,b+1));
 
+  const COLORS={'1':'#3a2a18','2':'#a8d7ff'};
+  const HERO=[
+    " 1 ",
+    "111",
+    "111",
+    "1 1",
+    "1 1"
+  ];
+  const ENEMY=[
+    "222",
+    "2 2",
+    "222",
+    "2 2",
+    "222"
+  ];
+  function drawSprite(pat,x,y,tile){
+    const s=tile/pat[0].length;
+    pat.forEach((row,j)=>row.split('').forEach((ch,i)=>{
+      if(ch!==' '){ctx.fillStyle=COLORS[ch];ctx.fillRect(x+i*s,y+j*s,s,s);} }));
+  }
+
   // ===== Game specific code =====
   
   const game = {
@@ -99,7 +125,8 @@ import { t } from './src/i18n.js';
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
       this.exit=this.randUnique();
     },
-    onKey(e){ if(this.over) return;
+    onKey(e){
+      if(this.over){ if(e.key==='Enter'||e.key===' ') this.reset(); return; }
       if(e.key==='ArrowLeft'||e.key==='a') this.move(-1,0);
       if(e.key==='ArrowRight'||e.key==='d') this.move(1,0);
       if(e.key==='ArrowUp'||e.key==='w') this.move(0,-1);
@@ -141,10 +168,14 @@ import { t } from './src/i18n.js';
       for(let y=0;y<N;y++) for(let x=0;x<N;x++){ ctx.fillStyle=(this.map[y][x]==='#')?'#edd7b0':'#faedd3'; ctx.fillRect(ox+x*tile, oy+y*tile, tile-1, tile-1); }
       ctx.fillStyle='#e6a64c'; for(const c of this.ch) ctx.fillRect(ox+c.x*tile+3, oy+c.y*tile+3, tile-6, tile-6);
       ctx.fillStyle='#3fbf75'; ctx.fillRect(ox+this.exit.x*tile+5, oy+this.exit.y*tile+5, tile-10, tile-10);
-      ctx.fillStyle='#a8d7ff'; for(const e of this.en) ctx.fillRect(ox+e.x*tile+4, oy+e.y*tile+4, tile-8, tile-8);
-      ctx.fillStyle='#3a2a18'; ctx.fillRect(ox+this.p.x*tile+4, oy+this.p.y*tile+4, tile-8, tile-8);
-      ctx.fillStyle='#bf8a3d'; ctx.font='14px "Press Start 2P"'; ctx.textAlign='center';
-      ctx.fillText(`HP:${this.hp}  Lvl:${this.lvl}`, SETTINGS.W/2, oy-12);
+      for(const e of this.en) drawSprite(ENEMY, ox+e.x*tile, oy+e.y*tile, tile);
+      drawSprite(HERO, ox+this.p.x*tile, oy+this.p.y*tile, tile);
+      ctx.font='14px "Press Start 2P"';
+      ctx.textAlign='left'; ctx.fillStyle='#bf3030';
+      ctx.fillText('❤'.repeat(this.hp), 10, oy-12);
+      ctx.textAlign='right'; ctx.fillStyle='#bf8a3d';
+      ctx.fillText(`Lvl:${this.lvl}`, SETTINGS.W-10, oy-12);
+      ctx.textAlign='center';
       if(this.over) ctx.fillText(t('rogueGameOver'), SETTINGS.W/2, SETTINGS.H*0.5);
       ctx.restore();
     }
@@ -158,6 +189,7 @@ import { t } from './src/i18n.js';
   loop();
 
 })();
+});
 </script>
 </body>
 </html>

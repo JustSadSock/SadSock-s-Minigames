@@ -38,8 +38,8 @@
   .tools .panel{overflow:auto}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .chip{width:26px;height:26px;border:2px solid #543;border-radius:6px;box-shadow:inset 0 0 0 2px #fff6;cursor:pointer}
-  .chip[selected]{outline:3px solid var(--accent)}
-  .tool{padding:8px 10px;}
+  .chip[selected]{box-shadow:0 0 0 3px var(--accent),inset 0 0 0 2px #fff6}
+  .tool{padding:6px 8px;}
   .tool[data-danger]{--btn-border:#e09a9a;--btn-shadow:#c27979;}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .muted{color:var(--muted)}
@@ -64,6 +64,7 @@
   @media (max-width:600px){
     .workspace{grid-template-columns:1fr;grid-template-rows:1fr auto}
     .tools{max-height:50svh;overflow:auto}
+    .tools .panel> .row{flex-direction:column;align-items:flex-start}
   }
 
   @media (min-width:601px){
@@ -91,17 +92,17 @@
           <div class="panel">
             <div class="row" style="justify-content:space-between">
               <div class="row">
-                <button class="btn tool" id="tool-pen">Кисть</button>
-                <button class="btn tool" id="tool-erase">Ластик</button>
-                <button class="btn tool" id="tool-pick">Пипетка</button>
+                <button class="pill tool" id="tool-pen" title="Кисть"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='5' width='8' height='3' fill='%23b97a56'/><rect x='6' y='3' width='2' height='2' fill='%23ccc'/><rect x='6' y='1' width='2' height='2' fill='%23000'/></svg>" width="16" height="16" alt="Кисть"></button>
+                <button class="pill tool" id="tool-erase" title="Ластик"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='1' y='2' width='6' height='4' fill='%23f99'/><rect x='1' y='2' width='3' height='4' fill='%23fcc'/></svg>" width="16" height="16" alt="Ластик"></button>
+                <button class="pill tool" id="tool-pick" title="Пипетка"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='6' width='2' height='2' fill='%23000'/><rect x='1' y='5' width='2' height='2' fill='%23999'/><rect x='2' y='3' width='2' height='2' fill='%23999'/><rect x='3' y='2' width='2' height='2' fill='%23999'/><rect x='4' y='0' width='4' height='2' fill='%23f0f'/><rect x='5' y='2' width='3' height='2' fill='%23f0f'/><rect x='6' y='4' width='2' height='2' fill='%23f0f'/></svg>" width="16" height="16" alt="Пипетка"></button>
               </div>
               <div class="row">
-                <label>FPS</label>
-                <pixel-range><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
-                <button class="btn tool" id="play">▶️</button>
-                <button class="btn tool" id="stop">⏹</button>
-                <label class="row" style="gap:6px"><input id="onion" type="checkbox"/> Onion</label>
-                <label class="row" style="gap:6px"><input id="mirror" type="checkbox"/> Mirror</label>
+                <label title="Кадры в секунду">FPS</label>
+                <pixel-range title="Скорость анимации"><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
+                <button class="pill tool" id="play" title="Воспроизвести">▶️</button>
+                <button class="pill tool" id="stop" title="Остановить">⏹</button>
+                <label class="row" style="gap:6px" title="Показывать предыдущий кадр"><input id="onion" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='1' fill='%236c0'/><rect x='2' y='1' width='4' height='2' fill='%23d6a'/><rect x='1' y='2' width='6' height='3' fill='%23f9c'/><rect x='2' y='4' width='4' height='3' fill='%23d6a'/></svg>" width="16" height="16" alt="Onion"></label>
+                <label class="row" style="gap:6px" title="Зеркальное рисование"><input id="mirror" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='8' fill='%23bbb'/><rect x='0' y='2' width='3' height='4' fill='%236cf'/><rect x='5' y='2' width='3' height='4' fill='%236cf'/></svg>" width="16" height="16" alt="Mirror"></label>
               </div>
             </div>
             <div class="toolbar" id="palette" style="margin-top:8px"></div>
@@ -130,7 +131,8 @@
             <button class="btn tool" id="btn-save">Сохранить</button>
             <button class="btn tool" id="btn-download">Скачать файл</button>
             <button class="btn tool" id="btn-upload">Загрузить файл</button>
-            <button class="btn tool" id="btn-png">PNG</button>
+            <button class="btn tool" id="btn-png" title="Сохранить как PNG">PNG</button>
+            <button class="btn tool" id="btn-gif" title="Сохранить как GIF">GIF</button>
           </div>
           <div class="row">
             <button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
@@ -343,6 +345,26 @@
     for(let i=0;i<cols;i++){ const fr=frames[i]; for(let p=0;p<LEN;p++){ const ci=fr[p]; if(!ci) continue; ctx.fillStyle=palette[ci]; ctx.fillRect(i*GRID+(p%GRID), ((p/GRID)|0), 1,1); }}
     const a=document.createElement('a'); a.href=cv.toDataURL(); a.download='anim.png'; a.click();
   };
+  document.getElementById('btn-gif').onclick = async()=>{
+    if(!window.GIF){
+      await new Promise((res,rej)=>{
+        const sc=document.createElement('script');
+        sc.src='https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js';
+        sc.onload=res; sc.onerror=rej; document.head.appendChild(sc);
+      });
+    }
+    const gif = new GIF({workers:2, quality:1, workerScript:'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js'});
+    frames.forEach(fr=>{
+      const cv=document.createElement('canvas'); cv.width=GRID; cv.height=GRID; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+      for(let p=0;p<LEN;p++){ const ci=fr[p]; if(!ci) continue; ctx.fillStyle=palette[ci]; ctx.fillRect(p%GRID,(p/GRID)|0,1,1); }
+      gif.addFrame(cv,{delay:1000/Math.max(1,fps)});
+    });
+    gif.on('finished', blob=>{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='anim.gif'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    });
+    gif.render();
+  };
   loadLS();
   document.getElementById('btn-record').onclick = async()=>{
     if(!('MediaRecorder' in window)) { toast('MediaRecorder не поддерживается'); return; }
@@ -366,6 +388,7 @@
   }));
 })();
 </script>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/pixel-widgets.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>

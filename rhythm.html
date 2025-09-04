@@ -5,18 +5,34 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title data-i18n="rhythm"></title>
 <link rel="stylesheet" href="styles/shell.css">
+<style>
+  #startScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);gap:12px;color:#fff;font-family:'Press Start 2P',ui-monospace,monospace;font-size:12px;text-align:center;}
+  #startScreen.hidden{display:none;}
+  .lanes-demo{display:flex;gap:8px;}
+  .lanes-demo div{width:40px;height:40px;border:2px solid var(--bezel);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+</style>
 </head>
 <body>
 <div class="cabinet">
   <div class="frame">
     <div class="inner">
-      <div class="hud">
-        <div class="pill" id="score">Score: 0</div>
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
-        <div class="pill" id="status">—</div>
-      </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
+      <div id="startScreen">
+        <div class="lanes-demo">
+          <div style="background:var(--pastel-pink)">A</div>
+          <div style="background:var(--pastel-blue)">S</div>
+          <div style="background:var(--pastel-mint)">K</div>
+          <div style="background:var(--pastel-peach)">L</div>
+        </div>
+        <button id="playBtn" class="pill">PLAY</button>
+      </div>
+    </div>
+    <div class="hud hud-inline">
+      <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+      <div class="counter" id="score">Score: 0</div>
+      <div class="counter" id="combo">Combo: 0</div>
+      <div class="counter" id="status">—</div>
     </div>
     <div class="pad" id="pad" aria-hidden="true">
       <div class="k" data-btn="a"></div>
@@ -25,7 +41,6 @@
       <div class="k" data-btn="right"></div>
     </div>
     <div class="label">Ритм</div>
-    <div class="hint">A/S/K/L или тач по дорожкам.</div>
   </div>
   <div class="footer">Мобильные A/S/K/L • Клавиатура: A/S/K/L</div>
 </div>
@@ -37,10 +52,16 @@
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
-  const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const scoreEl=d('#score'), comboEl=d('#combo'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
+  const startScreen=d('#startScreen'), playBtn=d('#playBtn');
   const scores=Scores('rhythm');
   d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
+  playBtn.onclick=()=>{ game.started=true; startScreen.classList.add('hidden'); Sound.fx('start'); cv.focus(); };
+  const cs=getComputedStyle(document.documentElement);
+  const laneCols=['--pastel-pink','--pastel-blue','--pastel-mint','--pastel-peach']
+    .map(v=>cs.getPropertyValue(v).trim()+"33");
+  const noteCols=['#ff5f9c','#46a0ff','#00d9b8','#ffca3a'];
   let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
@@ -87,6 +108,8 @@
     reset(){ this.score=0; this.started=false; this.over=false;
       best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
       scoreEl.textContent='Score: 0 (best: '+best+')';
+      comboEl.textContent='Combo: 0';
+      statusEl.textContent='—';
       this.lanes=4; this.speed=180; this.barY=SETTINGS.H-120;
       const pattern=[0,1,2,3, 0,1,2,3, 0,2,1,3, 0,1,2,3];
       this.notes=pattern.map((lane,i)=>({lane,y:-i*90,hit:false}));
@@ -96,29 +119,28 @@
     tryHit(l){ const tgt=this.barY; let best=null, bd=1e9;
       for(const n of this.notes){ if(n.hit||n.lane!==l) continue; const d=Math.abs(n.y-tgt); if(d<bd){bd=d; best=n;} }
       if(!best) return;
-      if(bd<=this.winPerf/2){ this.score+=300; this.combo++; statusEl.textContent='PERFECT ×'+this.combo; best.hit=true; Sound.fx('coin'); }
-      else if(bd<=this.winGood/2){ this.score+=100; this.combo++; statusEl.textContent='GOOD ×'+this.combo; best.hit=true; Sound.fx('coin'); }
+      if(bd<=this.winPerf/2){ this.score+=300; this.combo++; statusEl.textContent='PERFECT'; best.hit=true; Sound.fx('coin'); }
+      else if(bd<=this.winGood/2){ this.score+=100; this.combo++; statusEl.textContent='GOOD'; best.hit=true; Sound.fx('coin'); }
       else { this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); }
+      comboEl.textContent='Combo: '+this.combo;
     },
     step(dt){
       const I=Input.st;
       if(this.over){ if(I.a||I.b||I.left||I.right){ this.reset(); } return; }
-      if(!this.started){ if(I.a||I.b||I.left||I.right){ this.started=true; Sound.fx('start'); } else return; }
-      for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; Sound.fx('error'); } }
+      if(!this.started){ if(I.a||I.b||I.left||I.right){ this.started=true; startScreen.classList.add('hidden'); Sound.fx('start'); } else return; }
+      for(const n of this.notes){ n.y+=this.speed*dt; if(!n.hit && n.y>this.barY+60){ n.hit=true; this.combo=0; statusEl.textContent='MISS'; comboEl.textContent='Combo: 0'; Sound.fx('error'); } }
       if(I.a) this.tryHit(0); if(I.b) this.tryHit(1); if(I.left) this.tryHit(2); if(I.right) this.tryHit(3);
       if(this.notes.every(n=>n.hit)){ this.over=true; if(this.score>best){ best=this.score; localStorage.setItem('rhythmBest',best); } scores.add(this.score); }
     },
     draw(){
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
       const laneW=SETTINGS.W/this.lanes;
-      for(let i=0;i<this.lanes;i++){ ctx.fillStyle='#f2e3c0'; ctx.fillRect(i*laneW,0,laneW-2,SETTINGS.H); }
+      for(let i=0;i<this.lanes;i++){ ctx.fillStyle=laneCols[i]; ctx.fillRect(i*laneW,0,laneW-2,SETTINGS.H); }
       ctx.fillStyle='#e6a64c'; ctx.fillRect(0,this.barY,SETTINGS.W,4);
-      ctx.fillStyle='#3fbf75';
-      for(const n of this.notes){ if(n.hit) continue; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
+      for(const n of this.notes){ if(n.hit) continue; ctx.fillStyle=noteCols[n.lane]; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
       const prog=this.notes.filter(n=>n.hit).length/this.total;
-      ctx.fillStyle='#d18f3f'; ctx.fillRect(0,8,SETTINGS.W*prog,4);
-      ctx.strokeStyle='#bf8a3d'; ctx.strokeRect(0,8,SETTINGS.W,4);
-      if(!this.started){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('A/S/K/L или тач по дорожкам', SETTINGS.W/2, SETTINGS.H*0.5); }
+      ctx.fillStyle='#d18f3f'; ctx.fillRect(0,8,SETTINGS.W*prog,8);
+      ctx.strokeStyle='#bf8a3d'; ctx.strokeRect(0,8,SETTINGS.W,8);
       if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Трек окончен. A — снова', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
@@ -131,6 +153,7 @@
 
 })();
 </script>
+<script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>
 </html>

@@ -61,6 +61,15 @@
   }
 
   function redraw(){ items.forEach(it=>draw(it.ctx,it.name,frame)); }
+  function init(){
+    document.querySelectorAll('canvas[data-icon]').forEach(cv=>{
+      cv.width = cv.height = 16;
+      animate(cv, cv.dataset.icon);
+    });
+  }
+
+  if(document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
 
   window.Icons = { animate, redraw };
 })();
