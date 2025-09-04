@@ -32,7 +32,7 @@
       border:4px solid var(--pastel-peach);
       image-rendering:pixelated;
       box-shadow:0 10px 20px rgba(0,0,0,0.2);
-      width:clamp(60vw,80svh,96vw);
+      width:min(70svh,96vw);
       height:auto;
       aspect-ratio:3/4;
     }
@@ -50,7 +50,14 @@
       font-size:14px;
       color:var(--ink);
     }
-    .pad{position:static;margin-top:8px;}
+    .pad{
+      position:absolute;
+      bottom:0;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:8px;
+    }
   </style>
 </head>
 <body class="theme-blue">
@@ -87,10 +94,45 @@
     document.getElementById('scoresBtn').onclick=scores.show;
     let left=false,right=false;
 
+    const playerSprite=[
+      '00100',
+      '01210',
+      '11111',
+      '01010',
+      '10101'
+    ];
+    const dropSprites=[
+      [
+        '00100',
+        '01110',
+        '11111',
+        '01110',
+        '00100'
+      ],[
+        '00000',
+        '00100',
+        '01110',
+        '00100',
+        '00000'
+      ]
+    ];
+
+    function drawSprite(sprite,x,y,scale,palette){
+      for(let j=0;j<sprite.length;j++){
+        for(let i=0;i<sprite[j].length;i++){
+          const v=sprite[j][i];
+          if(v!=='0'){
+            ctx.fillStyle=palette[parseInt(v)];
+            ctx.fillRect(x+i*scale,y+j*scale,scale,scale);
+          }
+        }
+      }
+    }
+
     const toast = UI.makeToast(toastEl);
     function resetGame(){
       running=false;
-      player={x:canvas.width/2-5,y:canvas.height-10,w:10,h:5};
+      player={x:canvas.width/2-5,y:canvas.height-12,w:10,h:10};
       objects=[];
       spawnTimer=0;
       score=0;
@@ -99,13 +141,13 @@
       draw();
     }
     function spawnObject(){
-      const size=4;
-      objects.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor()});
+      const size=5;
+      objects.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor(),anim:0});
       if(objects.length>50) objects.shift();
     }
     function pickColor(){
       const vars=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'];
-      return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random()*vars.length)]);
+      return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random()*vars.length)]).trim();
     }
     function update(){
       if(!running) return;
@@ -119,6 +161,7 @@
       }
       for(const o of objects){
         o.y+=o.vy*difficulty;
+        o.anim+=0.2;
       }
       objects = objects.filter(o=>{
         if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreEl.textContent='Счёт: '+score; return false; }
@@ -138,13 +181,14 @@
       requestAnimationFrame(update);
     }
     function draw(){
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--bg2');
+      const s=getComputedStyle(document.documentElement);
+      ctx.fillStyle=s.getPropertyValue('--bg2');
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--pastel-blue');
-      ctx.fillRect(player.x,player.y,player.w,player.h);
+      const playerPalette=[null,s.getPropertyValue('--pastel-peach'),s.getPropertyValue('--pastel-blue')];
+      drawSprite(playerSprite,player.x,player.y,2,playerPalette);
       for(const o of objects){
-        ctx.fillStyle=o.color;
-        ctx.fillRect(o.x,o.y,o.w,o.h);
+        const frame=dropSprites[Math.floor(o.anim)%dropSprites.length];
+        drawSprite(frame,o.x,o.y,1,[null,o.color]);
       }
     }
     function movePlayerTo(x){
