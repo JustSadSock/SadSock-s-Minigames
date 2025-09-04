@@ -141,7 +141,8 @@
 <body>
   <div class="cabinet">
     <div class="frame">
-      <div class="inner">
+        <div class="inner">
+          <canvas class="icon" data-icon="music" aria-hidden="true"></canvas>
         <div class="topbar">
         <div class="transport">
           <div class="left">
@@ -260,8 +261,9 @@
 </div>
 
 <div id="msg" aria-live="polite"></div>
-  <script src="src/ui.js"></script>
-  <script>
+<script src="src/ui.js"></script>
+<script src="src/icons.js"></script>
+<script>
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const $ = (id)=>document.getElementById(id);

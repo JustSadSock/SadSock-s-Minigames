@@ -8,9 +8,10 @@
 </head>
 <body>
 <div class="cabinet">
-  <div class="frame">
-    <div class="inner">
-      <div class="hud">
+    <div class="frame">
+      <div class="inner">
+        <canvas class="icon" data-icon="rogue" aria-hidden="true"></canvas>
+        <div class="hud">
       <div class="counter" id="score">0</div>
       <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
       <div class="counter" id="status">—</div>
@@ -33,10 +34,11 @@
   <div class="footer" data-i18n="miniRogueFooter"></div>
 </div>
 
-<script src="src/ui.js"></script>
-<script src="src/audio.js"></script>
-<script src="src/scores.js"></script>
-<script type="module" src="src/serve-warning.js"></script>
+  <script src="src/ui.js"></script>
+  <script src="src/audio.js"></script>
+  <script src="src/scores.js"></script>
+  <script src="src/icons.js"></script>
+  <script type="module" src="src/serve-warning.js"></script>
 <script type="module">
 import('./src/i18n.js').catch(e=>{
   console.error('i18n failed',e);

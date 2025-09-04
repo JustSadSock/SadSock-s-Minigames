@@ -14,8 +14,9 @@
 </head>
 <body>
 <div class="cabinet">
-  <div class="frame">
+    <div class="frame">
     <div class="inner">
+      <canvas class="icon" data-icon="rhythm" aria-hidden="true"></canvas>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
@@ -48,6 +49,7 @@
 <script src="src/ui.js"></script>
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
+<script src="src/icons.js"></script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };

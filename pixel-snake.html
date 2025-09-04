@@ -58,8 +58,9 @@
 
   </style>
 </head>
-<body class="theme-blue">
-  <h1>Pixel Snake</h1>
+  <body class="theme-blue">
+    <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
+    <h1>Pixel Snake</h1>
   <div class="hud hud-inline">
     <div id="score" class="counter">Счёт: 0</div>
     <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
@@ -86,10 +87,11 @@
       </div>
     </div>
   </div>
-  <script src="src/ui.js"></script>
-  <script src="src/audio.js"></script>
-  <script src="src/scores.js"></script>
-  <script>
+    <script src="src/ui.js"></script>
+    <script src="src/audio.js"></script>
+    <script src="src/scores.js"></script>
+    <script src="src/icons.js"></script>
+    <script>
   (function(){
     'use strict';
     const canvas=document.getElementById('gameCanvas');
