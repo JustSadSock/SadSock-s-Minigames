@@ -338,6 +338,17 @@ html,body{overflow:hidden;}
       box-shadow:0 2px 6px rgba(0,0,0,.12);
       pointer-events:none;
     }
+    .tile .badge{
+      position:absolute;
+      top:4px;
+      right:4px;
+      font-size:10px;
+      padding:2px 4px;
+      background:var(--tile-bg);
+      border:1px solid var(--bezel);
+      border-radius:4px;
+      box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);
+    }
 
     .indicator{
       position:absolute; right:10px; top:50%; translate:0 -50%;

@@ -13,8 +13,9 @@ import { initSettings } from './settings.js';
       const avatarBtn = $('#avatarBtn');
       const avatarOverlay = $('#avatarOverlay');
       const reel = $('.reel');
-      const tiles = $$('.reel .tile');
+      const allTiles = $$('.reel .tile');
       const indicator = $('.indicator');
+      const catBtns = $$('#catNav button');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
       let activeFrame=null, currentTile=null;
@@ -69,11 +70,11 @@ import { initSettings } from './settings.js';
       initSettings(ms=>{ DUR = ms; });
 
       /* ---------- Барабан и навигация ---------- */
-      const total = tiles.length;
+      let tiles = [];
       const cols = 2;
-      const rows = Math.ceil(total/cols);
-      indicator.innerHTML = '<i></i>'.repeat(rows);
-      const dots = [...indicator.children];
+      let total = 0;
+      let rows = 0;
+      let dots = [];
       let colIdx = 0;
       let index = 0; // верхний видимый ряд
       let frac = 0;  // прогресс анимации
@@ -130,6 +131,19 @@ import { initSettings } from './settings.js';
         for(let i=0;i<dots.length;i++){
           dots[i].classList.toggle('active', i===active);
         }
+      }
+
+      function switchCategory(cat){
+        catBtns.forEach(b=>b.classList.toggle('active', b.dataset.cat===cat));
+        allTiles.forEach(t=>{ t.style.display = t.dataset.cat===cat ? '' : 'none'; });
+        tiles = allTiles.filter(t=>t.dataset.cat===cat);
+        total = tiles.length;
+        rows = Math.ceil(total/cols) || 1;
+        indicator.innerHTML = '<i></i>'.repeat(rows);
+        dots = [...indicator.children];
+        index = 0; colIdx = 0; frac = 0; activeRow = 0;
+        recalcSteps();
+        focusTile();
       }
 
       let snapping = false;
@@ -213,7 +227,7 @@ import { initSettings } from './settings.js';
         e.preventDefault();
       },{passive:false});
 
-      tiles.forEach((t,i)=>{
+      allTiles.forEach((t,i)=>{
         t.addEventListener('click',()=>{
           const row = Math.floor(i/cols);
           colIdx = i % cols;
@@ -231,9 +245,15 @@ import { initSettings } from './settings.js';
         tiles[idx]?.focus();
       }
 
-      recalcSteps();
-      focusTile();
+      switchCategory('game');
       addEventListener('resize', ()=> requestAnimationFrame(recalcSteps));
+
+      catBtns.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          if(btn.dataset.cat==='settings'){ $('#settingsBtn').click(); return; }
+          switchCategory(btn.dataset.cat);
+        });
+      });
 
       function selectCurrent(){
         const idx = (Math.round(index)%rows)*cols + colIdx;
@@ -278,7 +298,8 @@ import { initSettings } from './settings.js';
             const close=document.createElement('button');
             close.className='pbtn close';
             close.id='gameClose';
-            close.textContent='×';
+            close.dataset.i18n='home';
+            close.textContent=t('home');
             gameOverlay.appendChild(close);
             $('#gameClose').addEventListener('click', closeGame);
             screenEl.classList.add('playing');

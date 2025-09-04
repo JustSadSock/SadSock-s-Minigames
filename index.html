@@ -27,50 +27,56 @@
               </button>
             </div>
           </header>
+          <nav id="catNav" class="hud hud-inline">
+            <button class="tab active" data-cat="game" data-i18n="games">Games</button>
+            <button class="tab" data-cat="util" data-i18n="utilities">Utilities</button>
+            <button class="tab" data-cat="settings" data-i18n="settings">Settings</button>
+          </nav>
           <div class="reel" role="listbox" data-i18n-aria-label="menu">
-              <button class="tile" role="option" data-idx="0" data-color="#ff9eb8" data-game="music-box.html" data-i18n-aria-label="musicBox" data-i18n-title="musicBoxDesc">
+              <button class="tile" role="option" data-idx="0" data-color="#ff9eb8" data-game="music-box.html" data-cat="util" data-i18n-aria-label="musicBox" data-i18n-title="musicBoxDesc">
               <canvas aria-hidden="true" data-icon="music"></canvas>
               <span class="label" data-i18n="musicBox"></span>
               </button>
-              <button class="tile" role="option" data-idx="1" data-color="#00d9b8" data-game="pixel-snake.html" data-i18n-aria-label="pixelSnake" data-i18n-title="pixelSnakeDesc">
+              <button class="tile" role="option" data-idx="1" data-color="#00d9b8" data-game="pixel-snake.html" data-cat="game" data-i18n-aria-label="pixelSnake" data-i18n-title="pixelSnakeDesc">
               <canvas aria-hidden="true" data-icon="snake"></canvas>
               <span class="label" data-i18n="pixelSnake"></span>
               </button>
-              <button class="tile" role="option" data-idx="2" data-color="#46a0ff" data-game="memory-flip.html" data-i18n-aria-label="memoryFlip" data-i18n-title="memoryFlipDesc">
+              <button class="tile" role="option" data-idx="2" data-color="#46a0ff" data-game="memory-flip.html" data-cat="game" data-i18n-aria-label="memoryFlip" data-i18n-title="memoryFlipDesc">
               <canvas aria-hidden="true" data-icon="cards"></canvas>
               <span class="label" data-i18n="memoryFlip"></span>
               </button>
-              <button class="tile" role="option" data-idx="3" data-color="#ffca3a" data-game="dodge-rain.html" data-i18n-aria-label="dodgeRain" data-i18n-title="dodgeRainDesc">
+              <button class="tile" role="option" data-idx="3" data-color="#ffca3a" data-game="dodge-rain.html" data-cat="game" data-i18n-aria-label="dodgeRain" data-i18n-title="dodgeRainDesc">
               <canvas aria-hidden="true" data-icon="rain"></canvas>
               <span class="label" data-i18n="dodgeRain"></span>
               </button>
-              <button class="tile" role="option" data-idx="4" data-color="#ff5f9c" data-game="retro-breakout.html" data-i18n-aria-label="retroBreakout" data-i18n-title="retroBreakoutDesc">
+              <button class="tile" role="option" data-idx="4" data-color="#ff5f9c" data-game="retro-breakout.html" data-cat="game" data-i18n-aria-label="retroBreakout" data-i18n-title="retroBreakoutDesc">
               <canvas aria-hidden="true" data-icon="breakout"></canvas>
               <span class="label" data-i18n="retroBreakout"></span>
               </button>
-              <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" data-i18n-aria-label="pixelAnimator" data-i18n-title="pixelAnimatorDesc">
+              <button class="tile" role="option" data-idx="5" data-color="#ffca3a" data-game="pixel-animator.html" data-cat="util" data-i18n-aria-label="pixelAnimator" data-i18n-title="pixelAnimatorDesc">
               <canvas aria-hidden="true" data-icon="anim"></canvas>
               <span class="label" data-i18n="pixelAnimator"></span>
               </button>
-              <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" data-i18n-aria-label="miniRogue" data-i18n-title="miniRogueDesc">
+              <button class="tile" role="option" data-idx="6" data-color="#d4635b" data-game="mini-rogue.html" data-cat="game" data-i18n-aria-label="miniRogue" data-i18n-title="miniRogueDesc">
               <canvas aria-hidden="true" data-icon="rogue"></canvas>
               <span class="label" data-i18n="miniRogue"></span>
               </button>
-              <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" data-i18n-aria-label="pixelPong" data-i18n-title="pixelPongDesc">
+              <button class="tile" role="option" data-idx="7" data-color="#3fbf75" data-game="pixel-pong.html" data-cat="game" data-i18n-aria-label="pixelPong" data-i18n-title="pixelPongDesc">
               <canvas aria-hidden="true" data-icon="pong"></canvas>
               <span class="label" data-i18n="pixelPong"></span>
               </button>
-              <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" data-i18n-aria-label="rhythm" data-i18n-title="rhythmDesc">
+              <button class="tile" role="option" data-idx="8" data-color="#00bbf9" data-game="rhythm.html" data-cat="game" data-i18n-aria-label="rhythm" data-i18n-title="rhythmDesc">
               <canvas aria-hidden="true" data-icon="rhythm"></canvas>
               <span class="label" data-i18n="rhythm"></span>
               </button>
-              <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" data-i18n-aria-label="tower" data-i18n-title="towerDesc">
+              <button class="tile" role="option" data-idx="9" data-color="#e6a64c" data-game="tower.html" data-cat="game" data-i18n-aria-label="tower" data-i18n-title="towerDesc">
               <canvas aria-hidden="true" data-icon="tower"></canvas>
               <span class="label" data-i18n="tower"></span>
               </button>
-              <button class="tile" role="option" data-idx="10" data-color="#81c784" data-game="arena.html" data-i18n-aria-label="arena" data-i18n-title="arenaDesc">
+              <button class="tile" role="option" data-idx="10" data-color="#81c784" data-game="arena.html" data-cat="game" data-wip="1" data-i18n-aria-label="arena" data-i18n-title="arenaDesc">
               <canvas aria-hidden="true" data-icon="arena"></canvas>
               <span class="label" data-i18n="arena"></span>
+              <span class="badge" data-i18n="inDev"></span>
               </button>
             <div class="indicator" aria-hidden="true"></div>
           </div>
