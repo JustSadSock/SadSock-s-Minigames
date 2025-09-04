@@ -17,6 +17,14 @@
     <div class="frame">
     <div class="inner">
       <canvas class="icon" data-icon="rhythm" aria-hidden="true"></canvas>
+      <div class="hud">
+        <div class="counter" id="score">Score: 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
+        <div style="display:flex;gap:4px;">
+          <div class="counter" id="combo">Combo: 0</div>
+          <div class="counter" id="status">—</div>
+        </div>
+      </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
@@ -28,12 +36,6 @@
         </div>
         <button id="playBtn" class="pill">PLAY</button>
       </div>
-    </div>
-    <div class="hud hud-inline">
-      <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
-      <div class="counter" id="score">Score: 0</div>
-      <div class="counter" id="combo">Combo: 0</div>
-      <div class="counter" id="status">—</div>
     </div>
     <div class="pad" id="pad" aria-hidden="true">
       <div class="k" data-btn="a"></div>
@@ -67,6 +69,8 @@
     .map(v=>cs.getPropertyValue(v).trim()+"33");
   const noteCols=['#ff5f9c','#46a0ff','#00d9b8','#ffca3a'];
   let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
+  const scoreBoard=UI.score(scoreEl,'Score');
+  scoreBoard.set(0,best);
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
@@ -111,7 +115,7 @@
     init(){ this.reset(); loop(); },
     reset(){ this.score=0; this.started=false; this.over=false;
       best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
-      scoreEl.textContent='Score: 0 (best: '+best+')';
+      scoreBoard.set(0,best);
       comboEl.textContent='Combo: 0';
       statusEl.textContent='—';
       this.lanes=4; this.speed=180; this.barY=SETTINGS.H-120;
@@ -151,7 +155,7 @@
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent='Score: '+(game.score|0)+' (best: '+best+')'; }
+    game.step(dt); game.draw(); scoreBoard.set(game.score|0,best); }
   game.init();
 
 

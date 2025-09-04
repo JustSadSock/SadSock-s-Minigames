@@ -61,10 +61,6 @@
   <body class="theme-blue">
     <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
     <h1>Pixel Snake</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Счёт: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
   <div id="colorPick" class="color-pick" title="Цвет змейки">
     <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Зелёный"></button>
     <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Синий"></button>
@@ -72,6 +68,11 @@
     <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Персиковый"></button>
   </div>
   <div class="play">
+    <div class="hud">
+      <div id="score" class="counter">Счёт: 0</div>
+      <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+      <div id="status" class="counter" style="visibility:hidden"></div>
+    </div>
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-inline">

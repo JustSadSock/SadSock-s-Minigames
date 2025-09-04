@@ -19,8 +19,8 @@
     <div class="inner">
       <canvas class="icon" data-icon="pong" aria-hidden="true"></canvas>
       <div class="hud hud-3">
-        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="counter" id="score">0 : 0</div>
+        <button class="pill" id="scoresBtn" aria-label="Рекорды">🏆</button>
         <div class="counter" id="status">—</div>
       </div>
       <canvas id="cv" tabindex="0" aria-label="Игровое поле"></canvas>
@@ -67,6 +67,9 @@
   const colorPick=d('#colorPick'), aiSelect=d('#aiSelect');
   const scores=Scores('pong');
   d('#scoresBtn').onclick=scores.show;
+  let best=parseInt(localStorage.getItem('pongBest')||'0',10);
+  const scoreBoard=UI.score(scoreEl,'Счёт');
+  scoreBoard.set('0 : 0',best);
   const ctx=cv.getContext('2d');
   const styles=getComputedStyle(document.documentElement);
   const BG=styles.getPropertyValue('--bg0');
@@ -125,6 +128,7 @@
     name:'Pong', score:0, over:false, started:false, level:0,
     init(){ this.pw=10; this.ph=80; this.reset(); loop(); },
     reset(){ this.score=0; this.over=false; this.started=false; this.level=0;
+      scoreBoard.set('0 : 0',best);
       this.pColor=paddleColor; this.difficulty=difficulty;
       this.p1={x:18,y:SETTINGS.H/2-this.ph/2,s:260};
       this.p2={x:SETTINGS.W-18-this.pw,y:SETTINGS.H/2-this.ph/2,s:220+this.difficulty*40};
@@ -155,7 +159,7 @@
       if(b.x<-20){ this.s2++; Sound.fx('coin'); this.resetBall(-1); }
       if(b.x>SETTINGS.W+20){ this.s1++; Sound.fx('coin'); this.resetBall(+1); }
       this.score=Math.max(this.s1,this.s2);
-      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; scores.add(this.score); showStart('RESTART'); }
+      if(this.s1>=7||this.s2>=7){ Sound.fx('error'); this.over=true; this.started=false; if(this.score>best){best=this.score; localStorage.setItem('pongBest',best);} scores.add(this.score); showStart('RESTART'); }
     },
     resetBall(dir){
       const speed=180 + this.level*20 + this.difficulty*20;
@@ -174,7 +178,7 @@
   };
   let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); game.draw(); scoreEl.textContent=`${game.s1} : ${game.s2}`; }
+    game.step(dt); game.draw(); scoreBoard.set(`${game.s1} : ${game.s2}`,best); }
   game.init();
 
 

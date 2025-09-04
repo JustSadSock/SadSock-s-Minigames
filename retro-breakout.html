@@ -56,12 +56,12 @@
   <body class="theme-blue">
   <canvas class="icon" data-icon="breakout" aria-hidden="true"></canvas>
   <h1 data-i18n="retroBreakout"></h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter"></div>
-    <div id="lives" class="counter"></div>
-    <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
-  </div>
   <div class="play">
+    <div class="hud">
+      <div id="score" class="counter"></div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <div id="lives" class="counter"></div>
+    </div>
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast" aria-live="polite"></div>
     <div id="pad" class="pad pad-center">

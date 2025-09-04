@@ -95,13 +95,15 @@
 <body class="theme-blue">
   <canvas class="icon" data-icon="cards" aria-hidden="true"></canvas>
   <h1>Memory Flip</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Найдено пар: 0/8</div>
-    <div id="timer" class="counter">Время: 0.0с</div>
-    <div id="moves" class="counter">Ходы: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
   <div class="play">
+    <div class="hud">
+      <div id="score" class="counter">Найдено пар: 0/8</div>
+      <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+      <div style="display:flex;gap:4px;">
+        <div id="timer" class="counter">Время: 0.0с</div>
+        <div id="moves" class="counter">Ходы: 0</div>
+      </div>
+    </div>
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
     <div id="pad" class="pad pad-inline">

@@ -51,7 +51,9 @@ import('./src/i18n.js').catch(e=>{
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
   const scores=Scores('rogue');
   d('#scoresBtn').onclick=scores.show;
+  let best=parseInt(localStorage.getItem('rogueBest')||'0',10);
   const scoreBoard=UI.score(scoreEl,t('score'),t('best'));
+  scoreBoard.set(0,best);
   const ctx=cv.getContext('2d');
   const styles=getComputedStyle(document.documentElement);
   const BG=styles.getPropertyValue('--bg0');
@@ -187,8 +189,13 @@ import('./src/i18n.js').catch(e=>{
   };
   let last=performance.now(), recorded=false;
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
-    game.draw(); scoreBoard.set(game.score|0); }
+    game.step(dt);
+    if(game.over && !recorded){
+      scores.add(game.score);
+      recorded=true;
+      if(game.score>best){ best=game.score; localStorage.setItem('rogueBest',best); }
+    }
+    game.draw(); scoreBoard.set(game.score|0,best); }
   game.init();
   addEventListener('beforeunload',()=>game.destroy());
   loop();

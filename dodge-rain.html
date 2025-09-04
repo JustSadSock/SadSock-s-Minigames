@@ -55,11 +55,12 @@
   <body class="theme-blue">
     <canvas class="icon" data-icon="rain" aria-hidden="true"></canvas>
     <h1>Dodge Rain</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Счёт: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
   <div class="play">
+    <div class="hud">
+      <div id="score" class="counter">Счёт: 0</div>
+      <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
+      <div id="status" class="counter" style="visibility:hidden"></div>
+    </div>
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
@@ -93,6 +94,9 @@
     const pad=document.getElementById('pad');
     const scores=Scores('rain');
     document.getElementById('scoresBtn').onclick=scores.show;
+    let best=parseInt(localStorage.getItem('rainBest')||'0',10);
+    const scoreBoard=UI.score(scoreEl,'Счёт');
+    scoreBoard.set(0,best);
     let left=false,right=false;
 
     const playerSprite=[
@@ -138,7 +142,7 @@
       spawnTimer=0;
       score=0;
       difficulty=1;
-      scoreEl.textContent='Счёт: '+score;
+      scoreBoard.set(score,best);
       draw();
     }
     function spawnObject(){
@@ -165,7 +169,7 @@
         o.anim+=0.2;
       }
       objects = objects.filter(o=>{
-        if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreEl.textContent='Счёт: '+score; return false; }
+        if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreBoard.set(score,best); return false; }
         return true;
       });
       for(const o of objects){
@@ -173,6 +177,7 @@
           running=false;
           Sound.fx('error');
           toast('Счёт: '+score);
+          if(score>best){ best=score; localStorage.setItem('rainBest',best); }
           scores.add(score);
           resetGame();
           break;
