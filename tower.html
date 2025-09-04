@@ -22,6 +22,7 @@
         <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
         <div class="counter" id="status">—</div>
       </div>
+      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
       <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div id="overlay" data-i18n="dropBlock"></div>
       <div class="scanlines"></div>
@@ -46,6 +47,10 @@
 <script src="src/audio.js"></script>
 <script src="src/scores.js"></script>
 <script src="src/icons.js"></script>
+<script type="module">
+import { initSettings } from './src/settings.js';
+initSettings();
+</script>
 <script>
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };

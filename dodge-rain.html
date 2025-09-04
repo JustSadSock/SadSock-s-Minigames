@@ -61,6 +61,7 @@
       <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
       <div id="status" class="counter" style="visibility:hidden"></div>
     </div>
+    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
@@ -78,6 +79,10 @@
     <script src="src/audio.js"></script>
     <script src="src/scores.js"></script>
     <script src="src/icons.js"></script>
+    <script type="module">
+      import { initSettings } from './src/settings.js';
+      initSettings();
+    </script>
   <script>
   (function(){
     'use strict';

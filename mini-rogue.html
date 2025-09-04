@@ -16,6 +16,7 @@
       <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
       <div class="counter" id="status">—</div>
       </div>
+      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
       <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
     </div>
@@ -38,6 +39,10 @@
   <script src="src/audio.js"></script>
   <script src="src/scores.js"></script>
   <script src="src/icons.js"></script>
+  <script type="module">
+    import { initSettings } from './src/settings.js';
+    initSettings();
+  </script>
   <script type="module" src="src/serve-warning.js"></script>
 <script type="module">
 import('./src/i18n.js').catch(e=>{

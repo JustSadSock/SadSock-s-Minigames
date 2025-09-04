@@ -23,6 +23,10 @@ export function initSettings(onSpeedChange){
       <pixel-range><input id="volume" type="range" min="0" max="1" step="0.05" value="0.3" data-i18n-aria-label="volume" /></pixel-range>
     </div>
     <div class="row wide">
+      <span data-i18n="music"></span>
+      <button id="musicBtn" class="pbtn" data-i18n="musicOn" data-i18n-aria-label="music"></button>
+    </div>
+    <div class="row wide">
       <span data-i18n="screen"></span>
       <button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen">Fullscreen</button>
     </div>
@@ -53,6 +57,7 @@ export function initSettings(onSpeedChange){
 
   const settingsBtn = document.getElementById('settingsBtn');
   const volumeSlider = menu.querySelector('#volume');
+  const musicBtn = menu.querySelector('#musicBtn');
   const fullscreenBtn = menu.querySelector('#fullscreenBtn');
   const settingsOk = menu.querySelector('#settingsOk');
   const langSelect = menu.querySelector('#langSelect');
@@ -87,6 +92,20 @@ export function initSettings(onSpeedChange){
     Sound.setVolume(parseFloat(e.target.value));
     localStorage.setItem('volume', e.target.value);
   });
+
+  let musicEnabled = localStorage.getItem('music') !== 'off';
+  function updateMusic(){
+    musicBtn.dataset.i18n = musicEnabled ? 'musicOn' : 'musicOff';
+    applyTranslations(musicBtn);
+    if(musicEnabled) Sound.start(); else Sound.stop();
+  }
+  musicBtn.addEventListener('click',()=>{
+    musicEnabled = !musicEnabled;
+    localStorage.setItem('music', musicEnabled ? 'on' : 'off');
+    updateMusic();
+    Sound.fx('option');
+  });
+  updateMusic();
 
   fullscreenBtn.addEventListener('click',()=>{
     if(!document.fullscreenElement){

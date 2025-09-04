@@ -67,6 +67,12 @@ canvas{
 .pad-toggle{position:absolute; right:10px; bottom:10px; display:none}
 .pad-toggle.show{display:block}
 
+.settings-btn{
+  position:absolute;
+  top:8px;
+  right:8px;
+}
+
 .dpad{
   width:min(40vw,40svh);
   max-width:260px;
