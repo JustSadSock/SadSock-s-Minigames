@@ -15,6 +15,10 @@ export async function setLang(lang){
   } catch(err){
     console.warn('i18n load failed', err);
     cache[lang] = {};
+    const warn=document.createElement('div');
+    warn.textContent='Failed to load translations.';
+    warn.style.cssText='position:fixed;bottom:0;left:0;width:100%;padding:4px;background:#300;color:#ffca3a;font-family:sans-serif;text-align:center';
+    document.body.appendChild(warn);
   }
   currentLang = lang;
   document.documentElement.lang = lang;

@@ -18,3 +18,14 @@ Retro‑styled collection of small web games. Each page can be opened on its own
 | Tower | Stack blocks into a tower | Space or A to drop block | [Play](https://sadsock.github.io/SadSock-s-Minigames/tower.html) |
 | 5×5 Arena | Plan moves on a tactical grid | Mouse/touch actions | [Play](https://sadsock.github.io/SadSock-s-Minigames/arena.html) |
 
+## Development
+
+Install dependencies and start a local dev server so ES module imports work correctly:
+
+```bash
+npm install
+npm run dev
+```
+
+Open the printed local URL (default `http://localhost:5173/`). If modules fail to load, a warning message will appear reminding you to run the site through a server instead of opening files directly.
+
