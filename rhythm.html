@@ -26,7 +26,7 @@
         </div>
       </div>
       <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+      <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
         <div class="lanes-demo">
@@ -75,8 +75,6 @@ initSettings();
   const ctx=cv.getContext('2d');
   playBtn.onclick=()=>{ game.started=true; startScreen.classList.add('hidden'); Sound.fx('start'); cv.focus(); };
   const cs=getComputedStyle(document.documentElement);
-  const BG=cs.getPropertyValue('--bg0');
-  const STRIPE=cs.getPropertyValue('--bezel');
   const laneCols=['--pastel-pink','--pastel-blue','--pastel-mint','--pastel-peach']
     .map(v=>cs.getPropertyValue(v).trim()+"33");
   const noteCols=['#ff5f9c','#46a0ff','#00d9b8','#ffca3a'];
@@ -87,11 +85,7 @@ initSettings();
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle=BG; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle=STRIPE;
-    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
-    ctx.restore();
-  }
+  function clear(){ ctx.clearRect(0,0,cv.width,cv.height); }
   window.addEventListener('resize',resize);
 
   // Input

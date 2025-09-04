@@ -17,7 +17,7 @@
       <div class="counter" id="status">—</div>
       </div>
       <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+      <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
     </div>
     <div id="pad" class="pad pad-center">
@@ -60,17 +60,10 @@ import('./src/i18n.js').catch(e=>{
   const scoreBoard=UI.score(scoreEl,t('score'),t('best'));
   scoreBoard.set(0,best);
   const ctx=cv.getContext('2d');
-  const styles=getComputedStyle(document.documentElement);
-  const BG=styles.getPropertyValue('--bg0');
-  const STRIPE=styles.getPropertyValue('--bezel');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle=BG; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle=STRIPE;
-    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
-    ctx.restore();
-  }
+  function clear(){ ctx.clearRect(0,0,cv.width,cv.height); }
   window.addEventListener('resize',resize);
 
   // Input
