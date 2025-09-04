@@ -62,9 +62,14 @@
     <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
-      <button class="k" data-dir="left" aria-label="Влево">◄</button>
-      <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
-      <button class="k" data-dir="right" aria-label="Вправо">►</button>
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid;opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
+      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
     </div>
   </div>
   <script src="src/ui.js"></script>
@@ -199,7 +204,18 @@
       movePlayerTo(t.clientX-rect.left);
       e.preventDefault();
     },{passive:false});
-    const setBtn=(dir,val)=>{ const el=pad.querySelector(`[data-dir="${dir}"]`); if(el) el.classList.toggle('down',val); };
+    const setBtn=UI.attachDPad(pad,dir=>{
+      if(dir==='left'){ left=true; right=false; }
+      else if(dir==='right'){ right=true; left=false; }
+    });
+    pad.querySelectorAll('[data-dir]').forEach(btn=>{
+      const dir=btn.dataset.dir;
+      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else if(dir==='right') right=false; };
+      btn.addEventListener('touchend',off,{passive:false});
+      btn.addEventListener('touchcancel',off,{passive:false});
+      btn.addEventListener('mouseup',off);
+      btn.addEventListener('mouseleave',off);
+    });
     document.addEventListener('keydown',e=>{
       const k=e.key.toLowerCase();
       if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); e.preventDefault(); }
@@ -210,18 +226,6 @@
       if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); e.preventDefault(); }
       else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); e.preventDefault(); }
     });
-    pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      const dir=btn.dataset.dir;
-      const on=e=>{ e.preventDefault(); setBtn(dir,true); if(dir==='left') left=true; else right=true; };
-      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false; };
-      btn.addEventListener('touchstart',on,{passive:false});
-      btn.addEventListener('touchend',off,{passive:false});
-      btn.addEventListener('touchcancel',off,{passive:false});
-      btn.addEventListener('mousedown',on);
-      addEventListener('mouseup',off);
-      btn.addEventListener('mouseleave',off);
-    });
-    UI.autoHidePad(pad);
     startBtn.addEventListener('click',()=>{
       Sound.fx('start');
       resetGame();

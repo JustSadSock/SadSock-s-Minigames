@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="arena"></title>
   <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
   <style>
     :root {
       --bg-color: var(--bg0);
@@ -52,13 +53,9 @@
     #phase { text-align: center; font-size: 16px; min-height: 24px; }
     #planCells { display: flex; justify-content: space-between; }
     .planCell { width: 18%; height: 40px; border: 3px solid var(--card-border); background: var(--board-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
-    #actions { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6px; }
-    #actions button { padding: 16px; font-size: 32px; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; color: var(--text-color); }
-    #actions button[data-act="attack"] { color: var(--attack-color); }
-    #actions button[data-act="shield"] { color: var(--shield-color); }
-    #actions button:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-    #actions button:active:not(:disabled) { transform: translateY(0); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    #actions button:disabled { background: var(--btn-disabled); cursor: default; color: #999; box-shadow: none; }
+    .pad-inline{margin-top:12px;}
+    #pad .k[data-act="attack"]{color:var(--attack-color);}
+    #pad .k[data-act="shield"]{color:var(--shield-color);}
     #navButtons { display: flex; gap: 10px; justify-content: space-between; }
     #navButtons button { flex: 1; padding: 14px; font-size: 20px; background: var(--card-bg); border: 3px solid var(--card-border); border-radius: 12px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; color: var(--text-color); }
     #navButtons button:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
@@ -134,13 +131,18 @@
         <div id="pc3" class="planCell"></div>
         <div id="pc4" class="planCell"></div>
       </div>
-      <div id="actions">
-        <button data-act="up">▲</button>
-        <button data-act="down">▼</button>
-        <button data-act="left">◀</button>
-        <button data-act="right">▶</button>
-        <button data-act="attack">⚔</button>
-        <button data-act="shield">🛡</button>
+      <div id="pad" class="pad pad-inline">
+        <div class="dpad" aria-hidden="true">
+          <div class="k" data-act="up" data-dir="up" style="grid-area:up">▲</div>
+          <div class="k" data-act="left" data-dir="left" style="grid-area:left">◀</div>
+          <div class="k" style="grid-area:mid;opacity:.35"></div>
+          <div class="k" data-act="right" data-dir="right" style="grid-area:right">▶</div>
+          <div class="k" data-act="down" data-dir="down" style="grid-area:down">▼</div>
+        </div>
+        <div class="ab">
+          <div class="k" data-act="attack">⚔</div>
+          <div class="k" data-act="shield">🛡</div>
+        </div>
       </div>
       <div id="navButtons">
         <button id="btn-del" data-i18n="deleteBtn">Delete</button>
@@ -206,8 +208,9 @@
     <p id="msgContent"></p>
     <button id="msgClose" data-i18n="close">Close</button>
   </div>
+  <script src="src/ui.js"></script>
   <script type="module" src="src/serve-warning.js"></script>
-<script type="module">
+  <script type="module">
   import('./src/pixel-widgets.js');
   (async()=>{
     try{
@@ -240,7 +243,8 @@
     const ui=document.getElementById('ui');
     const phaseEl=document.getElementById('phase');
     const planCells=[0,1,2,3,4].map(i=>document.getElementById('pc'+i));
-    const actions=Array.from(document.querySelectorAll('#actions button'));
+    const pad=document.getElementById('pad');
+    const actions=Array.from(pad.querySelectorAll('[data-act]'));
     const btnDel=document.getElementById('btn-del');
     const btnNext=document.getElementById('btn-next');
     const scoreA=document.getElementById('scoreA');
@@ -301,7 +305,34 @@
     function recordFrame(actA=null,actB=null){const frame={A:{x:units.A.x,y:units.A.y,alive:units.A.alive},B:{x:units.B.x,y:units.B.y,alive:units.B.alive},edges:edgesCollapsed,actions:{A:actA? (typeof actA==='object'?{dirs:actA.dirs.slice()}:actA):null,B:actB? (typeof actB==='object'?{dirs:actB.dirs.slice()}:actB):null}}; replayFrames.push(frame); replaySlider.max=replayFrames.length-1;}
     function openAttack(player){atkBox.innerHTML=''; let tmp=[]; const center=document.createElement('div'); center.className='center'; center.textContent='⚔'; atkBox.appendChild(center); ['up','left','right','down'].forEach(dir=>{if(usedMove[player].has(dir)||usedAtkDirs[player].has(dir)) return; const btn=document.createElement('button'); btn.textContent={up:'▲',down:'▼',left:'◀',right:'▶'}[dir]; btn.classList.add(dir); btn.onclick=()=>{if(tmp.includes(dir)){tmp=tmp.filter(d=>d!==dir); btn.classList.remove('sel');} else {tmp.push(dir); btn.classList.add('sel');}}; atkBox.appendChild(btn);}); const okBtn=document.createElement('button'); okBtn.textContent=i18n.t('ok'); okBtn.className='ok'; okBtn.onclick=()=>{recordAction(player,{dirs:tmp.slice()}); atkOverlay.classList.remove('show');}; atkBox.appendChild(okBtn); const cancelBtn=document.createElement('button'); cancelBtn.textContent=i18n.t('cancel'); cancelBtn.className='cancel'; cancelBtn.onclick=()=>{atkOverlay.classList.remove('show');}; atkBox.appendChild(cancelBtn); atkOverlay.classList.add('show');}
     function aiPlan(){const plan=[]; let shieldUsed=false; let attackUsed=false; const usedMoveAI=new Set(); const usedAtkDirAI=new Set(); let px=units.B.x; let py=units.B.y; for(let i=0;i<STEPS;i++){const dx=units.A.x-px; const dy=units.A.y-py; let desiredAttack=null; let desiredMove=null; if(!attackUsed && Math.abs(dx)+Math.abs(dy)<=2){const dirs=[]; if(dy<0) dirs.push('up'); if(dy>0) dirs.push('down'); if(dx<0) dirs.push('left'); if(dx>0) dirs.push('right'); if(dirs.length===0) dirs.push('up'); desiredAttack={dirs:dirs};} if(Math.abs(dx)+Math.abs(dy)>0){ if(Math.abs(dx)>Math.abs(dy)) desiredMove=(dx>0?'right':'left'); else desiredMove=(dy>0?'down':'up'); } let chosen=null; if(desiredAttack&&!attackUsed){let valid=true; for(const d of desiredAttack.dirs){if(usedMoveAI.has(d)||usedAtkDirAI.has(d)) {valid=false; break;}} if(valid){chosen=desiredAttack;}} if(!chosen && desiredMove){ if(usedAtkDirAI.has(desiredMove)){const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); if(available.length>0) desiredMove=available[Math.floor(Math.random()*available.length)]; } chosen=desiredMove;} if(!chosen){ if(!shieldUsed){chosen='shield'; shieldUsed=true;} else {const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); chosen=available[Math.floor(Math.random()*available.length)];}} plan.push(chosen); if(typeof chosen==='string'){ if(DXY[chosen]){usedMoveAI.add(chosen); px=Math.max(0,Math.min(4,px+DXY[chosen][0])); py=Math.max(0,Math.min(4,py+DXY[chosen][1]));}} else if(typeof chosen==='object'){attackUsed=true; for(const d of chosen.dirs) usedAtkDirAI.add(d);} } plans.B=plan;}
-    function bindUI(){actions.forEach(btn=>{btn.onclick=()=>{if(phase!=='planA'&&phase!=='planB') return; const player=(phase==='planA')?'A':'B'; const act=btn.dataset.act; if(act==='attack') openAttack(player); else recordAction(player,act);};}); btnDel.onclick=deleteLast; btnNext.onclick=()=>{if(phase==='planA'){if(plans.A.length<STEPS) return; if(single){clearPreviewIcons(); aiPlan(); phase='execute'; updateUI(); executePlans();} else {clearPreviewIcons(); hidePlanCells(); phase='planB'; updateUI(); initPreviewPositions();}} else if(phase==='planB'){if(plans.B.length<STEPS) return; clearPreviewIcons(); phase='execute'; updateUI(); executePlans();}}; document.getElementById('btn1p').onclick=()=>{single=true; modeSel.style.display='none'; diffSel.style.display='flex';}; document.getElementById('btn2p').onclick=()=>{single=false; startGame();}; Array.from(diffSel.querySelectorAll('.card')).forEach(card=>{card.onclick=()=>{aiLevel=card.dataset.level; startGame();};}); rulesBtnInitial.onclick=()=>{rulesOv.classList.add('show');}; rulesClose.onclick=()=>{rulesOv.classList.remove('show');}; let tutorialIndex=0; const tutorialScript=['tutorial1','tutorial2','tutorial3']; function showTutorial(){tutorialContent.textContent=i18n.t(tutorialScript[tutorialIndex]); tutorialOv.classList.add('show');} rulesTutorial.onclick=()=>{rulesOv.classList.remove('show'); tutorialIndex=0; showTutorial();}; tutorialNext.onclick=()=>{tutorialIndex++; if(tutorialIndex<tutorialScript.length){showTutorial();} else {tutorialOv.classList.remove('show'); single=true; startGame();}}; tutorialClose.onclick=()=>{tutorialOv.classList.remove('show');}; settingsBtn.onclick=()=>{settingsModal.classList.add('show'); volumeRange.value=localStorage.getItem('volume')||1; langSelect.value=i18n.lang;}; settingsClose.onclick=()=>{settingsModal.classList.remove('show');}; menuBtn.onclick=()=>{location.reload();}; scoreReset.onclick=()=>{score={A:0,B:0}; updateScore();}; volumeRange.oninput=()=>{localStorage.setItem('volume',volumeRange.value);}; langSelect.onchange=()=>{i18n.setLang(langSelect.value);}; btnReplay.onclick=()=>{const frames=(savedReplayFrames&&savedReplayFrames.length)?savedReplayFrames:replayFrames; if(!frames||!frames.length) return; replayFrames=frames.slice(); isReplaying=true; replayOverlay.classList.add('show'); replayIndex=0; replaySlider.value=0; replaySlider.max=replayFrames.length-1; replayPlay.style.display='inline-block'; replayPause.style.display='none'; renderReplayFrame(0);}; replayClose.onclick=()=>{stopReplay();}; replayPlay.onclick=()=>{startReplay();}; replayPause.onclick=()=>{pauseReplay();}; replaySlider.oninput=e=>{pauseReplay(); renderReplayFrame(parseInt(e.target.value));}; speedButtons.forEach(btn=>{btn.onclick=()=>{speedButtons.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); replaySpeed=parseInt(btn.dataset.speed); if(isReplaying){startReplay();}};});}
+    function bindUI(){
+      const setBtn=UI.attachDPad(pad,dir=>{ if(phase!=='planA'&&phase!=='planB') return; const player=(phase==='planA')?'A':'B'; recordAction(player,dir); });
+      actions.forEach(btn=>{btn.onclick=()=>{if(btn.dataset.dir) return; if(phase!=='planA'&&phase!=='planB') return; const player=(phase==='planA')?'A':'B'; const act=btn.dataset.act; if(act==='attack') openAttack(player); else recordAction(player,act);};});
+      btnDel.onclick=deleteLast;
+      btnNext.onclick=()=>{if(phase==='planA'){if(plans.A.length<STEPS) return; if(single){clearPreviewIcons(); aiPlan(); phase='execute'; updateUI(); executePlans();} else {clearPreviewIcons(); hidePlanCells(); phase='planB'; updateUI(); initPreviewPositions();}} else if(phase==='planB'){if(plans.B.length<STEPS) return; clearPreviewIcons(); phase='execute'; updateUI(); executePlans();}};
+      document.getElementById('btn1p').onclick=()=>{single=true; modeSel.style.display='none'; diffSel.style.display='flex';};
+      document.getElementById('btn2p').onclick=()=>{single=false; startGame();};
+      Array.from(diffSel.querySelectorAll('.card')).forEach(card=>{card.onclick=()=>{aiLevel=card.dataset.level; startGame();};});
+      rulesBtnInitial.onclick=()=>{rulesOv.classList.add('show');};
+      rulesClose.onclick=()=>{rulesOv.classList.remove('show');};
+      let tutorialIndex=0; const tutorialScript=['tutorial1','tutorial2','tutorial3'];
+      function showTutorial(){tutorialContent.textContent=i18n.t(tutorialScript[tutorialIndex]); tutorialOv.classList.add('show');}
+      rulesTutorial.onclick=()=>{rulesOv.classList.remove('show'); tutorialIndex=0; showTutorial();};
+      tutorialNext.onclick=()=>{tutorialIndex++; if(tutorialIndex<tutorialScript.length){showTutorial();} else {tutorialOv.classList.remove('show'); single=true; startGame();}};
+      tutorialClose.onclick=()=>{tutorialOv.classList.remove('show');};
+      settingsBtn.onclick=()=>{settingsModal.classList.add('show'); volumeRange.value=localStorage.getItem('volume')||1; langSelect.value=i18n.lang;};
+      settingsClose.onclick=()=>{settingsModal.classList.remove('show');};
+      menuBtn.onclick=()=>{location.reload();};
+      scoreReset.onclick=()=>{score={A:0,B:0}; updateScore();};
+      volumeRange.oninput=()=>{localStorage.setItem('volume',volumeRange.value);};
+      langSelect.onchange=()=>{i18n.setLang(langSelect.value);};
+      btnReplay.onclick=()=>{const frames=(savedReplayFrames&&savedReplayFrames.length)?savedReplayFrames:replayFrames; if(!frames||!frames.length) return; replayFrames=frames.slice(); isReplaying=true; replayOverlay.classList.add('show'); replayIndex=0; replaySlider.value=0; replaySlider.max=replayFrames.length-1; replayPlay.style.display='inline-block'; replayPause.style.display='none'; renderReplayFrame(0);};
+      replayClose.onclick=()=>{stopReplay();};
+      replayPlay.onclick=()=>{startReplay();};
+      replayPause.onclick=()=>{pauseReplay();};
+      replaySlider.oninput=e=>{pauseReplay(); renderReplayFrame(parseInt(e.target.value));};
+      speedButtons.forEach(btn=>{btn.onclick=()=>{speedButtons.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); replaySpeed=parseInt(btn.dataset.speed); if(isReplaying){startReplay();}};});
+    }
     function renderReplayFrame(index){if(index<0||index>=replayFrames.length) return; replayIndex=index; replaySlider.value=index; const frame=replayFrames[index]; edgesCollapsed=frame.edges; drawBoard(); units.A.x=frame.A.x; units.A.y=frame.A.y; units.A.alive=frame.A.alive; units.B.x=frame.B.x; units.B.y=frame.B.y; units.B.alive=frame.B.alive; updateUnitsOnBoard(); clearActionIcons(); if(frame.actions){const actA=frame.actions.A; const actB=frame.actions.B; if(actA){if(typeof actA==='string'){if(actA==='shield') addActionIcon(frame.A.x,frame.A.y,'🛡',varToRGB('--shield-color')); else if(DXY[actA]){const iconA={up:'▲',down:'▼',left:'◀',right:'▶'}[actA]; addActionIcon(frame.A.x,frame.A.y,iconA);}} else {addActionIcon(frame.A.x,frame.A.y,'⚔',varToRGB('--attack-color')); actA.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=frame.A.x+dx,ty=frame.A.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});} } if(actB){if(typeof actB==='string'){if(actB==='shield') addActionIcon(frame.B.x,frame.B.y,'🛡',varToRGB('--shield-color')); else if(DXY[actB]){const iconB={up:'▲',down:'▼',left:'◀',right:'▶'}[actB]; addActionIcon(frame.B.x,frame.B.y,iconB);}} else {addActionIcon(frame.B.x,frame.B.y,'⚔',varToRGB('--attack-color')); actB.dirs.forEach(d=>{const dx=DXY[d][0],dy=DXY[d][1]; const tx=frame.B.x+dx,ty=frame.B.y+dy; if(tx>=0&&tx<=4&&ty>=0&&ty<=4){const ar={up:'▲',down:'▼',left:'◀',right:'▶'}[d]; addActionIcon(tx,ty,ar,varToRGB('--attack-color'));}});} }} }
     function startReplay(){pauseReplay(); replayPlay.style.display='none'; replayPause.style.display='inline-block'; replayTimer=setInterval(()=>{if(replayIndex>=replayFrames.length-1){pauseReplay(); return;} replayIndex++; renderReplayFrame(replayIndex);},600/replaySpeed);}
     function pauseReplay(){if(replayTimer) clearInterval(replayTimer); replayTimer=null; replayPlay.style.display='inline-block'; replayPause.style.display='none';}

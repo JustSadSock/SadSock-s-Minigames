@@ -64,9 +64,14 @@
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast" aria-live="polite"></div>
     <div id="pad" class="pad pad-center">
-      <button class="k" data-dir="left">◄</button>
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid;opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
       <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start">START</button>
-      <button class="k" data-dir="right">►</button>
     </div>
   </div>
   <script src="src/audio.js"></script>
