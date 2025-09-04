@@ -28,6 +28,13 @@
   image-rendering:pixelated;
 }
 
+canvas{
+  max-width:100%;
+  height:auto;
+  display:block;
+  margin:0 auto;
+}
+
 .pad{
   position:absolute;
   left:10px;
@@ -135,5 +142,7 @@
 @media (max-width:600px){
   .hud{flex-direction:column; align-items:center; text-align:center; gap:4px;}
   .pad{flex-direction:column; align-items:center;}
-  .dpad{width:min(60vw,40svh); max-width:240px;}
+  .dpad{width:min(60vw,40svh); max-width:260px;}
+  canvas{width:100%; height:auto;}
+  .pad button{min-width:72px;min-height:72px;font-size:20px;}
 }
