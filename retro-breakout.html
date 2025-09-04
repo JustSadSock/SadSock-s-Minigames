@@ -90,7 +90,12 @@
     const canvas=document.getElementById('gameCanvas');
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
-    canvas.width=120; canvas.height=160;
+    const W=120, H=160;
+    function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
+      canvas.width=W*pr; canvas.height=H*pr; ctx.setTransform(pr,0,0,pr,0,0);
+    }
+    window.addEventListener('resize',resize);
+    resize();
     let gameRunning=false;
     let ball, paddle, bricks, brickRows=4, brickCols=8;
     let score=0, lives=3;
@@ -120,9 +125,9 @@
       score=0; lives=3;
       updateScore();
       setBall();
-      paddle={x:(canvas.width-paddleWidth)/2,y:canvas.height-10,w:paddleWidth,h:4};
+      paddle={x:(W-paddleWidth)/2,y:H-10,w:paddleWidth,h:4};
       bricks=[];
-      const bw=canvas.width/brickCols;
+      const bw=W/brickCols;
       const bh=10;
       for(let r=0;r<brickRows;r++){
         for(let c=0;c<brickCols;c++){
@@ -132,12 +137,12 @@
       draw();
     }
     function setBall(){
-      ball={x:canvas.width/2,y:canvas.height-20,vx:120,vy:-120,r:2};
+      ball={x:W/2,y:H-20,vx:120,vy:-120,r:2};
     }
     function updateScore(){scoreBoard.set(score,best); livesEl.textContent=livesLabel+': '+lives;}
     function draw(){
       ctx.fillStyle=bgColor;
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillRect(0,0,W,H);
       for(const b of bricks){
         if(b.alive||b.hit){
           if(b.hit){
@@ -162,9 +167,9 @@
       if(right) setPaddle(paddle.x+paddleSpeed*dt);
       ball.x+=ball.vx*dt;
       ball.y+=ball.vy*dt;
-      if(ball.x<ball.r || ball.x>canvas.width-ball.r) ball.vx*=-1;
+      if(ball.x<ball.r || ball.x>W-ball.r) ball.vx*=-1;
       if(ball.y<ball.r) ball.vy*=-1;
-      if(ball.y>canvas.height-ball.r){
+      if(ball.y>H-ball.r){
         lives--; updateScore();
         if(lives>0){ setBall(); }
         else {
@@ -195,7 +200,7 @@
       requestAnimationFrame(loop);
     }
     function setPaddle(left){
-      paddle.x=Math.min(Math.max(left,0),canvas.width-paddle.w);
+      paddle.x=Math.min(Math.max(left,0),W-paddle.w);
     }
     canvas.addEventListener('mousemove',e=>{
       const rect=canvas.getBoundingClientRect();

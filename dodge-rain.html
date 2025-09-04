@@ -89,7 +89,12 @@
     const canvas=document.getElementById('gameCanvas');
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
-    canvas.width=120; canvas.height=160;
+    const W=120, H=160;
+    function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
+      canvas.width=W*pr; canvas.height=H*pr; ctx.setTransform(pr,0,0,pr,0,0);
+    }
+    window.addEventListener('resize',resize);
+    resize();
     let running=false;
     let player, objects, spawnTimer, score, difficulty;
     const scoreEl=document.getElementById('score');
@@ -142,7 +147,7 @@
     const toast = UI.makeToast(toastEl);
     function resetGame(){
       running=false;
-      player={x:canvas.width/2-5,y:canvas.height-12,w:10,h:10};
+      player={x:W/2-5,y:H-12,w:10,h:10};
       objects=[];
       spawnTimer=0;
       score=0;
@@ -152,7 +157,7 @@
     }
     function spawnObject(){
       const size=5;
-      objects.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor(),anim:0});
+      objects.push({x:Math.random()*(W-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor(),anim:0});
       if(objects.length>50) objects.shift();
     }
     function pickColor(){
@@ -162,7 +167,7 @@
     function update(){
       if(!running) return;
       if(left) player.x=Math.max(0,player.x-2);
-      if(right) player.x=Math.min(canvas.width-player.w,player.x+2);
+      if(right) player.x=Math.min(W-player.w,player.x+2);
       spawnTimer++;
       difficulty+=0.001;
       if(spawnTimer>Math.max(5,20-difficulty*2)){
@@ -174,7 +179,7 @@
         o.anim+=0.2;
       }
       objects = objects.filter(o=>{
-        if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreBoard.set(score,best); return false; }
+        if(o.y>H){ score++; Sound.fx('coin'); scoreBoard.set(score,best); return false; }
         return true;
       });
       for(const o of objects){
@@ -194,7 +199,7 @@
     function draw(){
       const s=getComputedStyle(document.documentElement);
       ctx.fillStyle=s.getPropertyValue('--bg2');
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillRect(0,0,W,H);
       const playerPalette=[null,s.getPropertyValue('--pastel-peach'),s.getPropertyValue('--pastel-blue')];
       drawSprite(playerSprite,player.x,player.y,2,playerPalette);
       for(const o of objects){
@@ -204,7 +209,7 @@
     }
     function movePlayerTo(x){
       const half=player.w/2;
-      player.x=Math.min(Math.max(x-half,0),canvas.width-player.w);
+      player.x=Math.min(Math.max(x-half,0),W-player.w);
     }
     canvas.addEventListener('mousemove',e=>{
       const rect=canvas.getBoundingClientRect();
