@@ -58,22 +58,25 @@
 
   </style>
 </head>
-<body class="theme-blue">
+  <body class="theme-blue">
+  <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
   <h1>Pixel Snake</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Счёт: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
-  <div id="colorPick" class="color-pick" title="Цвет змейки">
-    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Зелёный"></button>
-    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Синий"></button>
-    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Розовый"></button>
-    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Персиковый"></button>
+  <div id="colorPick" class="color-pick" title="Snake color">
+    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
+    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
+    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
+    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
   </div>
   <div class="play">
-    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
+    <div class="hud">
+      <div id="score" class="counter">0</div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <div id="status" class="counter" style="visibility:hidden"></div>
+    </div>
+    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
-    <div id="pad" class="pad pad-inline">
+    <div id="pad" class="pad pad-center">
       <div class="dpad" aria-hidden="true">
         <div class="k" data-dir="up" style="grid-area:up">▲</div>
         <div class="k" data-dir="left" style="grid-area:left">◄</div>
@@ -82,18 +85,22 @@
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
       <div class="ab">
-        <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
+        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
   </div>
-  <script src="src/ui.js"></script>
-  <script src="src/audio.js"></script>
-  <script src="src/scores.js"></script>
-  <script>
-  (function(){
-    'use strict';
-    const canvas=document.getElementById('gameCanvas');
-    const ctx=canvas.getContext('2d',{alpha:false});
+    <script type="module">
+  import './src/ui.js';
+  import './src/audio.js';
+  import './src/scores.js';
+  import './src/icons.js';
+  import './src/i18n.js';
+  import { initSettings } from './src/settings.js';
+  initSettings();
+
+  const Sound=globalThis.Sound;
+  const canvas=document.getElementById('gameCanvas');
+  const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
     canvas.width=120; canvas.height=160;
     let running=false;
@@ -109,7 +116,7 @@
     const toastEl=document.getElementById('toast');
     const pad=document.getElementById('pad');
     const colorPick=document.getElementById('colorPick');
-    const scoreBoard=UI.score(scoreEl,'Счёт');
+    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
     const scores=Scores('snake');
     document.getElementById('scoresBtn').onclick=scores.show;
     const toast=UI.makeToast(toastEl);
@@ -158,7 +165,7 @@
       best=parseInt(localStorage.getItem('snakeBest')||'0',10);
       scoreBoard.set(score,best);
       running=false;
-      startBtn.textContent='START';
+      startBtn.textContent=globalThis.i18n?.t('start')||'Start';
     }
     function spawnApple(){
       let pos;
@@ -176,9 +183,9 @@
         if(score>best){
           best=score;
           localStorage.setItem('snakeBest',best);
-          toast('Новый рекорд: '+score);
+          toast('New record: '+score);
         }else{
-          toast('Счёт: '+score);
+          toast('Score: '+score);
         }
         scores.add(score);
         resetGame();
@@ -220,12 +227,12 @@
     function startGame(){
       if(running){
         running=false;
-        startBtn.textContent='START';
+        startBtn.textContent=globalThis.i18n?.t('start')||'Start';
         return;
       }
       running=true;
       lastTime=0; acc=0;
-      startBtn.textContent='PAUSE';
+      startBtn.textContent='Pause';
       Sound.fx('start');
       requestAnimationFrame(loop);
     }
@@ -271,9 +278,6 @@
     startBtn.addEventListener('click',startGame);
     resetGame();
     draw();
-  })();
-  </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/i18n.js"></script>
+    </script>
 </body>
 </html>

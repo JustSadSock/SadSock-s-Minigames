@@ -18,7 +18,7 @@ import { initSettings } from './settings.js';
       const catBtns = $$('#catNav button');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
-      let activeFrame=null, currentTile=null;
+      let currentTile=null;
       let DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 
       // блокируем двойные касания и прокрутку страницы
@@ -263,7 +263,7 @@ import { initSettings } from './settings.js';
         Sound.fx("select");
       }
 
-      function openGame(tile){
+      async function openGame(tile){
         currentTile = tile;
         const gameSrc = tile.dataset.game;
         reel.classList.add('zoom');
@@ -286,15 +286,12 @@ import { initSettings } from './settings.js';
           gameOverlay.style.transform = `translate(${offsetX}px,${offsetY}px) scale(${scaleX},${scaleY})`;
           requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
           let started=false;
-          function launch(){
+          async function launch(){
             if(started) return;
             started=true;
             gameOverlay.removeEventListener('transitionend', launch);
             gameOverlay.innerHTML='';
-            const frame=document.createElement('iframe');
-            frame.src=gameSrc;
-            activeFrame=frame;
-            gameOverlay.appendChild(frame);
+            await loadGame(gameSrc);
             const close=document.createElement('button');
             close.className='pbtn close';
             close.id='gameClose';
@@ -312,12 +309,29 @@ import { initSettings } from './settings.js';
         setTimeout(startExpand, DUR+50);
       }
 
+      async function loadGame(src){
+        const res = await fetch(src);
+        const text = await res.text();
+        const doc = new DOMParser().parseFromString(text,'text/html');
+        const headEls = [...doc.head.children];
+        headEls.forEach(el=>{
+          if(el.tagName==='LINK' || el.tagName==='STYLE') gameOverlay.appendChild(el.cloneNode(true));
+        });
+        const bodyEls = [...doc.body.children];
+        const frag = document.createDocumentFragment();
+        bodyEls.forEach(el=>{ if(el.tagName!=='SCRIPT') frag.appendChild(el); });
+        gameOverlay.appendChild(frag);
+        bodyEls.filter(el=>el.tagName==='SCRIPT').forEach(el=>{
+          const s=document.createElement('script');
+          [...el.attributes].forEach(a=>s.setAttribute(a.name,a.value));
+          s.type=el.type||'module';
+          s.textContent=el.textContent;
+          gameOverlay.appendChild(s);
+        });
+      }
+
       function closeGame(){
         screenEl.classList.remove('playing');
-        if(activeFrame){
-          activeFrame.remove();
-          activeFrame=null;
-        }
         const tile=currentTile;
         if(tile){
           const rect = tile.getBoundingClientRect();

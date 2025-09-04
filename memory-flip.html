@@ -68,7 +68,7 @@
     .back img{width:100%;height:100%;image-rendering:pixelated;}
     .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
     #score,#timer,#moves{margin:0;font-size:clamp(16px,4vw,20px);text-align:center;}
-
+    .card.sel{outline:2px solid var(--accent);}
     .toast{
       position:absolute;
       top:50%;
@@ -93,22 +93,43 @@
   </style>
 </head>
 <body class="theme-blue">
+  <canvas class="icon" data-icon="cards" aria-hidden="true"></canvas>
   <h1>Memory Flip</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Найдено пар: 0/8</div>
-    <div id="timer" class="counter">Время: 0.0с</div>
-    <div id="moves" class="counter">Ходы: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
   <div class="play">
+    <div class="hud">
+      <div id="score" class="counter">0/8</div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <div style="display:flex;gap:4px;">
+        <div id="timer" class="counter">0s</div>
+        <div id="moves" class="counter">0</div>
+      </div>
+    </div>
+    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad pad-inline"><button class="btn" id="startBtn" aria-label="Начать игру">PLAY</button></div>
+    <div id="pad" class="pad pad-center">
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid;opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
+      <div class="ab">
+        <div class="k" data-btn="a">A</div>
+        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+      </div>
+    </div>
   </div>
-<script src="src/audio.js"></script>
-<script src="src/ui.js"></script>
-<script src="src/scores.js"></script>
-<script>
+<script type="module">
+import './src/audio.js';
+import './src/icons.js';
+import './src/ui.js';
+import './src/scores.js';
+import './src/i18n.js';
+import { initSettings } from './src/settings.js';
+initSettings();
+
 (function(){
   'use strict';
   const iconSvgs=[
@@ -127,20 +148,23 @@
   const grid=document.getElementById('grid');
   const scoreEl=document.getElementById('score');
   const startBtn=document.getElementById('startBtn');
+  const pad=document.getElementById('pad');
   const header=document.querySelector('h1');
   const play=document.querySelector('.play');
   const toastEl=document.getElementById('toast');
   const timerEl=document.getElementById('timer');
   const movesEl=document.getElementById('moves');
   const showToast=UI.makeToast(toastEl);
-  const timeBoard=UI.score(timerEl,'Время');
-  const movesBoard=UI.score(movesEl,'Ходы');
-  const scores=Scores('memory',{cmp:'asc',format:s=>s.toFixed(1)+'с'});
+  const timeBoard=UI.score(timerEl,globalThis.i18n?.t('time')||'Time');
+  const movesBoard=UI.score(movesEl,globalThis.i18n?.t('moves')||'Moves');
+  const scores=Scores('memory',{cmp:'asc',format:s=>s.toFixed(1)+'s'});
   document.getElementById('scoresBtn').onclick=scores.show;
   let startTime=0, penalty=0, timerId=null;
   let moves=0;
   let bestTime=parseFloat(localStorage.getItem('mfBestTime'))||null;
   let bestMoves=parseInt(localStorage.getItem('mfBestMoves'))||null;
+  const foundPairsLabel=globalThis.i18n?.t('foundPairs')||'Found pairs';
+  let sel=0;
 
   function startTimer(){
     startTime=performance.now();
@@ -159,15 +183,25 @@
     }
     return array;
   }
+  function select(idx){ if(cards[sel]) cards[sel].classList.remove('sel'); sel=idx; if(cards[sel]){ cards[sel].classList.add('sel'); cards[sel].focus(); } }
+  function moveSel(dir){
+    const cols=4;
+    let r=Math.floor(sel/cols), c=sel%cols;
+    if(dir==='left') c=(c+cols-1)%cols;
+    else if(dir==='right') c=(c+1)%cols;
+    else if(dir==='up') r=(r+cols-1)%cols;
+    else if(dir==='down') r=(r+1)%cols;
+    select(r*cols+c);
+  }
   function resetGame(){
     startBtn.disabled=false;
     grid.innerHTML='';
     const values=shuffle(icons.concat(icons));
     cards=[];
     matchedCount=0;
-    scoreEl.textContent='Найдено пар: 0/8';
+    scoreEl.textContent=foundPairsLabel+': 0/8';
     moves=0;
-    timeBoard.set('0с', bestTime!=null?bestTime.toFixed(1)+'с':null);
+    timeBoard.set('0s', bestTime!=null?bestTime.toFixed(1)+'s':null);
     movesBoard.set(0, bestMoves);
     values.forEach(val=>{
       const card=document.createElement('div');
@@ -177,7 +211,7 @@
       card.addEventListener('click',()=>handleCard(card));
       card.tabIndex=0;
       card.setAttribute('role','button');
-      card.setAttribute('aria-label','Карта');
+      card.setAttribute('aria-label',globalThis.i18n?.t('card')||'Card');
       card.addEventListener('keydown',e=>{
         if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleCard(card); }
       });
@@ -186,8 +220,9 @@
     });
     firstCard=secondCard=null;
     stopTimer();
-    timerEl.textContent='Время: 0.0с';
+    timerEl.textContent='0s';
     gameActive=false;
+    select(0);
   }
 
   function startGame(skipReset){
@@ -216,7 +251,7 @@
         secondCard.classList.add('matched');
         matchedCount++;
         Sound.fx('coin');
-        scoreEl.textContent='Найдено пар: '+matchedCount+'/8';
+        scoreEl.textContent=foundPairsLabel+': '+matchedCount+'/8';
         firstCard=secondCard=null;
         if(matchedCount===icons.length){
           stopTimer();
@@ -224,9 +259,9 @@
           if(bestTime==null || total<bestTime){
             bestTime=total;
             localStorage.setItem('mfBestTime',bestTime);
-            showToast('Новый рекорд времени: '+total.toFixed(1)+'с');
+            showToast('New record time: '+total.toFixed(1)+'s');
           }else{
-            showToast('Время: '+total.toFixed(1)+'с');
+          showToast((globalThis.i18n?.t('time')||'Time')+': '+total.toFixed(1)+'s');
           }
           scores.add(total);
           if(bestMoves==null || moves<bestMoves){
@@ -258,6 +293,23 @@
     card.classList.remove('open');
   }
   startBtn.addEventListener('click',startGame);
+  const setBtn=UI.attachDPad(pad,moveSel);
+  pad.querySelector('[data-btn="a"]').addEventListener('click',()=>{ if(cards[sel]) handleCard(cards[sel]); });
+  document.addEventListener('keydown',e=>{
+    const k=e.key;
+    if(k==='ArrowLeft'){ moveSel('left'); setBtn('left',true); e.preventDefault(); }
+    else if(k==='ArrowRight'){ moveSel('right'); setBtn('right',true); e.preventDefault(); }
+    else if(k==='ArrowUp'){ moveSel('up'); setBtn('up',true); e.preventDefault(); }
+    else if(k==='ArrowDown'){ moveSel('down'); setBtn('down',true); e.preventDefault(); }
+    else if(k==='Enter' || k===' '){ if(cards[sel]) handleCard(cards[sel]); e.preventDefault(); }
+  });
+  document.addEventListener('keyup',e=>{
+    const k=e.key;
+    if(k==='ArrowLeft') setBtn('left',false);
+    else if(k==='ArrowRight') setBtn('right',false);
+    else if(k==='ArrowUp') setBtn('up',false);
+    else if(k==='ArrowDown') setBtn('down',false);
+  });
   function adjustGrid(){
     const GAP=6, cols=4;
     const availableHeight=window.innerHeight - header.offsetHeight - scoreEl.offsetHeight - timerEl.offsetHeight - 48;
@@ -273,7 +325,5 @@
   resetGame();
 })();
 </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

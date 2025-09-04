@@ -8,17 +8,19 @@
 </head>
 <body>
 <div class="cabinet">
-  <div class="frame">
-    <div class="inner">
-      <div class="hud">
+    <div class="frame">
+      <div class="inner">
+        <canvas class="icon" data-icon="rogue" aria-hidden="true"></canvas>
+        <div class="hud">
       <div class="counter" id="score">0</div>
       <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
       <div class="counter" id="status">—</div>
       </div>
-      <canvas id="cv" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+      <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
     </div>
-    <div class="pad" id="pad">
+    <div id="pad" class="pad pad-center">
       <div class="dpad">
         <div class="k" data-btn="up" style="grid-area:up"></div>
         <div class="k" data-btn="left" style="grid-area:left"></div>
@@ -33,11 +35,15 @@
   <div class="footer" data-i18n="miniRogueFooter"></div>
 </div>
 
-<script src="src/ui.js"></script>
-<script src="src/audio.js"></script>
-<script src="src/scores.js"></script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module">
+  <script type="module">
+    import './src/ui.js';
+    import './src/audio.js';
+    import './src/scores.js';
+    import './src/icons.js';
+    import './src/i18n.js';
+    import { initSettings } from './src/settings.js';
+    initSettings();
+
 import('./src/i18n.js').catch(e=>{
   console.error('i18n failed',e);
   if(window.UI&&UI.alert) UI.alert('Localization failed');
@@ -49,16 +55,14 @@ import('./src/i18n.js').catch(e=>{
   const scoreEl=d('#score'), statusEl=d('#status'), cv=d('#cv'), pad=d('#pad');
   const scores=Scores('rogue');
   d('#scoresBtn').onclick=scores.show;
+  let best=parseInt(localStorage.getItem('rogueBest')||'0',10);
   const scoreBoard=UI.score(scoreEl,t('score'),t('best'));
+  scoreBoard.set(0,best);
   const ctx=cv.getContext('2d');
   function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
     const r=cv.getBoundingClientRect(); cv.width=Math.floor(r.width*pr); cv.height=Math.floor(r.height*pr);
   }
-  function clear(){ ctx.fillStyle='#f4e3c1'; ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.save(); ctx.globalAlpha=.07; const s=8; ctx.fillStyle='#b09060';
-    for(let y=0;y<cv.height;y+=s*2) ctx.fillRect(0,y,cv.width,s);
-    ctx.restore();
-  }
+  function clear(){ ctx.clearRect(0,0,cv.width,cv.height); }
   window.addEventListener('resize',resize);
 
   // Input
@@ -112,14 +116,14 @@ import('./src/i18n.js').catch(e=>{
   // ===== Game specific code =====
   
   const game = {
-    score:0, started:true, over:false,
+    score:0, started:true, over:false, recorded:false,
     init(){
       this._onKey = e=>this.onKey(e);
       addEventListener('keydown', this._onKey);
       this.reset();
     },
     destroy(){ removeEventListener('keydown', this._onKey); },
-    reset(){ this.score=0; this.over=false; Sound.fx('start'); recorded=false;
+    reset(){ this.score=0; this.over=false; this.recorded=false; Sound.fx('start');
       this.N=16; this.map=this.gen(); this.p=this.find('.'); this.hp=3; this.lvl=1;
       this.en=[]; for(let i=0;i<3;i++) this.en.push(this.randWalk());
       this.ch=[]; for(let i=0;i<3;i++) this.ch.push(this.randUnique());
@@ -180,16 +184,21 @@ import('./src/i18n.js').catch(e=>{
       ctx.restore();
     }
   };
-  let last=performance.now(), recorded=false;
+  let last=performance.now();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
-    game.step(dt); if(game.over && !recorded){ scores.add(game.score); recorded=true; }
-    game.draw(); scoreBoard.set(game.score|0); }
+    game.step(dt);
+    if(game.over && !game.recorded){
+      scores.add(game.score);
+      game.recorded=true;
+      if(game.score>best){ best=game.score; localStorage.setItem('rogueBest',best); }
+    }
+    game.draw(); scoreBoard.set(game.score|0,best); }
   game.init();
   addEventListener('beforeunload',()=>game.destroy());
   loop();
 
 })();
 });
-</script>
+    </script>
 </body>
 </html>

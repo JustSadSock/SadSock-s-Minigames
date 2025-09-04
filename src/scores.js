@@ -25,4 +25,4 @@
     return {add, show, load};
   }
   global.Scores = Scores;
-})(this);
+})(globalThis);

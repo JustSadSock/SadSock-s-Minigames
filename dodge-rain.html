@@ -52,187 +52,187 @@
     }
   </style>
 </head>
-<body class="theme-blue">
-  <h1>Dodge Rain</h1>
-  <div class="hud hud-inline">
-    <div id="score" class="counter">Счёт: 0</div>
-    <button id="scoresBtn" class="pill" aria-label="Рекорды">🏆</button>
-  </div>
+  <body class="theme-blue">
+    <canvas class="icon" data-icon="rain" aria-hidden="true"></canvas>
+    <h1 data-i18n="dodgeRain"></h1>
   <div class="play">
-    <canvas id="gameCanvas" tabindex="0" aria-label="Игровое поле"></canvas>
+    <div class="hud">
+      <div id="score" class="counter">0</div>
+      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <div id="status" class="counter" style="visibility:hidden"></div>
+    </div>
+    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
-      <button class="k" data-dir="left" aria-label="Влево">◄</button>
-      <button class="btn" id="startBtn" aria-label="Начать игру">START</button>
-      <button class="k" data-dir="right" aria-label="Вправо">►</button>
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up">▲</div>
+        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="k" style="grid-area:mid;opacity:.35"></div>
+        <div class="k" data-dir="right" style="grid-area:right">►</div>
+        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+      </div>
+      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
     </div>
   </div>
-  <script src="src/ui.js"></script>
-  <script src="src/audio.js"></script>
-  <script src="src/scores.js"></script>
-  <script>
-  (function(){
-    'use strict';
-    const canvas=document.getElementById('gameCanvas');
-    const ctx=canvas.getContext('2d',{alpha:false});
-    ctx.imageSmoothingEnabled=false;
-    canvas.width=120; canvas.height=160;
-    let running=false;
-    let player, objects, spawnTimer, score, difficulty;
-    const scoreEl=document.getElementById('score');
-    const startBtn=document.getElementById('startBtn');
-    const header=document.querySelector('h1');
-    const toastEl=document.getElementById('toast');
-    const pad=document.getElementById('pad');
-    const scores=Scores('rain');
-    document.getElementById('scoresBtn').onclick=scores.show;
-    let left=false,right=false;
+    <script type="module">
+      import './src/ui.js';
+      import './src/audio.js';
+      import './src/scores.js';
+      import './src/icons.js';
+      import './src/i18n.js';
+      import { initSettings } from './src/settings.js';
+      import { createGameLoop } from './src/game-loop.js';
+      initSettings();
 
-    const playerSprite=[
-      '00100',
-      '01210',
-      '11111',
-      '01010',
-      '10101'
-    ];
-    const dropSprites=[
-      [
+      const canvas = document.getElementById('gameCanvas');
+      const startBtn = document.getElementById('startBtn');
+      const toastEl = document.getElementById('toast');
+      const pad = document.getElementById('pad');
+      const scoreEl = document.getElementById('score');
+      const scoresBtn = document.getElementById('scoresBtn');
+      const scores = Scores('rain');
+      scoresBtn.onclick = scores.show;
+      let best = parseInt(localStorage.getItem('rainBest') || '0', 10);
+      const scoreBoard = UI.score(scoreEl, globalThis.i18n?.t('score') || 'Score');
+      scoreBoard.set(0, best);
+
+      let running = false;
+      let player, objects, spawnTimer, score, difficulty;
+
+      const playerSprite = [
         '00100',
-        '01110',
+        '01210',
         '11111',
-        '01110',
-        '00100'
-      ],[
-        '00000',
-        '00100',
-        '01110',
-        '00100',
-        '00000'
-      ]
-    ];
+        '01010',
+        '10101'
+      ];
+      const dropSprites = [
+        [
+          '00100',
+          '01110',
+          '11111',
+          '01110',
+          '00100'
+        ], [
+          '00000',
+          '00100',
+          '01110',
+          '00100',
+          '00000'
+        ]
+      ];
 
-    function drawSprite(sprite,x,y,scale,palette){
-      for(let j=0;j<sprite.length;j++){
-        for(let i=0;i<sprite[j].length;i++){
-          const v=sprite[j][i];
-          if(v!=='0'){
-            ctx.fillStyle=palette[parseInt(v)];
-            ctx.fillRect(x+i*scale,y+j*scale,scale,scale);
+      const toast = UI.makeToast(toastEl);
+
+      function resetGame() {
+        running = false;
+        player = { x: 60 - 5, y: 160 - 12, w: 10, h: 10 };
+        objects = [];
+        spawnTimer = 0;
+        score = 0;
+        difficulty = 1;
+        scoreBoard.set(score, best);
+      }
+
+      function spawnObject() {
+        const size = 5;
+        objects.push({ x: Math.random() * (120 - size), y: -size, w: size, h: size, vy: 1 + Math.random() * 1, color: pickColor(), anim: 0 });
+        if (objects.length > 50) objects.shift();
+      }
+
+      function pickColor() {
+        const vars = ['--pastel-peach', '--pastel-mint', '--pastel-blue', '--pastel-pink'];
+        return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random() * vars.length)]).trim();
+      }
+
+      function drawSprite(sprite, x, y, scale, palette) {
+        for (let j = 0; j < sprite.length; j++) {
+          for (let i = 0; i < sprite[j].length; i++) {
+            const v = sprite[j][i];
+            if (v !== '0') {
+              ctx.fillStyle = palette[parseInt(v)];
+              ctx.fillRect(x + i * scale, y + j * scale, scale, scale);
+            }
           }
         }
       }
-    }
 
-    const toast = UI.makeToast(toastEl);
-    function resetGame(){
-      running=false;
-      player={x:canvas.width/2-5,y:canvas.height-12,w:10,h:10};
-      objects=[];
-      spawnTimer=0;
-      score=0;
-      difficulty=1;
-      scoreEl.textContent='Счёт: '+score;
-      draw();
-    }
-    function spawnObject(){
-      const size=5;
-      objects.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor(),anim:0});
-      if(objects.length>50) objects.shift();
-    }
-    function pickColor(){
-      const vars=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'];
-      return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random()*vars.length)]).trim();
-    }
-    function update(){
-      if(!running) return;
-      if(left) player.x=Math.max(0,player.x-2);
-      if(right) player.x=Math.min(canvas.width-player.w,player.x+2);
-      spawnTimer++;
-      difficulty+=0.001;
-      if(spawnTimer>Math.max(5,20-difficulty*2)){
-        spawnObject();
-        spawnTimer=0;
-      }
-      for(const o of objects){
-        o.y+=o.vy*difficulty;
-        o.anim+=0.2;
-      }
-      objects = objects.filter(o=>{
-        if(o.y>canvas.height){ score++; Sound.fx('coin'); scoreEl.textContent='Счёт: '+score; return false; }
-        return true;
-      });
-      for(const o of objects){
-        if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){
-          running=false;
-          Sound.fx('error');
-          toast('Счёт: '+score);
-          scores.add(score);
-          resetGame();
-          break;
+      function update({ keys }) {
+        if (!running) return;
+        if (keys.left) player.x = Math.max(0, player.x - 2);
+        if (keys.right) player.x = Math.min(120 - player.w, player.x + 2);
+        spawnTimer++;
+        difficulty += 0.001;
+        if (spawnTimer > Math.max(5, 20 - difficulty * 2)) {
+          spawnObject();
+          spawnTimer = 0;
+        }
+        for (const o of objects) {
+          o.y += o.vy * difficulty;
+          o.anim += 0.2;
+        }
+        objects = objects.filter(o => {
+          if (o.y > 160) {
+            score++;
+            Sound.fx('coin');
+            scoreBoard.set(score, best);
+            return false;
+          }
+          return true;
+        });
+        for (const o of objects) {
+          if (o.x < player.x + player.w && o.x + o.w > player.x && o.y < player.y + player.h && o.y + o.h > player.y) {
+            running = false;
+            Sound.fx('error');
+            toast('Score: ' + score);
+            if (score > best) { best = score; localStorage.setItem('rainBest', best); }
+            scores.add(score);
+            resetGame();
+            break;
+          }
         }
       }
-      draw();
-      requestAnimationFrame(update);
-    }
-    function draw(){
-      const s=getComputedStyle(document.documentElement);
-      ctx.fillStyle=s.getPropertyValue('--bg2');
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      const playerPalette=[null,s.getPropertyValue('--pastel-peach'),s.getPropertyValue('--pastel-blue')];
-      drawSprite(playerSprite,player.x,player.y,2,playerPalette);
-      for(const o of objects){
-        const frame=dropSprites[Math.floor(o.anim)%dropSprites.length];
-        drawSprite(frame,o.x,o.y,1,[null,o.color]);
+
+      function draw(ctx) {
+        const s = getComputedStyle(document.documentElement);
+        ctx.fillStyle = s.getPropertyValue('--bg2');
+        ctx.fillRect(0, 0, 120, 160);
+        const playerPalette = [null, s.getPropertyValue('--pastel-peach'), s.getPropertyValue('--pastel-blue')];
+        drawSprite(playerSprite, player.x, player.y, 2, playerPalette);
+        for (const o of objects) {
+          const frame = dropSprites[Math.floor(o.anim) % dropSprites.length];
+          drawSprite(frame, o.x, o.y, 1, [null, o.color]);
+        }
       }
-    }
-    function movePlayerTo(x){
-      const half=player.w/2;
-      player.x=Math.min(Math.max(x-half,0),canvas.width-player.w);
-    }
-    canvas.addEventListener('mousemove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      movePlayerTo(e.clientX-rect.left);
-    });
-    canvas.addEventListener('touchmove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      const t=e.touches[0];
-      movePlayerTo(t.clientX-rect.left);
-      e.preventDefault();
-    },{passive:false});
-    const setBtn=(dir,val)=>{ const el=pad.querySelector(`[data-dir="${dir}"]`); if(el) el.classList.toggle('down',val); };
-    document.addEventListener('keydown',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); e.preventDefault(); }
-    });
-    document.addEventListener('keyup',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); e.preventDefault(); }
-    });
-    pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      const dir=btn.dataset.dir;
-      const on=e=>{ e.preventDefault(); setBtn(dir,true); if(dir==='left') left=true; else right=true; };
-      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false; };
-      btn.addEventListener('touchstart',on,{passive:false});
-      btn.addEventListener('touchend',off,{passive:false});
-      btn.addEventListener('touchcancel',off,{passive:false});
-      btn.addEventListener('mousedown',on);
-      addEventListener('mouseup',off);
-      btn.addEventListener('mouseleave',off);
-    });
-    UI.autoHidePad(pad);
-    startBtn.addEventListener('click',()=>{
-      Sound.fx('start');
+
+      const { ctx, keys, attachPad } = createGameLoop(canvas, { width: 120, height: 160, update, draw });
+      attachPad(pad);
+
+      function movePlayerTo(x) {
+        const half = player.w / 2;
+        player.x = Math.min(Math.max(x - half, 0), 120 - player.w);
+      }
+
+      canvas.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        movePlayerTo(e.clientX - rect.left);
+      });
+      canvas.addEventListener('touchmove', e => {
+        const rect = canvas.getBoundingClientRect();
+        const t = e.touches[0];
+        movePlayerTo(t.clientX - rect.left);
+        e.preventDefault();
+      }, { passive: false });
+
+      startBtn.addEventListener('click', () => {
+        Sound.fx('start');
+        resetGame();
+        running = true;
+      });
+
       resetGame();
-      running=true;
-      requestAnimationFrame(update);
-    });
-    resetGame();
-  })();
-  </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/i18n.js"></script>
+    </script>
 </body>
 </html>
 
