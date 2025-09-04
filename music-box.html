@@ -230,10 +230,12 @@
 </div>
 
 <div id="msg" aria-live="polite"></div>
-<script src="src/ui.js"></script>
-<script src="src/audio.js"></script>
-<script src="src/icons.js"></script>
-<script>
+<script type="module">
+import './src/ui.js';
+import './src/audio.js';
+import './src/icons.js';
+import './src/i18n.js';
+
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const $ = (id)=>document.getElementById(id);
@@ -511,8 +513,7 @@ $('loadFile').onclick=()=>{
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
 </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/pixel-widgets.js"></script>
-<script type="module" src="src/i18n.js"></script>
+</body>
+</html>
 </body>
 </html>

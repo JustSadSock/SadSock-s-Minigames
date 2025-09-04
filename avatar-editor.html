@@ -76,9 +76,11 @@
     color:var(--ink);
   }
 </style>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/pixel-widgets.js"></script>
-<script src="src/ui.js"></script>
+<script type="module">
+import './src/pixel-widgets.js';
+import './src/ui.js';
+import './src/i18n.js';
+</script>
 </head>
 <body>
 <div class="cabinet">
@@ -110,7 +112,7 @@
 
 <div id="toast" class="toast"></div>
 
-<script>
+<script type="module">
 /* ===== base ===== */
 const S=16, cv=document.getElementById('cv'), ctx=cv.getContext('2d',{alpha:true});
 cv.width=cv.height=S;
@@ -417,6 +419,5 @@ document.getElementById('randomBtn').onclick=()=>{
   save(); render(); openPanel(active);
 };
 </script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

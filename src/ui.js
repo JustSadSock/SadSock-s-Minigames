@@ -97,4 +97,4 @@
     return setBtn;
   };
   global.UI=UI;
-})(this);
+})(globalThis);

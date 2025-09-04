@@ -89,28 +89,18 @@
       </div>
     </div>
   </div>
-    <script src="src/ui.js"></script>
-    <script src="src/audio.js"></script>
-    <script src="src/scores.js"></script>
-    <script src="src/icons.js"></script>
     <script type="module">
-      import { initSettings } from './src/settings.js';
-      initSettings();
-    </script>
-    <script>
-  (function(){
-    'use strict';
-    const Sound=globalThis.Sound||{fx(){},start(){},stop(){}};
-    if(!globalThis.UI||!globalThis.Scores){
-      const msg=document.createElement('div');
-      msg.textContent='Failed to load scripts. Run "npm run dev" and open via http://localhost:5173/';
-      msg.style.cssText='position:fixed;top:0;left:0;width:100%;padding:1rem;background:#300;color:#ffca3a;font-family:sans-serif;text-align:center';
-      document.body.innerHTML='';
-      document.body.appendChild(msg);
-      return;
-    }
-    const canvas=document.getElementById('gameCanvas');
-    const ctx=canvas.getContext('2d',{alpha:false});
+  import './src/ui.js';
+  import './src/audio.js';
+  import './src/scores.js';
+  import './src/icons.js';
+  import './src/i18n.js';
+  import { initSettings } from './src/settings.js';
+  initSettings();
+
+  const Sound=globalThis.Sound;
+  const canvas=document.getElementById('gameCanvas');
+  const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
     canvas.width=120; canvas.height=160;
     let running=false;
@@ -288,8 +278,6 @@
     startBtn.addEventListener('click',startGame);
     resetGame();
     draw();
-  })();
-</script>
-<script type="module" src="src/i18n.js"></script>
+    </script>
 </body>
 </html>

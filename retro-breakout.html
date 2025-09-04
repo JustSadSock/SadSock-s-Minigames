@@ -76,11 +76,12 @@
       <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
     </div>
   </div>
-  <script src="src/audio.js"></script>
-  <script src="src/ui.js"></script>
-  <script src="src/scores.js"></script>
-  <script src="src/icons.js"></script>
   <script type="module">
+    import './src/audio.js';
+    import './src/ui.js';
+    import './src/scores.js';
+    import './src/icons.js';
+    import './src/i18n.js';
     import { initSettings } from './src/settings.js';
     import { createGameLoop } from './src/game-loop.js';
     initSettings();
@@ -226,8 +227,6 @@
 
     resetGame();
   </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>
 

@@ -35,16 +35,15 @@
   <div class="footer" data-i18n="miniRogueFooter"></div>
 </div>
 
-  <script src="src/ui.js"></script>
-  <script src="src/audio.js"></script>
-  <script src="src/scores.js"></script>
-  <script src="src/icons.js"></script>
   <script type="module">
+    import './src/ui.js';
+    import './src/audio.js';
+    import './src/scores.js';
+    import './src/icons.js';
+    import './src/i18n.js';
     import { initSettings } from './src/settings.js';
     initSettings();
-  </script>
-  <script type="module" src="src/serve-warning.js"></script>
-<script type="module">
+
 import('./src/i18n.js').catch(e=>{
   console.error('i18n failed',e);
   if(window.UI&&UI.alert) UI.alert('Localization failed');
@@ -200,6 +199,6 @@ import('./src/i18n.js').catch(e=>{
 
 })();
 });
-</script>
+    </script>
 </body>
 </html>

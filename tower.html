@@ -9,8 +9,6 @@
   #overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);color:#fff;font-family:'Press Start 2P',ui-monospace,monospace;text-align:center;padding:8px;}
   #overlay.play{background:none;color:#000;justify-content:flex-start;align-items:flex-start;font-size:12px;pointer-events:none;}
 </style>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/pixel-widgets.js"></script>
 </head>
 <body>
 <div class="cabinet">
@@ -43,15 +41,16 @@
   <div class="footer">Button A • Keyboard: Space</div>
 </div>
 
-<script src="src/ui.js"></script>
-<script src="src/audio.js"></script>
-<script src="src/scores.js"></script>
-<script src="src/icons.js"></script>
 <script type="module">
+import './src/pixel-widgets.js';
+import './src/ui.js';
+import './src/audio.js';
+import './src/scores.js';
+import './src/icons.js';
+import './src/i18n.js';
 import { initSettings } from './src/settings.js';
 initSettings();
-</script>
-<script>
+
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
   const d = (s)=>document.querySelector(s);
@@ -164,6 +163,5 @@ initSettings();
 
 })();
 </script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

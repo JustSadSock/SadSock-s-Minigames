@@ -158,9 +158,10 @@
   </div>
 
   <div id="toast" class="toast"></div>
-<script src="src/ui.js"></script>
-<script src="src/icons.js"></script>
-<script>
+<script type="module">
+import './src/ui.js';
+import './src/icons.js';
+import './src/i18n.js';
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;
@@ -391,8 +392,5 @@
   }));
 })();
 </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/pixel-widgets.js"></script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>

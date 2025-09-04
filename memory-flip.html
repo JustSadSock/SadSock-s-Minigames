@@ -121,15 +121,15 @@
       </div>
     </div>
   </div>
-<script src="src/audio.js"></script>
-<script src="src/icons.js"></script>
-<script src="src/ui.js"></script>
-<script src="src/scores.js"></script>
 <script type="module">
+import './src/audio.js';
+import './src/icons.js';
+import './src/ui.js';
+import './src/scores.js';
+import './src/i18n.js';
 import { initSettings } from './src/settings.js';
 initSettings();
-</script>
-<script>
+
 (function(){
   'use strict';
   const iconSvgs=[
@@ -325,7 +325,5 @@ initSettings();
   resetGame();
 })();
 </script>
-<script type="module" src="src/serve-warning.js"></script>
-<script type="module" src="src/i18n.js"></script>
 </body>
 </html>
