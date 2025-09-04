@@ -53,7 +53,6 @@
     #phase { text-align: center; font-size: 16px; min-height: 24px; }
     #planCells { display: flex; justify-content: space-between; }
     .planCell { width: 18%; height: 40px; border: 3px solid var(--card-border); background: var(--board-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
-    .pad-inline{margin-top:12px;}
     #pad .k[data-act="attack"]{color:var(--attack-color);}
     #pad .k[data-act="shield"]{color:var(--shield-color);}
     #navButtons { display: flex; gap: 10px; justify-content: space-between; }
@@ -132,7 +131,7 @@
         <div id="pc3" class="planCell"></div>
         <div id="pc4" class="planCell"></div>
       </div>
-      <div id="pad" class="pad pad-inline">
+      <div id="pad" class="pad pad-center">
         <div class="dpad" aria-hidden="true">
           <div class="k" data-act="up" data-dir="up" style="grid-area:up">▲</div>
           <div class="k" data-act="left" data-dir="left" style="grid-area:left">◀</div>

@@ -38,11 +38,18 @@
         <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
-    <div class="pad" id="pad" aria-hidden="true">
-      <div class="k" data-btn="a"></div>
-      <div class="k" data-btn="b"></div>
-      <div class="k" data-btn="left"></div>
-      <div class="k" data-btn="right"></div>
+    <div id="pad" class="pad pad-center" aria-hidden="true">
+      <div class="dpad" aria-hidden="true">
+        <div class="k" data-btn="up" style="grid-area:up"></div>
+        <div class="k" data-btn="left" style="grid-area:left"></div>
+        <div class="k" style="grid-area:mid;opacity:.35"></div>
+        <div class="k" data-btn="right" style="grid-area:right"></div>
+        <div class="k" data-btn="down" style="grid-area:down"></div>
+      </div>
+      <div class="ab">
+        <div class="k" data-btn="a">A</div>
+        <div class="k" data-btn="b">B</div>
+      </div>
     </div>
     <div class="label">Rhythm</div>
   </div>
