@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <title data-i18n="musicBox"></title>
-<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/shell.css">
 <style>
   :root{
     /* unified palette */
@@ -34,30 +34,17 @@
     --pill-ink:var(--ink);
   }
   *{box-sizing:border-box}
-  html,body{height:100%}
   body{
     margin:0; color:var(--ink); font-size:14px; line-height:1.35;
     font-family:'Press Start 2P', ui-monospace, monospace;
     background:var(--bg0);
   }
-
-  /* рамка дисплея под твой стиль */
-  .frame{
-    max-width:920px; margin:10px auto; padding:10px;
-    background:var(--panel);
-    border:4px solid var(--bezel); border-radius:22px;
-    box-shadow: 0 14px 40px var(--shadow), inset 0 10px 24px rgba(255,255,255,.25);
-  }
-  .screen{
-    position:relative; border-radius:18px; padding:10px 10px 4px;
+  .frame{width:min(920px,94vw);height:auto;}
+  .inner{
+    position:relative; inset:auto; border-radius:18px; padding:10px 10px 4px;
     background:var(--tile-bg);
     box-shadow: inset 0 2px 0 rgba(255,255,255,.55), inset 0 -8px 22px rgba(0,0,0,.08);
     overflow:hidden;
-  }
-  .scanlines::after{
-    content:""; position:absolute; inset:0; pointer-events:none; opacity:.22;
-    background:repeating-linear-gradient(to bottom, rgba(0,0,0,.06), rgba(0,0,0,.06) 1px, transparent 1px, transparent 3px);
-    mix-blend-mode:multiply;
   }
 
   /* header + tabs */
@@ -152,9 +139,10 @@
 </style>
 </head>
 <body>
-  <div class="frame">
-    <div class="screen scanlines">
-      <div class="topbar">
+  <div class="cabinet">
+    <div class="frame">
+      <div class="inner">
+        <div class="topbar">
         <div class="transport">
           <div class="left">
             <button id="playBtn" class="btn primary">▶ Play</button>
@@ -265,9 +253,11 @@
           <p style="margin:6px 0 0">Вкладки вверху: <b>Melody & Bass</b> — редактирование; <b>Import / Export</b> — код; <b>Info</b> — помощь.  
           Все элементы крупные и рассчитаны на палец.</p>
         </div>
+      </div>
+      <div class="scanlines"></div>
+    </div>
   </div>
-  </div>
-  </div>
+</div>
 
 <div id="msg" aria-live="polite"></div>
   <script src="src/ui.js"></script>
