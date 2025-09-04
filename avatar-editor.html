@@ -19,7 +19,7 @@
   html,body{margin:0;height:100%;background:transparent;color:var(--ink);font-family:'Press Start 2P',ui-monospace,monospace}
   input,select,textarea{font:inherit}
   .editor{
-    width:min(420px,100%);padding:8px;background:linear-gradient(var(--bg2),var(--bg1));
+    width:min(440px,100%);padding:8px;background:linear-gradient(var(--bg2),var(--bg1));
     border:4px solid var(--bezel);border-radius:16px;
     box-shadow:inset 0 0 0 6px var(--bezel),0 6px 14px rgba(0,0,0,.12);
     display:flex;flex-direction:column;height:100%;
@@ -45,7 +45,7 @@
   }
   .tab{
     font-size:12px; line-height:1; white-space:nowrap;
-    min-width:84px;               /* 11 вкладок = 4+4+3 по ширине ~320-360px */
+    min-width:96px;               /* чтобы текст вкладок не обрезался */
   }
   .panel{display:none;padding:10px}
   .panel.active{display:block}
@@ -54,7 +54,7 @@
   .card{background:var(--paper);border-radius:10px;padding:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi),0 2px 0 var(--shadow)}
   .badge{font-size:11px;background:var(--paper);border-radius:8px;padding:2px 6px}
   .cols{display:grid;grid-auto-flow:column;grid-auto-columns:26px;gap:8px;overflow:auto}
-  .sw{width:26px;height:26px;border-radius:7px;border:2px solid rgba(0,0,0,.06);box-shadow:inset 0 1px 0 #fff}
+  .sw{width:26px;height:26px;border-radius:7px;border:2px solid var(--bezel);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);cursor:pointer}
   .sw.sel{outline:2px solid var(--accent)}
   @media (max-width:360px){
     .editor{padding:6px;border-width:3px}
@@ -94,11 +94,13 @@
     <div id="panels"></div>
   </div>
   <div class="row" style="margin-top:8px; gap:8px;">
+    <button id="previewBtn" class="btn" data-i18n="preview" title="Preview">▶ Preview</button>
+    <button id="randomBtn" class="btn" data-i18n="random" title="Random">Random</button>
     <pixel-input style="flex:1;"><input id="nick" type="text" placeholder="Ник"></pixel-input>
-    <button id="saveBtn" class="btn">OK</button>
+    <button id="saveBtn" class="btn" data-i18n="ok">OK</button>
     <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
-    <button id="exportJson" class="btn" title="Экспорт JSON">JSON↥</button>
-    <button id="importJson" class="btn" title="Импорт JSON">JSON↧</button>
+    <button id="exportJson" class="btn" data-i18n="exportJson" title="Export JSON">Export JSON</button>
+    <button id="importJson" class="btn" data-i18n="importJson" title="Import JSON">Import JSON</button>
   </div>
       </div>
     </div>
@@ -147,6 +149,8 @@ const CATS=[
   {k:'acc',n:'Аксессуар',count:5,color:'acc'},
 ];
 const COLOR_PROP={head:'skin',eyes:'eye',brows:'hair',mouth:'lip',hair:'hair',facial:'hair',glasses:'glass',hat:'hat',acc:'acc',bg:'bgColor'};
+const COLOR_LABEL_KEY={skin:'skinColor',hair:'hairColor',eye:'eyeColor',lip:'lipColor',glass:'glassColor',hat:'hatColor',acc:'accColor',bg:'bgColorLabel'};
+const COLOR_LABEL_FALLBACK={skin:'Цвет кожи',hair:'Цвет волос',eye:'Цвет глаз',lip:'Цвет губ',glass:'Цвет оправы',hat:'Цвет шапки',acc:'Цвет аксессуара',bg:'Цвет фона'};
 
 /* ===== state ===== */
 const INIT={
@@ -285,7 +289,7 @@ function buildUI(){
   dom.tabs.innerHTML=''; dom.panels.innerHTML='';
   CATS.forEach(cat=>{
     const b=document.createElement('button');
-    b.className='tab'; b.textContent=cat.n; b.dataset.k=cat.k;
+    b.className='tab'; b.textContent=cat.n; b.dataset.k=cat.k; b.title=cat.n;
     if(cat.k===active) b.setAttribute('aria-selected','true');
     b.onclick=()=>{ active=cat.k; document.querySelectorAll('.tab').forEach(x=>x.removeAttribute('aria-selected')); b.setAttribute('aria-selected','true'); openPanel(cat.k); };
     dom.tabs.appendChild(b);
@@ -319,7 +323,11 @@ function openPanel(k){
       sw.onclick=()=>{ if(prop==='bgColor') state.bgColor=c; else state[prop]=c; save(); render(); openPanel(k); };
       cols.appendChild(sw);
     });
-    colors.append(cols);
+    const lbl=document.createElement('span'); lbl.className='badge';
+    lbl.textContent=COLOR_LABEL_FALLBACK[cat.color];
+    const key=COLOR_LABEL_KEY[cat.color];
+    if(key){ lbl.dataset.i18n=key; if(window.i18n) i18n.applyTranslations(lbl); }
+    colors.append(lbl,cols);
   }else{
     colors.textContent='Цвет не меняется';
   }
@@ -385,7 +393,28 @@ document.getElementById('importJson').onclick = ()=>{
   };
   inp.click();
 };
-setInterval(render, 1000);
+const previewBtn=document.getElementById('previewBtn');
+let anim=null;
+previewBtn.onclick=()=>{
+  if(anim){
+    clearInterval(anim); anim=null;
+    if(window.i18n) i18n.applyTranslations(previewBtn); else previewBtn.textContent='\u25B6 Preview';
+  }else{
+    anim=setInterval(render,1000); previewBtn.textContent='\u23F8';
+  }
+};
+document.getElementById('randomBtn').onclick=()=>{
+  CATS.forEach(cat=>{
+    state[cat.k]=Math.floor(Math.random()*cat.count);
+    if(cat.color){
+      const prop=COLOR_PROP[cat.k];
+      const pal=PAL[cat.color];
+      const color=pal[Math.floor(Math.random()*pal.length)];
+      if(prop==='bgColor') state.bgColor=color; else state[prop]=color;
+    }
+  });
+  save(); render(); openPanel(active);
+};
 </script>
 <script type="module" src="src/i18n.js"></script>
 </body>
