@@ -82,170 +82,149 @@
   <script src="src/icons.js"></script>
   <script type="module">
     import { initSettings } from './src/settings.js';
+    import { createGameLoop } from './src/game-loop.js';
     initSettings();
-  </script>
-  <script>
-  (function(){
-    'use strict';
-    const canvas=document.getElementById('gameCanvas');
-    const ctx=canvas.getContext('2d',{alpha:false});
-    ctx.imageSmoothingEnabled=false;
-    const W=120, H=160;
-    function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
-      canvas.width=W*pr; canvas.height=H*pr; ctx.setTransform(pr,0,0,pr,0,0);
-    }
-    window.addEventListener('resize',resize);
-    resize();
-    let gameRunning=false;
-    let ball, paddle, bricks, brickRows=4, brickCols=8;
-    let score=0, lives=3;
-    const scoreEl=document.getElementById('score');
-    const livesEl=document.getElementById('lives');
-    const startBtn=document.getElementById('startBtn');
-    const paddleWidth=30;
-    const toastEl=document.getElementById('toast');
-    const pad=document.getElementById('pad');
-    const showToast=UI.makeToast(toastEl);
-    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score',globalThis.i18n?.t('best')||'best');
-    const livesLabel=globalThis.i18n?.t('lives')||'Lives';
-    const scores=Scores('breakout');
-    document.getElementById('scoresBtn').onclick=scores.show;
-    let left=false,right=false;
-    let best=Number(localStorage.getItem('breakoutBest')||0);
-    const styles=getComputedStyle(document.documentElement);
-    const bgColor=styles.getPropertyValue('--bg2');
-    const paddleColor=styles.getPropertyValue('--pastel-blue');
-    const ballColor=styles.getPropertyValue('--pastel-pink');
-    const brickPalette=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'].map(v=>styles.getPropertyValue(v));
-    let lastTime=0;
-    const paddleSpeed=200;
 
-    function resetGame(){
-      gameRunning=false;
-      score=0; lives=3;
+    const canvas = document.getElementById('gameCanvas');
+    const startBtn = document.getElementById('startBtn');
+    const pad = document.getElementById('pad');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const scoresBtn = document.getElementById('scoresBtn');
+    const toastEl = document.getElementById('toast');
+    const scores = Scores('breakout');
+    scoresBtn.onclick = scores.show;
+    let best = Number(localStorage.getItem('breakoutBest') || 0);
+    const scoreBoard = UI.score(scoreEl, globalThis.i18n?.t('score') || 'Score', globalThis.i18n?.t('best') || 'best');
+    const livesLabel = globalThis.i18n?.t('lives') || 'Lives';
+    scoreBoard.set(0, best);
+    livesEl.textContent = livesLabel + ': 3';
+
+    const styles = getComputedStyle(document.documentElement);
+    const bgColor = styles.getPropertyValue('--bg2');
+    const paddleColor = styles.getPropertyValue('--pastel-blue');
+    const ballColor = styles.getPropertyValue('--pastel-pink');
+    const brickPalette = ['--pastel-peach', '--pastel-mint', '--pastel-blue', '--pastel-pink'].map(v => styles.getPropertyValue(v));
+    const paddleWidth = 30;
+
+    let gameRunning = false;
+    let ball, paddle, bricks, brickRows = 4, brickCols = 8;
+    let score = 0, lives = 3;
+    const showToast = UI.makeToast(toastEl);
+
+    function resetGame() {
+      gameRunning = false;
+      score = 0; lives = 3;
       updateScore();
       setBall();
-      paddle={x:(W-paddleWidth)/2,y:H-10,w:paddleWidth,h:4};
-      bricks=[];
-      const bw=W/brickCols;
-      const bh=10;
-      for(let r=0;r<brickRows;r++){
-        for(let c=0;c<brickCols;c++){
-          bricks.push({x:c*bw,y:20+r*(bh+2),w:bw-2,h:bh,alive:true,color:brickPalette[r%brickPalette.length],hit:0});
+      paddle = { x: (120 - paddleWidth) / 2, y: 160 - 10, w: paddleWidth, h: 4 };
+      bricks = [];
+      const bw = 120 / brickCols;
+      const bh = 10;
+      for (let r = 0; r < brickRows; r++) {
+        for (let c = 0; c < brickCols; c++) {
+          bricks.push({ x: c * bw, y: 20 + r * (bh + 2), w: bw - 2, h: bh, alive: true, color: brickPalette[r % brickPalette.length], hit: 0 });
         }
       }
-      draw();
     }
-    function setBall(){
-      ball={x:W/2,y:H-20,vx:120,vy:-120,r:2};
+
+    function setBall() {
+      ball = { x: 60, y: 140, vx: 120, vy: -120, r: 2 };
     }
-    function updateScore(){scoreBoard.set(score,best); livesEl.textContent=livesLabel+': '+lives;}
-    function draw(){
-      ctx.fillStyle=bgColor;
-      ctx.fillRect(0,0,W,H);
-      for(const b of bricks){
-        if(b.alive||b.hit){
-          if(b.hit){
-            ctx.fillStyle=b.hit%2?'#fff':b.color;
-            b.hit--;
-          }else{
-            ctx.fillStyle=b.color;
-          }
-          ctx.fillRect(b.x,b.y,b.w,b.h);
-        }
-      }
-      ctx.fillStyle=paddleColor;
-      ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
-      ctx.fillStyle=ballColor;
-      ctx.fillRect(ball.x-ball.r,ball.y-ball.r,ball.r*2,ball.r*2);
+
+    function updateScore() {
+      scoreBoard.set(score, best);
+      livesEl.textContent = livesLabel + ': ' + lives;
     }
-    function loop(t){
-      if(!gameRunning) return;
-      if(!lastTime) lastTime=t;
-      const dt=(t-lastTime)/1000; lastTime=t;
-      if(left) setPaddle(paddle.x-paddleSpeed*dt);
-      if(right) setPaddle(paddle.x+paddleSpeed*dt);
-      ball.x+=ball.vx*dt;
-      ball.y+=ball.vy*dt;
-      if(ball.x<ball.r || ball.x>W-ball.r) ball.vx*=-1;
-      if(ball.y<ball.r) ball.vy*=-1;
-      if(ball.y>H-ball.r){
+
+    function update({ dt, keys }) {
+      if (!gameRunning) return;
+      if (keys.left) setPaddle(paddle.x - 200 * dt);
+      if (keys.right) setPaddle(paddle.x + 200 * dt);
+      ball.x += ball.vx * dt;
+      ball.y += ball.vy * dt;
+      if (ball.x < ball.r || ball.x > 120 - ball.r) ball.vx *= -1;
+      if (ball.y < ball.r) ball.vy *= -1;
+      if (ball.y > 160 - ball.r) {
         lives--; updateScore();
-        if(lives>0){ setBall(); }
+        if (lives > 0) { setBall(); }
         else {
           Sound.fx('error');
-          gameRunning=false;
-          if(score>best){best=score; localStorage.setItem('breakoutBest',best); showToast((globalThis.i18n?.t('best')||'Best')+': '+score);}else{showToast((globalThis.i18n?.t('score')||'Score')+': '+score);}
+          gameRunning = false;
+          if (score > best) { best = score; localStorage.setItem('breakoutBest', best); showToast((globalThis.i18n?.t('best') || 'Best') + ': ' + score); } else { showToast((globalThis.i18n?.t('score') || 'Score') + ': ' + score); }
           scores.add(score);
           return;
         }
       }
-      if(ball.y+ball.r>=paddle.y && ball.x>=paddle.x && ball.x<=paddle.x+paddle.w){
-        ball.vy=-Math.abs(ball.vy);
-        const offset=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
-        ball.vx=200*offset;
+      if (ball.y + ball.r >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+        ball.vy = -Math.abs(ball.vy);
+        const offset = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
+        ball.vx = 200 * offset;
       }
-      for(const b of bricks){
-        if(b.alive && ball.x>=b.x && ball.x<=b.x+b.w && ball.y>=b.y && ball.y<=b.y+b.h){
-          b.alive=false; b.hit=6;
-          ball.vy*=-1;
-          ball.vx*=1.02; ball.vy*=1.02;
+      for (const b of bricks) {
+        if (b.alive && ball.x >= b.x && ball.x <= b.x + b.w && ball.y >= b.y && ball.y <= b.y + b.h) {
+          b.alive = false; b.hit = 6;
+          ball.vy *= -1;
+          ball.vx *= 1.02; ball.vy *= 1.02;
           score++;
           Sound.fx('coin');
           updateScore();
           break;
         }
       }
-      draw();
-      requestAnimationFrame(loop);
     }
-    function setPaddle(left){
-      paddle.x=Math.min(Math.max(left,0),W-paddle.w);
+
+    function draw(ctx) {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, 120, 160);
+      for (const b of bricks) {
+        if (b.alive || b.hit) {
+          if (b.hit) {
+            ctx.fillStyle = b.hit % 2 ? '#fff' : b.color;
+            b.hit--;
+          } else {
+            ctx.fillStyle = b.color;
+          }
+          ctx.fillRect(b.x, b.y, b.w, b.h);
+        }
+      }
+      ctx.fillStyle = paddleColor;
+      ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+      ctx.fillStyle = ballColor;
+      ctx.fillRect(ball.x - ball.r, ball.y - ball.r, ball.r * 2, ball.r * 2);
     }
-    canvas.addEventListener('mousemove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      setPaddle(e.clientX-rect.left - paddle.w/2);
+
+    function setPaddle(left) {
+      paddle.x = Math.min(Math.max(left, 0), 120 - paddle.w);
+    }
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      setPaddle(e.clientX - rect.left - paddle.w / 2);
     });
-    canvas.addEventListener('touchmove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      const t=e.touches[0];
-      setPaddle(t.clientX-rect.left - paddle.w/2);
+    canvas.addEventListener('touchmove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches[0];
+      setPaddle(t.clientX - rect.left - paddle.w / 2);
       e.preventDefault();
-    },{passive:false});
-    function startGame(){
+    }, { passive: false });
+
+    function startGame() {
       Sound.fx('start');
       resetGame();
-      gameRunning=true;
-          startBtn.textContent=globalThis.i18n?.t('restart')||'Restart';
-      requestAnimationFrame(loop);
+      gameRunning = true;
+      startBtn.textContent = globalThis.i18n?.t('restart') || 'Restart';
     }
-    const setBtn=UI.attachDPad(pad,dir=>{
-      if(!gameRunning) startGame();
-      if(dir==='left'){ left=true; right=false; }
-      else if(dir==='right'){ right=true; left=false; }
+
+    const { ctx, keys, attachPad } = createGameLoop(canvas, { width: 120, height: 160, update, draw });
+    attachPad(pad, (dir, val) => { if (!gameRunning && val) startGame(); });
+    document.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (!gameRunning && (k === 'arrowleft' || k === 'a' || k === 'arrowright' || k === 'd' || k === ' ')) startGame();
     });
-    pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      const dir=btn.dataset.dir;
-      const off=e=>{e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else right=false;};
-      btn.addEventListener('touchend',off,{passive:false});
-      btn.addEventListener('touchcancel',off,{passive:false});
-      btn.addEventListener('mouseup',off);
-      btn.addEventListener('mouseleave',off);
-    });
-    document.addEventListener('keydown',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); }
-      else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); }
-      if(!gameRunning && (k==='arrowleft' || k==='a' || k==='arrowright' || k==='d' || k===' ')) startGame();
-    });
-    document.addEventListener('keyup',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); }
-      else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); }
-    });
-    startBtn.addEventListener('click',startGame);
+    startBtn.addEventListener('click', startGame);
+
     resetGame();
-  })();
   </script>
 <script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/i18n.js"></script>

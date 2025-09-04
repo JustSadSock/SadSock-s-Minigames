@@ -81,177 +81,157 @@
     <script src="src/icons.js"></script>
     <script type="module">
       import { initSettings } from './src/settings.js';
+      import { createGameLoop } from './src/game-loop.js';
       initSettings();
-    </script>
-  <script>
-  (function(){
-    'use strict';
-    const canvas=document.getElementById('gameCanvas');
-    const ctx=canvas.getContext('2d',{alpha:false});
-    ctx.imageSmoothingEnabled=false;
-    const W=120, H=160;
-    function resize(){ const pr=Math.max(1,Math.floor(devicePixelRatio||1));
-      canvas.width=W*pr; canvas.height=H*pr; ctx.setTransform(pr,0,0,pr,0,0);
-    }
-    window.addEventListener('resize',resize);
-    resize();
-    let running=false;
-    let player, objects, spawnTimer, score, difficulty;
-    const scoreEl=document.getElementById('score');
-    const startBtn=document.getElementById('startBtn');
-    const header=document.querySelector('h1');
-    const toastEl=document.getElementById('toast');
-    const pad=document.getElementById('pad');
-    const scores=Scores('rain');
-    document.getElementById('scoresBtn').onclick=scores.show;
-    let best=parseInt(localStorage.getItem('rainBest')||'0',10);
-    const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
-    scoreBoard.set(0,best);
-    let left=false,right=false;
 
-    const playerSprite=[
-      '00100',
-      '01210',
-      '11111',
-      '01010',
-      '10101'
-    ];
-    const dropSprites=[
-      [
+      const canvas = document.getElementById('gameCanvas');
+      const startBtn = document.getElementById('startBtn');
+      const toastEl = document.getElementById('toast');
+      const pad = document.getElementById('pad');
+      const scoreEl = document.getElementById('score');
+      const scoresBtn = document.getElementById('scoresBtn');
+      const scores = Scores('rain');
+      scoresBtn.onclick = scores.show;
+      let best = parseInt(localStorage.getItem('rainBest') || '0', 10);
+      const scoreBoard = UI.score(scoreEl, globalThis.i18n?.t('score') || 'Score');
+      scoreBoard.set(0, best);
+
+      let running = false;
+      let player, objects, spawnTimer, score, difficulty;
+
+      const playerSprite = [
         '00100',
-        '01110',
+        '01210',
         '11111',
-        '01110',
-        '00100'
-      ],[
-        '00000',
-        '00100',
-        '01110',
-        '00100',
-        '00000'
-      ]
-    ];
+        '01010',
+        '10101'
+      ];
+      const dropSprites = [
+        [
+          '00100',
+          '01110',
+          '11111',
+          '01110',
+          '00100'
+        ], [
+          '00000',
+          '00100',
+          '01110',
+          '00100',
+          '00000'
+        ]
+      ];
 
-    function drawSprite(sprite,x,y,scale,palette){
-      for(let j=0;j<sprite.length;j++){
-        for(let i=0;i<sprite[j].length;i++){
-          const v=sprite[j][i];
-          if(v!=='0'){
-            ctx.fillStyle=palette[parseInt(v)];
-            ctx.fillRect(x+i*scale,y+j*scale,scale,scale);
+      const toast = UI.makeToast(toastEl);
+
+      function resetGame() {
+        running = false;
+        player = { x: 60 - 5, y: 160 - 12, w: 10, h: 10 };
+        objects = [];
+        spawnTimer = 0;
+        score = 0;
+        difficulty = 1;
+        scoreBoard.set(score, best);
+      }
+
+      function spawnObject() {
+        const size = 5;
+        objects.push({ x: Math.random() * (120 - size), y: -size, w: size, h: size, vy: 1 + Math.random() * 1, color: pickColor(), anim: 0 });
+        if (objects.length > 50) objects.shift();
+      }
+
+      function pickColor() {
+        const vars = ['--pastel-peach', '--pastel-mint', '--pastel-blue', '--pastel-pink'];
+        return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random() * vars.length)]).trim();
+      }
+
+      function drawSprite(sprite, x, y, scale, palette) {
+        for (let j = 0; j < sprite.length; j++) {
+          for (let i = 0; i < sprite[j].length; i++) {
+            const v = sprite[j][i];
+            if (v !== '0') {
+              ctx.fillStyle = palette[parseInt(v)];
+              ctx.fillRect(x + i * scale, y + j * scale, scale, scale);
+            }
           }
         }
       }
-    }
 
-    const toast = UI.makeToast(toastEl);
-    function resetGame(){
-      running=false;
-      player={x:W/2-5,y:H-12,w:10,h:10};
-      objects=[];
-      spawnTimer=0;
-      score=0;
-      difficulty=1;
-      scoreBoard.set(score,best);
-      draw();
-    }
-    function spawnObject(){
-      const size=5;
-      objects.push({x:Math.random()*(W-size),y:-size,w:size,h:size,vy:1+Math.random()*1,color:pickColor(),anim:0});
-      if(objects.length>50) objects.shift();
-    }
-    function pickColor(){
-      const vars=['--pastel-peach','--pastel-mint','--pastel-blue','--pastel-pink'];
-      return getComputedStyle(document.documentElement).getPropertyValue(vars[Math.floor(Math.random()*vars.length)]).trim();
-    }
-    function update(){
-      if(!running) return;
-      if(left) player.x=Math.max(0,player.x-2);
-      if(right) player.x=Math.min(W-player.w,player.x+2);
-      spawnTimer++;
-      difficulty+=0.001;
-      if(spawnTimer>Math.max(5,20-difficulty*2)){
-        spawnObject();
-        spawnTimer=0;
-      }
-      for(const o of objects){
-        o.y+=o.vy*difficulty;
-        o.anim+=0.2;
-      }
-      objects = objects.filter(o=>{
-        if(o.y>H){ score++; Sound.fx('coin'); scoreBoard.set(score,best); return false; }
-        return true;
-      });
-      for(const o of objects){
-        if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){
-          running=false;
-          Sound.fx('error');
-          toast('Score: '+score);
-          if(score>best){ best=score; localStorage.setItem('rainBest',best); }
-          scores.add(score);
-          resetGame();
-          break;
+      function update({ keys }) {
+        if (!running) return;
+        if (keys.left) player.x = Math.max(0, player.x - 2);
+        if (keys.right) player.x = Math.min(120 - player.w, player.x + 2);
+        spawnTimer++;
+        difficulty += 0.001;
+        if (spawnTimer > Math.max(5, 20 - difficulty * 2)) {
+          spawnObject();
+          spawnTimer = 0;
+        }
+        for (const o of objects) {
+          o.y += o.vy * difficulty;
+          o.anim += 0.2;
+        }
+        objects = objects.filter(o => {
+          if (o.y > 160) {
+            score++;
+            Sound.fx('coin');
+            scoreBoard.set(score, best);
+            return false;
+          }
+          return true;
+        });
+        for (const o of objects) {
+          if (o.x < player.x + player.w && o.x + o.w > player.x && o.y < player.y + player.h && o.y + o.h > player.y) {
+            running = false;
+            Sound.fx('error');
+            toast('Score: ' + score);
+            if (score > best) { best = score; localStorage.setItem('rainBest', best); }
+            scores.add(score);
+            resetGame();
+            break;
+          }
         }
       }
-      draw();
-      requestAnimationFrame(update);
-    }
-    function draw(){
-      const s=getComputedStyle(document.documentElement);
-      ctx.fillStyle=s.getPropertyValue('--bg2');
-      ctx.fillRect(0,0,W,H);
-      const playerPalette=[null,s.getPropertyValue('--pastel-peach'),s.getPropertyValue('--pastel-blue')];
-      drawSprite(playerSprite,player.x,player.y,2,playerPalette);
-      for(const o of objects){
-        const frame=dropSprites[Math.floor(o.anim)%dropSprites.length];
-        drawSprite(frame,o.x,o.y,1,[null,o.color]);
+
+      function draw(ctx) {
+        const s = getComputedStyle(document.documentElement);
+        ctx.fillStyle = s.getPropertyValue('--bg2');
+        ctx.fillRect(0, 0, 120, 160);
+        const playerPalette = [null, s.getPropertyValue('--pastel-peach'), s.getPropertyValue('--pastel-blue')];
+        drawSprite(playerSprite, player.x, player.y, 2, playerPalette);
+        for (const o of objects) {
+          const frame = dropSprites[Math.floor(o.anim) % dropSprites.length];
+          drawSprite(frame, o.x, o.y, 1, [null, o.color]);
+        }
       }
-    }
-    function movePlayerTo(x){
-      const half=player.w/2;
-      player.x=Math.min(Math.max(x-half,0),W-player.w);
-    }
-    canvas.addEventListener('mousemove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      movePlayerTo(e.clientX-rect.left);
-    });
-    canvas.addEventListener('touchmove',e=>{
-      const rect=canvas.getBoundingClientRect();
-      const t=e.touches[0];
-      movePlayerTo(t.clientX-rect.left);
-      e.preventDefault();
-    },{passive:false});
-    const setBtn=UI.attachDPad(pad,dir=>{
-      if(dir==='left'){ left=true; right=false; }
-      else if(dir==='right'){ right=true; left=false; }
-    });
-    pad.querySelectorAll('[data-dir]').forEach(btn=>{
-      const dir=btn.dataset.dir;
-      const off=e=>{ e.preventDefault(); setBtn(dir,false); if(dir==='left') left=false; else if(dir==='right') right=false; };
-      btn.addEventListener('touchend',off,{passive:false});
-      btn.addEventListener('touchcancel',off,{passive:false});
-      btn.addEventListener('mouseup',off);
-      btn.addEventListener('mouseleave',off);
-    });
-    document.addEventListener('keydown',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=true; setBtn('left',true); e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=true; setBtn('right',true); e.preventDefault(); }
-    });
-    document.addEventListener('keyup',e=>{
-      const k=e.key.toLowerCase();
-      if(k==='arrowleft' || k==='a'){ left=false; setBtn('left',false); e.preventDefault(); }
-      else if(k==='arrowright' || k==='d'){ right=false; setBtn('right',false); e.preventDefault(); }
-    });
-    startBtn.addEventListener('click',()=>{
-      Sound.fx('start');
+
+      const { ctx, keys, attachPad } = createGameLoop(canvas, { width: 120, height: 160, update, draw });
+      attachPad(pad);
+
+      function movePlayerTo(x) {
+        const half = player.w / 2;
+        player.x = Math.min(Math.max(x - half, 0), 120 - player.w);
+      }
+
+      canvas.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        movePlayerTo(e.clientX - rect.left);
+      });
+      canvas.addEventListener('touchmove', e => {
+        const rect = canvas.getBoundingClientRect();
+        const t = e.touches[0];
+        movePlayerTo(t.clientX - rect.left);
+        e.preventDefault();
+      }, { passive: false });
+
+      startBtn.addEventListener('click', () => {
+        Sound.fx('start');
+        resetGame();
+        running = true;
+      });
+
       resetGame();
-      running=true;
-      requestAnimationFrame(update);
-    });
-    resetGame();
-  })();
-  </script>
+    </script>
 <script type="module" src="src/serve-warning.js"></script>
 <script type="module" src="src/i18n.js"></script>
 </body>
