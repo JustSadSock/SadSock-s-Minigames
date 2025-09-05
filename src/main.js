@@ -5,6 +5,14 @@ import { initSettings } from './settings.js';
 
 (function(){
       'use strict';
+      const sandboxMsg='You are using an unsupported command-line flag: --no-sandbox';
+      function hideSandbox(){
+        document.querySelectorAll('div').forEach(el=>{
+          if(el.textContent&&el.textContent.trim().startsWith(sandboxMsg)) el.remove();
+        });
+      }
+      hideSandbox();
+      new MutationObserver(hideSandbox).observe(document.documentElement,{childList:true,subtree:true});
       const $ = (s,p=document)=>p.querySelector(s);
       const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
       const nickDisplay = $('#nickDisplay');
@@ -309,24 +317,12 @@ import { initSettings } from './settings.js';
         setTimeout(startExpand, DUR+50);
       }
 
-      async function loadGame(src){
-        const res = await fetch(src);
-        const text = await res.text();
-        const doc = new DOMParser().parseFromString(text,'text/html');
-        const headEls = [...doc.head.children];
-        headEls.forEach(el=>{
-          if(el.tagName==='LINK' || el.tagName==='STYLE') gameOverlay.appendChild(el.cloneNode(true));
-        });
-        const bodyEls = [...doc.body.children];
-        const frag = document.createDocumentFragment();
-        bodyEls.forEach(el=>{ if(el.tagName!=='SCRIPT') frag.appendChild(el); });
-        gameOverlay.appendChild(frag);
-        bodyEls.filter(el=>el.tagName==='SCRIPT').forEach(el=>{
-          const s=document.createElement('script');
-          [...el.attributes].forEach(a=>s.setAttribute(a.name,a.value));
-          s.type=el.type||'module';
-          s.textContent=el.textContent;
-          gameOverlay.appendChild(s);
+      function loadGame(src){
+        return new Promise(res=>{
+          const frame=document.createElement('iframe');
+          frame.src=src;
+          frame.addEventListener('load', res, {once:true});
+          gameOverlay.appendChild(frame);
         });
       }
 
