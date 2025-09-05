@@ -1,5 +1,6 @@
 import './audio.js';
 import './icons.js';
+import './ui.js';
 import { t } from './i18n.js';
 import { initSettings } from './settings.js';
 
@@ -22,7 +23,7 @@ import { initSettings } from './settings.js';
       const avatarOverlay = $('#avatarOverlay');
       const reel = $('.reel');
       const allTiles = $$('.reel .tile');
-      const catBtns = $$('#catNav button');
+      const catBtns = $$('#catNav p-button');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
       let currentTile=null;
@@ -127,7 +128,7 @@ import { initSettings } from './settings.js';
             gameOverlay.removeEventListener('transitionend', launch);
             gameOverlay.innerHTML='';
             await loadGame(gameSrc);
-            const close=document.createElement('button');
+            const close=document.createElement('p-button');
             close.className='pbtn close';
             close.id='gameClose';
             close.dataset.i18n='home';

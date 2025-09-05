@@ -67,7 +67,7 @@ canvas.bg-stripes{
   position:static;
   margin-top:8px;
 }
-.pad button{
+.pad p-button{
   min-width:clamp(56px,18vw,80px);
   min-height:clamp(56px,18vw,80px);
   font-size:clamp(12px,4vw,16px);
@@ -161,5 +161,5 @@ canvas.bg-stripes{
   .pad{flex-direction:column; align-items:center;}
   .dpad{width:min(60vw,40svh); max-width:260px;}
   canvas{width:100%; height:auto;}
-  .pad button{min-width:72px;min-height:72px;font-size:20px;}
+  .pad p-button{min-width:72px;min-height:72px;font-size:20px;}
 }

@@ -17,16 +17,16 @@
         <canvas class="icon" data-icon="tower" aria-hidden="true"></canvas>
         <div class="hud">
         <div class="counter" id="score">0</div>
-        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
+        <p-button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</p-button>
         <div class="counter" id="status">—</div>
       </div>
-      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+      <p-button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</p-button>
       <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div id="overlay" data-i18n="dropBlock"></div>
       <div class="scanlines"></div>
     </div>
     <div id="pad" class="pad pad-center">
-      <button class="k" data-btn="a" data-i18n-aria-label="dropBlock" style="width:40vw;max-width:160px;">A</button>
+      <p-button class="k" data-btn="a" data-i18n-aria-label="dropBlock" style="width:40vw;max-width:160px;">A</p-button>
     </div>
     <div class="options" style="margin-top:8px;width:70%;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
       <label class="pill" style="flex:1;display:flex;gap:6px;align-items:center;justify-content:center;">
@@ -34,7 +34,7 @@
         <pixel-range style="flex:1"><input type="range" id="widthRange" min="30" max="80" value="60" aria-label="Width"></pixel-range>
       </label>
       <div class="pill" id="mode">∞</div>
-      <button class="pill" id="diffBtn" data-i18n="easy" data-i18n-title="difficulty" title="Difficulty"></button>
+      <p-button class="pill" id="diffBtn" data-i18n="easy" data-i18n-title="difficulty" title="Difficulty"></p-button>
     </div>
     <div class="label" data-i18n="tower"></div>
   </div>
