@@ -409,3 +409,57 @@ html,body{overflow:hidden;}
       .tile{ transition:none !important; filter:brightness(1); }
     }
 
+    /* --- storefront grid with animated icons --- */
+    .reel{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,16px);
+      gap:12px;
+      padding:20px;
+      overflow:auto;
+      perspective:none;
+      transform-style:flat;
+      mask:none;
+      -webkit-mask:none;
+      justify-content:center;
+      align-content:flex-start;
+    }
+    .reel::before,
+    .reel::after{ display:none; }
+    .reel.zoom{ transform:scale(0.9); }
+
+    .tile{
+      position:relative;
+      top:auto; left:auto;
+      width:16px; height:16px;
+      padding:0;
+      border:none;
+      background:none;
+      transform:none;
+      filter:none;
+      box-shadow:none;
+      border-radius:2px;
+      display:block;
+      cursor:pointer;
+    }
+    .tile canvas{
+      width:100%; height:100%;
+      border:2px solid #ffbd69;
+      border-radius:4px;
+      box-shadow:inset 0 0 0 2px #ffd59e;
+      background:#14110e;
+      image-rendering:pixelated;
+      transition:transform .2s var(--ease);
+    }
+    .tile:hover canvas{
+      transform:translateY(-2px);
+      animation:iconHop .3s var(--ease);
+    }
+    .tile:active canvas{ transform:translateY(0); }
+    .tile .label,
+    .tile .badge{ display:none; }
+
+    @keyframes iconHop{
+      0%,100%{ transform:translateY(0); }
+      50%{ transform:translateY(-3px); }
+    }
+
