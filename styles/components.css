@@ -133,6 +133,8 @@ canvas.bg-stripes{
   color:var(--b-ink);
   padding:6px 10px;
   font-weight:700;
+  font-size:14px;
+  line-height:1;
   box-shadow:0 3px 0 var(--b-shadow),inset 0 0 0 2px var(--bezel-hi);
   min-width:80px;
   text-align:center;
