@@ -62,7 +62,7 @@ html,body{overflow:hidden;}
       position:relative;
       width:100%; height:100%;
       border-radius:var(--crt-curve);
-      background:radial-gradient(120% 140% at 50% -20%, #3b2a12 0%, #1c1711 60%, #14110e 100%);
+      background:radial-gradient(120% 140% at 50% -20%, var(--bg2) 0%, var(--bg1) 60%, var(--bg0) 100%);
       box-shadow:
         0 20px 60px rgba(0,0,0,.45),
         inset 0 10px 22px rgba(255,220,160,.14),
@@ -302,10 +302,10 @@ html,body{overflow:hidden;}
       width:calc(100% - 12px);
       height:calc(100% - 12px);
       image-rendering:pixelated;
-      background:#14110e;
+      background:var(--bg0);
       border-radius:12px;
-      border:2px solid #ffbd69;
-      box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
+      border:2px solid var(--pastel-peach);
+      box-shadow:inset 0 0 0 2px var(--bezel-hi),0 0 0 1px rgba(0,0,0,.12);
       transform:scale(1);
       transition:transform .2s var(--ease), filter .2s linear;
     }
@@ -443,10 +443,10 @@ html,body{overflow:hidden;}
     }
     .tile canvas{
       width:100%; height:100%;
-      border:2px solid #ffbd69;
+      border:2px solid var(--pastel-peach);
       border-radius:4px;
-      box-shadow:inset 0 0 0 2px #ffd59e;
-      background:#14110e;
+      box-shadow:inset 0 0 0 2px var(--bezel-hi);
+      background:var(--bg0);
       image-rendering:pixelated;
       transition:transform .2s var(--ease);
     }

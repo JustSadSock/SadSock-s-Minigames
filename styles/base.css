@@ -1,19 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('palette.css');
 
 :root{
-  --bg0:#f0e4d0;
-  --bg1:#ffd9a3;
-  --bg2:#fff1cc;
-  --ink:#2d1600;
+  --bg0:var(--color-bg);
+  --bg1:var(--color-panel);
+  --bg2:var(--color-surface);
+  --ink:var(--color-ink);
   --dim:#714f34;
-  --pastel-pink:#ff5f9c;
-  --pastel-lav:#ff8cc6;
-  --pastel-mint:#00d9b8;
-  --pastel-blue:#46a0ff;
-  --pastel-peach:#ffca3a;
-  --accent:#ff595e;
-  --accent2:#00bbf9;
-  --accent3:#ffca3a;
+  --pastel-pink:var(--color-accent-pink);
+  --pastel-lav:var(--color-accent-pink);
+  --pastel-mint:var(--color-accent-blue);
+  --pastel-blue:var(--color-accent-blue);
+  --pastel-peach:var(--color-panel);
+  --accent:var(--color-accent-pink);
+  --accent2:var(--color-accent-blue);
+  --accent3:var(--color-panel);
   --bezel-hi:#fff2d4;
   --bezel:#ffe0b3;
   --bezel-lo:#ffce91;
