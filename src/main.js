@@ -100,6 +100,7 @@ import { initSettings } from './settings.js';
       });
 
       async function openGame(tile){
+        try{ Sound.fx('select'); }catch(e){}
         currentTile = tile;
         const gameSrc = tile.dataset.game;
         reel.classList.add('zoom');

@@ -161,9 +161,14 @@ pixel-range .thumb{position:absolute;top:50%;width:14px;height:14px;background:v
   box-shadow:0 3px 0 var(--b-shadow),inset 0 0 0 2px var(--bezel-hi);
   transition:transform .05s;
 }
+.btn:hover:not(:active),.tab:hover:not(:active),.pill:hover:not(:active),
+.btn:focus-visible:not(:active),.tab:focus-visible:not(:active),.pill:focus-visible:not(:active){
+  animation:btn-jitter .15s steps(2) infinite;
+  filter:brightness(1.2);
+}
 .btn:active,.tab:active,.pill:active{
   box-shadow:0 1px 0 var(--b-shadow),inset 0 0 0 2px var(--bezel-hi);
-  animation:btn-press .15s;
+  animation:btn-press .15s,btn-flicker .3s steps(2);
 }
 .btn{--b-bg:var(--btn-bg,var(--tile-bg));--b-ink:var(--btn-ink,var(--ink));--b-border:var(--btn-border,var(--bezel));--b-shadow:var(--btn-shadow,var(--bezel-lo));}
 .tab{--b-bg:var(--tab-bg,var(--tile-bg));--b-ink:var(--tab-ink,var(--ink));--b-border:var(--tab-border,var(--bezel));--b-shadow:var(--tab-shadow,var(--bezel-lo));}
@@ -219,6 +224,16 @@ pixel-range .thumb{position:absolute;top:50%;width:14px;height:14px;background:v
   0%{transform:translateY(0) scale(1);filter:brightness(1);}
   50%{transform:translateY(2px) scale(.95);filter:brightness(1.4);}
   100%{transform:translateY(0) scale(1);filter:brightness(1);}
+}
+
+@keyframes btn-jitter{
+  0%,100%{transform:translate(0,0);}
+  50%{transform:translate(1px,0);}
+}
+
+@keyframes btn-flicker{
+  0%,100%{filter:brightness(1);}
+  50%{filter:brightness(1.6);}
 }
 
 @keyframes cursor-blink{

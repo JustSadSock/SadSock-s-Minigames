@@ -11,6 +11,9 @@
           this.click();
         }
       });
+      this.addEventListener('mouseenter',()=>{ try{ Sound.fx('move'); }catch(e){} });
+      this.addEventListener('focus',()=>{ try{ Sound.fx('move'); }catch(e){} });
+      this.addEventListener('click',()=>{ try{ Sound.fx('click'); }catch(e){} });
     }
   }
   customElements.define('p-button',PButton);

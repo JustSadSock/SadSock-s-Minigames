@@ -234,6 +234,14 @@ html,body{overflow:hidden;}
       50%{transform:scale(1.05) translate(2px,0);}
       75%{transform:scale(1.05) translate(-1px,0);}
     }
+    @keyframes tileJitter{
+      0%,100%{transform:scale(1.05) translate(0,0);}
+      50%{transform:scale(1.05) translate(1px,0);}
+    }
+    @keyframes tileFlicker{
+      0%,100%{filter:brightness(1.25);}
+      50%{filter:brightness(1.6);}
+    }
     .tile.flash::after{ opacity:.8; animation:tileFlash .3s steps(1) forwards; }
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
@@ -321,9 +329,10 @@ html,body{overflow:hidden;}
     .tile[data-active="1"] canvas{
       transform:scale(1.05);
       filter:brightness(1.15);
+      animation:tileJitter .15s steps(2) infinite;
     }
     .tile:active canvas{
-      animation:tileGlitch .3s steps(2);
+      animation:tileGlitch .3s steps(2),tileFlicker .3s steps(2);
       filter:brightness(1.25);
     }
 
@@ -450,16 +459,30 @@ html,body{overflow:hidden;}
       image-rendering:pixelated;
       transition:transform .2s var(--ease);
     }
-    .tile:hover canvas{
+    .tile:hover canvas,
+    .tile:focus-visible canvas{
       transform:translateY(-2px);
-      animation:iconHop .3s var(--ease);
+      filter:brightness(1.2);
+      animation:iconHop .4s steps(2) infinite;
     }
-    .tile:active canvas{ transform:translateY(0); }
+    .tile:active canvas{
+      transform:translateY(0);
+      filter:brightness(1.4);
+      animation:iconFlicker .3s steps(2);
+    }
     .tile .label,
     .tile .badge{ display:none; }
 
     @keyframes iconHop{
-      0%,100%{ transform:translateY(0); }
-      50%{ transform:translateY(-3px); }
+      0%{ transform:translateY(0); }
+      30%{ transform:translateY(-3px); }
+      50%{ transform:translate(-2px,-2px); }
+      70%{ transform:translate(2px,-2px); }
+      100%{ transform:translateY(0); }
+    }
+
+    @keyframes iconFlicker{
+      0%,100%{ filter:brightness(1.4); }
+      50%{ filter:brightness(1.8); }
     }
 
