@@ -16,11 +16,11 @@ const modules = { anim, arena, breakout, cards, music, pong, rain, rhythm, rogue
   'use strict';
 
   const cache = {}, items = [];
-  let frame = 0, last = 0, fps = 12, animating = false;
+  let frame = 0, last = 0, fps = 6, animating = false;
 
-  async function load(name){
+  function load(name){
     if(cache[name]) return cache[name];
-    const sets = modules[name] || [];
+    const sets = (modules[name] || []).slice(0,3);
     const canvases = sets.map(data=>{
       const cv = document.createElement('canvas');
       cv.width = 16; cv.height = 16;
@@ -33,10 +33,8 @@ const modules = { anim, arena, breakout, cards, music, pong, rain, rhythm, rogue
       data.forEach(p=>{ ctx.fillStyle=p.c; ctx.fillRect(p.x-minX+offX, p.y-minY+offY,1,1); });
       return cv;
     });
-    while(canvases.length < 10 && canvases.length > 0){
-      canvases.push(...canvases);
-    }
-    cache[name] = canvases.slice(0, Math.max(10, canvases.length));
+    if(canvases.length === 1) canvases.push(canvases[0]);
+    cache[name] = canvases;
     return cache[name];
   }
 
@@ -61,7 +59,8 @@ const modules = { anim, arena, breakout, cards, music, pong, rain, rhythm, rogue
     const ctx = canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled = false;
     items.push({ctx,name});
-    load(name).then(()=>draw(ctx,name,frame));
+    load(name);
+    draw(ctx,name,frame);
     if(!animating){ animating = true; requestAnimationFrame(loop); }
   }
 
