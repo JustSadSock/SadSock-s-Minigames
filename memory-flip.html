@@ -18,7 +18,6 @@
       color:var(--ink);
       gap:12px;
     }
-    h1{margin:0;font-size:18px;}
     .play{
       width:100%;
       display:flex;
@@ -52,22 +51,21 @@
     .card.open .card-inner{transform:rotateY(180deg);}
     .card.matched .card-inner{animation:match .4s;}
     .card.wrong .card-inner{animation:shake .4s;}
-    .face{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:2px solid var(--pastel-peach);
-      border-radius:8px;
-      backface-visibility:hidden;
-      box-shadow:0 4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.5);
-    }
-    .front{background:linear-gradient(180deg,var(--pastel-blue),#3a94ef);}
-    .back{background:linear-gradient(180deg,var(--pastel-peach),#e3a228);transform:rotateY(180deg);}
-    .back img{width:100%;height:100%;image-rendering:pixelated;}
-    .card.matched .back{background:linear-gradient(180deg,var(--pastel-mint),#00bfa1);}
-    #score,#timer,#moves{margin:0;font-size:clamp(16px,4vw,20px);text-align:center;}
+      .face{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border:2px solid var(--pastel-peach);
+        border-radius:8px;
+        backface-visibility:hidden;
+        box-shadow:0 4px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.5);
+      }
+      .front{background:var(--pastel-blue);}
+      .back{background:var(--pastel-pink);transform:rotateY(180deg);}
+      .back img{width:100%;height:100%;image-rendering:pixelated;}
+      .card.matched .back{background:var(--pastel-peach);}
     .card.sel{outline:2px solid var(--accent);}
     .toast{
       position:absolute;
@@ -98,13 +96,13 @@
   <div class="play">
     <div class="hud">
       <div id="score" class="counter">0/8</div>
-      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <p-button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</p-button>
       <div style="display:flex;gap:4px;">
         <div id="timer" class="counter">0s</div>
         <div id="moves" class="counter">0</div>
       </div>
     </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+    <p-button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</p-button>
     <div id="grid" role="grid"></div>
     <div id="toast" class="toast" aria-live="polite"></div>
     <div id="pad" class="pad pad-center">
@@ -117,7 +115,7 @@
       </div>
       <div class="ab">
         <div class="k" data-btn="a">A</div>
-        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+        <p-button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></p-button>
       </div>
     </div>
   </div>

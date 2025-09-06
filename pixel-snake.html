@@ -17,7 +17,6 @@
       gap:12px;
       color:var(--ink);
     }
-    h1{margin:0;font-size:18px;}
     .play{
       flex:1;
       width:100%;
@@ -36,7 +35,7 @@
       height:auto;
       aspect-ratio:3/4;
     }
-    #score{margin:0;font-size:14px;font-weight:bold;text-shadow:0 1px 0 var(--bg0);}
+      #score{margin:0;font-weight:bold;text-shadow:0 1px 0 var(--bg0);}
 
     .toast{
       position:absolute;
@@ -53,8 +52,8 @@
 
 
     .color-pick{display:flex;gap:4px;}
-    .color-pick button{width:36px;height:36px;border:2px solid var(--bezel);border-radius:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi);cursor:pointer;}
-    .color-pick button.sel{outline:2px solid var(--accent);}
+    .color-pick p-button{width:36px;height:36px;border:2px solid var(--bezel);border-radius:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi);cursor:pointer;}
+    .color-pick p-button.sel{outline:2px solid var(--accent);}
 
   </style>
 </head>
@@ -62,18 +61,18 @@
   <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
   <h1>Pixel Snake</h1>
   <div id="colorPick" class="color-pick" title="Snake color">
-    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
-    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
-    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
-    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
+    <p-button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></p-button>
+    <p-button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></p-button>
+    <p-button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></p-button>
+    <p-button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></p-button>
   </div>
   <div class="play">
     <div class="hud">
       <div id="score" class="counter">0</div>
-      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+      <p-button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</p-button>
       <div id="status" class="counter" style="visibility:hidden"></div>
     </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+    <p-button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</p-button>
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
@@ -85,7 +84,7 @@
         <div class="k" data-dir="down" style="grid-area:down">▼</div>
       </div>
       <div class="ab">
-        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+        <p-button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></p-button>
       </div>
     </div>
   </div>
@@ -142,7 +141,7 @@
       const m=col.match(/(\d+),\s*(\d+),\s*(\d+)/);
       return m? '#' + [1,2,3].map(i=>('0'+parseInt(m[i]).toString(16)).slice(-2)).join('') : '#3fbf75';
     }
-    const colorBtns=colorPick.querySelectorAll('button');
+    const colorBtns=colorPick.querySelectorAll('p-button');
     colorBtns.forEach(btn=>{
       const getCol=()=>getComputedStyle(document.documentElement).getPropertyValue(btn.dataset.col);
       if(toHex(getCol())===toHex(snakeColor)) btn.classList.add('sel');

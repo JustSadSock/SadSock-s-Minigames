@@ -55,6 +55,9 @@ canvas.bg-stripes{
   padding:8px;
   border-radius:12px;
   background:var(--tile-bg);
+  background-image:repeating-linear-gradient(45deg,
+    color-mix(in srgb, var(--bezel-lo) 15%, transparent) 0 1px,
+    transparent 1px 2px);
   border:2px solid var(--bezel);
   box-shadow:inset 0 2px 0 var(--bezel-hi), inset 0 -3px 0 var(--bezel);
 }
@@ -67,7 +70,7 @@ canvas.bg-stripes{
   position:static;
   margin-top:8px;
 }
-.pad button{
+.pad p-button{
   min-width:clamp(56px,18vw,80px);
   min-height:clamp(56px,18vw,80px);
   font-size:clamp(12px,4vw,16px);
@@ -95,14 +98,21 @@ canvas.bg-stripes{
   padding:10px;
   border-radius:16px;
   background:var(--tile-bg);
+  background-image:repeating-linear-gradient(45deg,
+    color-mix(in srgb, var(--bezel-lo) 15%, transparent) 0 1px,
+    transparent 1px 2px);
   border:2px solid var(--bezel);
   box-shadow:inset 0 2px 0 var(--bezel-hi), inset 0 -3px 0 var(--bezel);
 }
 .k{
-  background:linear-gradient(var(--tile-bg), var(--tile-bg-dim));
+  background:
+    linear-gradient(var(--tile-bg), var(--tile-bg-dim)),
+    repeating-linear-gradient(45deg,
+      color-mix(in srgb, var(--bezel-lo) 15%, transparent) 0 1px,
+      transparent 1px 2px);
   border:2px solid var(--bezel);
   border-radius:12px;
-  box-shadow:0 4px 0 var(--bezel-lo),0 6px 12px rgba(0,0,0,.25);
+  box-shadow:0 0 0 2px var(--bezel-lo),0 4px 0 var(--bezel-lo),0 6px 12px rgba(0,0,0,.25);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -133,6 +143,8 @@ canvas.bg-stripes{
   color:var(--b-ink);
   padding:6px 10px;
   font-weight:700;
+  font-size:14px;
+  line-height:1;
   box-shadow:0 3px 0 var(--b-shadow),inset 0 0 0 2px var(--bezel-hi);
   min-width:80px;
   text-align:center;
@@ -152,6 +164,7 @@ canvas.bg-stripes{
 
 @media (pointer:fine){
   .hint,.footer{display:none}
+  .pad,.pad-toggle{display:none}
 }
 
 @media (max-width:600px){
@@ -159,5 +172,5 @@ canvas.bg-stripes{
   .pad{flex-direction:column; align-items:center;}
   .dpad{width:min(60vw,40svh); max-width:260px;}
   canvas{width:100%; height:auto;}
-  .pad button{min-width:72px;min-height:72px;font-size:20px;}
+  .pad p-button{min-width:72px;min-height:72px;font-size:20px;}
 }

@@ -24,11 +24,11 @@ export function initSettings(onSpeedChange){
     </div>
     <div class="row wide">
       <span data-i18n="music"></span>
-      <button id="musicBtn" class="pbtn" data-i18n="musicOn" data-i18n-aria-label="music"></button>
+      <p-button id="musicBtn" class="pbtn" data-i18n="musicOn" data-i18n-aria-label="music"></p-button>
     </div>
     <div class="row wide">
       <span data-i18n="screen"></span>
-      <button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen">Fullscreen</button>
+      <p-button id="fullscreenBtn" class="pbtn" data-i18n="fullscreen" data-i18n-aria-label="fullscreen">Fullscreen</p-button>
     </div>
     <div class="row wide">
       <label for="langSelect" data-i18n="language"></label>
@@ -50,7 +50,7 @@ export function initSettings(onSpeedChange){
       <span data-i18n="scrollSpeed"></span>
       <pixel-range><input id="speed" type="range" min="100" max="500" step="20" value="180" data-i18n-aria-label="scrollSpeed" /></pixel-range>
     </div>
-    <div style="text-align:center"><button id="settingsOk" class="pbtn" data-i18n="ok" data-i18n-aria-label="close">OK</button></div>
+    <div style="text-align:center"><p-button id="settingsOk" class="pbtn" data-i18n="ok" data-i18n-aria-label="close">OK</p-button></div>
   `;
   document.body.appendChild(menu);
   applyTranslations(menu);

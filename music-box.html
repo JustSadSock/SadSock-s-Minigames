@@ -115,9 +115,9 @@
         <div class="topbar">
         <div class="transport">
           <div class="left">
-            <button id="playBtn" class="btn key">▶</button>
-            <button id="stopBtn" class="btn key">■</button>
-            <button id="clearBtn" class="btn key">✖</button>
+            <p-button id="playBtn" class="btn key">▶</p-button>
+            <p-button id="stopBtn" class="btn key">■</p-button>
+            <p-button id="clearBtn" class="btn key">✖</p-button>
           </div>
           <details class="opts" open>
             <summary class="pill">⚙ Options</summary>
@@ -138,9 +138,9 @@
           </details>
         </div>
         <div class="tabs">
-          <button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
-          <button class="tab" data-tab="code">📤 Import / Export</button>
-          <button class="tab" data-tab="info">ℹ Info</button>
+          <p-button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</p-button>
+          <p-button class="tab" data-tab="code">📤 Import / Export</p-button>
+          <p-button class="tab" data-tab="info">ℹ Info</p-button>
         </div>
       </div>
 
@@ -179,7 +179,7 @@
 
         <!-- Барабаны в той же колонке -->
         <details class="panel accordion" open>
-          <summary class="row"><strong>Drums</strong><span style="color:#86694b">Ряды: Kick • Snare • Hat</span></summary>
+        <summary class="row"><strong>Drums</strong><span style="color:var(--dim)">Ряды: Kick • Snare • Hat</span></summary>
           <div class="grid drums" id="drumGrid" style="--cols:16; --rows:3"></div>
         </details>
       </div>
@@ -188,20 +188,20 @@
         <div class="panel">
           <strong>Export</strong>
           <div class="row" style="gap:8px; margin:8px 0">
-            <button class="btn" id="exportJSON">↥ Export JSON</button>
-            <button class="btn" id="exportCode">↥ Export as Code</button>
-            <button class="btn" id="copyOut">Copy</button>
-            <button class="btn" id="saveFile">Save file</button>
+            <p-button class="btn" id="exportJSON">↥ Export JSON</p-button>
+            <p-button class="btn" id="exportCode">↥ Export as Code</p-button>
+            <p-button class="btn" id="copyOut">Copy</p-button>
+            <p-button class="btn" id="saveFile">Save file</p-button>
           </div>
           <textarea id="out" class="code" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
         </div>
         <div class="panel">
           <strong>Import</strong>
           <div class="row" style="gap:8px; margin:8px 0">
-            <button class="btn" id="importPlay">Play imported</button>
-            <button class="btn" id="loadIntoEditor">Load into editor</button>
-            <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
-            <button class="btn" id="loadFile">Load file</button>
+            <p-button class="btn" id="importPlay">Play imported</p-button>
+            <p-button class="btn" id="loadIntoEditor">Load into editor</p-button>
+            <p-button class="btn" id="pasteBtn">📋 Paste из буфера</p-button>
+            <p-button class="btn" id="loadFile">Load file</p-button>
           </div>
           <textarea id="inp" class="code" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
         </div>

@@ -40,7 +40,7 @@
     #atkOverlay,#replayOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:50;}
     #atkOverlay.show,#replayOverlay.show{display:flex;}
     #atkOverlay .atkBox{background:var(--panel);border:2px solid var(--bezel);padding:8px;display:grid;grid-template-areas:" . up . " " left center right" " . down . " " ok ok ok " " cancel cancel cancel";gap:4px;}
-    #atkOverlay button{font-size:16px;}
+    #atkOverlay p-button{font-size:16px;}
     #replayControls{background:var(--panel);border:2px solid var(--bezel);padding:8px;display:flex;flex-direction:column;gap:4px;}
     .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:2px solid var(--bezel);padding:8px;display:none;z-index:60;}
     .modal.show{display:block;}
@@ -49,27 +49,27 @@
 <body>
   <canvas class="icon" data-icon="arena" aria-hidden="true"></canvas>
   <div id="modeSelect" class="screen">
-    <button class="btn" id="btn1p" data-i18n="singlePlayer">1P</button>
-    <button class="btn" id="btn2p" data-i18n="twoPlayers">2P</button>
-    <button class="btn" id="rulesBtnInitial" data-i18n="rules">Rules</button>
+    <p-button class="btn" id="btn1p" data-i18n="singlePlayer">1P</p-button>
+    <p-button class="btn" id="btn2p" data-i18n="twoPlayers">2P</p-button>
+    <p-button class="btn" id="rulesBtnInitial" data-i18n="rules">Rules</p-button>
   </div>
   <div id="difficultySelect" class="screen" style="display:none;">
-    <button class="btn" data-level="easy" data-i18n="easy">Easy</button>
-    <button class="btn" data-level="medium" data-i18n="medium">Medium</button>
-    <button class="btn" data-level="hard" data-i18n="hard">Hard</button>
-    <button class="btn" data-level="expert" data-i18n="expert">Expert</button>
-    <button class="btn" data-level="insane" data-i18n="insane">Insane</button>
+    <p-button class="btn" data-level="easy" data-i18n="easy">Easy</p-button>
+    <p-button class="btn" data-level="medium" data-i18n="medium">Medium</p-button>
+    <p-button class="btn" data-level="hard" data-i18n="hard">Hard</p-button>
+    <p-button class="btn" data-level="expert" data-i18n="expert">Expert</p-button>
+    <p-button class="btn" data-level="insane" data-i18n="insane">Insane</p-button>
   </div>
   <div id="gameArea" style="display:none;">
     <div id="scoreboard">
       <span id="scoreA" class="counter">0</span>
       <span>:</span>
       <span id="scoreB" class="counter">0</span>
-      <button id="scoreReset" class="btn" data-i18n="resetScore">Reset</button>
-      <button id="menuBtn" class="btn" data-i18n="toMenu">Menu</button>
-      <button id="btnReplay" class="btn" data-i18n="replay">Replay</button>
+      <p-button id="scoreReset" class="btn" data-i18n="resetScore">Reset</p-button>
+      <p-button id="menuBtn" class="btn" data-i18n="toMenu">Menu</p-button>
+      <p-button id="btnReplay" class="btn" data-i18n="replay">Replay</p-button>
     </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙</button>
+    <p-button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙</p-button>
     <div id="board"></div>
     <div id="ui" class="panel">
       <div id="phase"></div>
@@ -94,8 +94,8 @@
         </div>
       </div>
       <div id="navButtons">
-        <button id="btn-del" class="btn" data-i18n="deleteBtn">Delete</button>
-        <button id="btn-next" class="btn" data-i18n="nextBtn">Next</button>
+        <p-button id="btn-del" class="btn" data-i18n="deleteBtn">Delete</p-button>
+        <p-button id="btn-next" class="btn" data-i18n="nextBtn">Next</p-button>
       </div>
     </div>
   </div>
@@ -114,8 +114,8 @@
       <li data-i18n="rule7"></li>
       <li data-i18n="rule8"></li>
     </ul>
-    <button id="rulesClose" data-i18n="close">Close</button>
-    <button id="rulesTutorial" data-i18n="tutorial">Tutorial</button>
+    <p-button id="rulesClose" data-i18n="close">Close</p-button>
+    <p-button id="rulesTutorial" data-i18n="tutorial">Tutorial</p-button>
   </div>
   <div id="settingsModal" class="modal">
     <h2>⚙</h2>
@@ -127,35 +127,35 @@
       <option value="ru" data-i18n="selectRussian">Русский</option>
       <option value="uk" data-i18n="selectUkrainian">Українська</option>
     </select></pixel-select>
-    <button id="settingsClose" data-i18n="close">Close</button>
+    <p-button id="settingsClose" data-i18n="close">Close</p-button>
   </div>
   <div id="tutorialOverlay" class="modal">
     <h2 data-i18n="tutorial"></h2>
     <p id="tutorialContent"></p>
-    <button id="tutorialNext" data-i18n="nextBtn">Next</button>
-    <button id="tutorialClose" data-i18n="close">Close</button>
+    <p-button id="tutorialNext" data-i18n="nextBtn">Next</p-button>
+    <p-button id="tutorialClose" data-i18n="close">Close</p-button>
   </div>
   <div id="replayOverlay">
     <div id="replayControls">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button id="replayClose" data-i18n="close">Close</button>
-        <button id="replayPlay">▶</button>
-        <button id="replayPause" style="display:none;">❚❚</button>
+        <p-button id="replayClose" data-i18n="close">Close</p-button>
+        <p-button id="replayPlay">▶</p-button>
+        <p-button id="replayPause" style="display:none;">❚❚</p-button>
       </div>
       <pixel-range><input type="range" id="replaySlider" min="0" max="0" value="0"></pixel-range>
       <div id="speedButtons">
-        <button data-speed="1">1x</button>
-        <button data-speed="2">2x</button>
-        <button data-speed="3">3x</button>
-        <button data-speed="4">4x</button>
-        <button data-speed="5">5x</button>
+        <p-button data-speed="1">1x</p-button>
+        <p-button data-speed="2">2x</p-button>
+        <p-button data-speed="3">3x</p-button>
+        <p-button data-speed="4">4x</p-button>
+        <p-button data-speed="5">5x</p-button>
       </div>
     </div>
   </div>
   <div id="msgOverlay" class="modal">
     <h2 id="msgTitle"></h2>
     <p id="msgContent"></p>
-    <button id="msgClose" data-i18n="close">Close</button>
+    <p-button id="msgClose" data-i18n="close">Close</p-button>
   </div>
   <script type="module">
   import './src/ui.js';
@@ -225,7 +225,7 @@
     const replayPlay=document.getElementById('replayPlay');
     const replayPause=document.getElementById('replayPause');
     const replaySlider=document.getElementById('replaySlider');
-    const speedButtons=document.querySelectorAll('#speedButtons button');
+    const speedButtons=document.querySelectorAll('#speedButtons p-button');
     function drawBoard(){boardEl.innerHTML=''; for(let y=0;y<5;y++){for(let x=0;x<5;x++){const cell=document.createElement('div'); cell.className='cell'; cell.id=`c${x}${y}`; if(edgesCollapsed&&(x===0||x===4||y===0||y===4)) cell.classList.add('collapsed'); boardEl.appendChild(cell);}} updateUnitsOnBoard();}
     function updateUnitsOnBoard(){document.querySelectorAll('.token').forEach(tok=>tok.remove()); ['A','B'].forEach(p=>{const u=units[p]; if(!u.alive) return; const cell=document.getElementById('c'+u.x+u.y); if(cell){const tok=document.createElement('div'); tok.className='token '+p; cell.appendChild(tok);}});}
     function resetRound(){plans={A:[],B:[]}; usedMove={A:new Set(),B:new Set()}; usedAtkDirs={A:new Set(),B:new Set()}; usedAtk={A:0,B:0}; usedShield={A:0,B:0}; if(fullReset){units={A:{x:0,y:2,alive:true},B:{x:4,y:2,alive:true}}; edgesCollapsed=false; fullReset=false;} replayFrames=[]; replayIndex=0; clearActionIcons(); clearPreviewIcons(); drawBoard(); phase='planA'; updateUI(); initPreviewPositions();}
@@ -252,7 +252,7 @@
     function getOutcome(){if(!units.A.alive&&!units.B.alive) return 'draw'; if(!units.A.alive) return 'B'; if(!units.B.alive) return 'A'; return null;}
     function endRound(outcome){if(outcome==='A') score.A++; if(outcome==='B') score.B++; updateScore(); let message; if(outcome==='draw') message=i18n.t('bothDieDraw'); else if(!outcome) message=i18n.t('exhaustedDraw'); else message=(outcome==='A')?i18n.t('playerA_wins'):i18n.t('playerB_wins'); let showMsg=false; if(outcome==='A'||outcome==='B'||outcome==='draw') showMsg=true; else if(round===4) showMsg=true; if(showMsg){showMessage(message);} savedReplayFrames=replayFrames.slice(); round++; if(round>4){round=1; fullReset=true;} resetRound();}
     function recordFrame(actA=null,actB=null){const frame={A:{x:units.A.x,y:units.A.y,alive:units.A.alive},B:{x:units.B.x,y:units.B.y,alive:units.B.alive},edges:edgesCollapsed,actions:{A:actA? (typeof actA==='object'?{dirs:actA.dirs.slice()}:actA):null,B:actB? (typeof actB==='object'?{dirs:actB.dirs.slice()}:actB):null}}; replayFrames.push(frame); replaySlider.max=replayFrames.length-1;}
-    function openAttack(player){atkBox.innerHTML=''; let tmp=[]; const center=document.createElement('div'); center.className='center'; center.textContent='⚔'; atkBox.appendChild(center); ['up','left','right','down'].forEach(dir=>{if(usedMove[player].has(dir)||usedAtkDirs[player].has(dir)) return; const btn=document.createElement('button'); btn.textContent={up:'▲',down:'▼',left:'◀',right:'▶'}[dir]; btn.classList.add(dir); btn.onclick=()=>{if(tmp.includes(dir)){tmp=tmp.filter(d=>d!==dir); btn.classList.remove('sel');} else {tmp.push(dir); btn.classList.add('sel');}}; atkBox.appendChild(btn);}); const okBtn=document.createElement('button'); okBtn.textContent=i18n.t('ok'); okBtn.className='ok'; okBtn.onclick=()=>{recordAction(player,{dirs:tmp.slice()}); atkOverlay.classList.remove('show');}; atkBox.appendChild(okBtn); const cancelBtn=document.createElement('button'); cancelBtn.textContent=i18n.t('cancel'); cancelBtn.className='cancel'; cancelBtn.onclick=()=>{atkOverlay.classList.remove('show');}; atkBox.appendChild(cancelBtn); atkOverlay.classList.add('show');}
+    function openAttack(player){atkBox.innerHTML=''; let tmp=[]; const center=document.createElement('div'); center.className='center'; center.textContent='⚔'; atkBox.appendChild(center); ['up','left','right','down'].forEach(dir=>{if(usedMove[player].has(dir)||usedAtkDirs[player].has(dir)) return; const btn=document.createElement('p-button'); btn.textContent={up:'▲',down:'▼',left:'◀',right:'▶'}[dir]; btn.classList.add(dir); btn.onclick=()=>{if(tmp.includes(dir)){tmp=tmp.filter(d=>d!==dir); btn.classList.remove('sel');} else {tmp.push(dir); btn.classList.add('sel');}}; atkBox.appendChild(btn);}); const okBtn=document.createElement('p-button'); okBtn.textContent=i18n.t('ok'); okBtn.className='ok'; okBtn.onclick=()=>{recordAction(player,{dirs:tmp.slice()}); atkOverlay.classList.remove('show');}; atkBox.appendChild(okBtn); const cancelBtn=document.createElement('p-button'); cancelBtn.textContent=i18n.t('cancel'); cancelBtn.className='cancel'; cancelBtn.onclick=()=>{atkOverlay.classList.remove('show');}; atkBox.appendChild(cancelBtn); atkOverlay.classList.add('show');}
     function aiPlan(){const plan=[]; let shieldUsed=false; let attackUsed=false; const usedMoveAI=new Set(); const usedAtkDirAI=new Set(); let px=units.B.x; let py=units.B.y; for(let i=0;i<STEPS;i++){const dx=units.A.x-px; const dy=units.A.y-py; let desiredAttack=null; let desiredMove=null; if(!attackUsed && Math.abs(dx)+Math.abs(dy)<=2){const dirs=[]; if(dy<0) dirs.push('up'); if(dy>0) dirs.push('down'); if(dx<0) dirs.push('left'); if(dx>0) dirs.push('right'); if(dirs.length===0) dirs.push('up'); desiredAttack={dirs:dirs};} if(Math.abs(dx)+Math.abs(dy)>0){ if(Math.abs(dx)>Math.abs(dy)) desiredMove=(dx>0?'right':'left'); else desiredMove=(dy>0?'down':'up'); } let chosen=null; if(desiredAttack&&!attackUsed){let valid=true; for(const d of desiredAttack.dirs){if(usedMoveAI.has(d)||usedAtkDirAI.has(d)) {valid=false; break;}} if(valid){chosen=desiredAttack;}} if(!chosen && desiredMove){ if(usedAtkDirAI.has(desiredMove)){const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); if(available.length>0) desiredMove=available[Math.floor(Math.random()*available.length)]; } chosen=desiredMove;} if(!chosen){ if(!shieldUsed){chosen='shield'; shieldUsed=true;} else {const allDirs=['up','down','left','right']; const available=allDirs.filter(d=>!usedAtkDirAI.has(d)); chosen=available[Math.floor(Math.random()*available.length)];}} plan.push(chosen); if(typeof chosen==='string'){ if(DXY[chosen]){usedMoveAI.add(chosen); px=Math.max(0,Math.min(4,px+DXY[chosen][0])); py=Math.max(0,Math.min(4,py+DXY[chosen][1]));}} else if(typeof chosen==='object'){attackUsed=true; for(const d of chosen.dirs) usedAtkDirAI.add(d);} } plans.B=plan;}
     function bindUI(){
       const setBtn=UI.attachDPad(pad,dir=>{ if(phase!=='planA'&&phase!=='planB') return; const player=(phase==='planA')?'A':'B'; recordAction(player,dir); });

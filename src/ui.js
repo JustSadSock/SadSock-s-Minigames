@@ -1,5 +1,23 @@
 (function(global){
   'use strict';
+
+  class PButton extends HTMLElement{
+    connectedCallback(){
+      if(!this.hasAttribute('role')) this.setAttribute('role','button');
+      if(!this.hasAttribute('tabindex')) this.tabIndex=0;
+      this.addEventListener('keydown',e=>{
+        if(e.key===' '||e.key==='Enter'){
+          e.preventDefault();
+          this.click();
+        }
+      });
+      this.addEventListener('mouseenter',()=>{ try{ Sound.fx('move'); }catch(e){} });
+      this.addEventListener('focus',()=>{ try{ Sound.fx('move'); }catch(e){} });
+      this.addEventListener('click',()=>{ try{ Sound.fx('click'); }catch(e){} });
+    }
+  }
+  customElements.define('p-button',PButton);
+
   const UI={};
   UI.score=function(el,label,bestLabel){
     if(el) el.classList.add('counter');
@@ -28,7 +46,7 @@
     box.className='box';
     const p=document.createElement('p');
     p.textContent=text;
-    const btn=document.createElement('button');
+    const btn=document.createElement('p-button');
     btn.className='btn';
     btn.textContent=global.i18n ? i18n.t('close') : 'OK';
     btn.dataset.i18n='close';
@@ -54,7 +72,7 @@
     };
     UI.autoHidePad=function(pad){
     if(!pad) return;
-    const toggle=document.createElement('button');
+    const toggle=document.createElement('p-button');
     toggle.className='btn pad-toggle';
     toggle.dataset.i18n='showDPad';
     pad.parentElement.appendChild(toggle);

@@ -97,13 +97,13 @@ import './src/i18n.js';
     <div id="panels"></div>
   </div>
   <div class="row" style="margin-top:8px; gap:8px;">
-    <button id="previewBtn" class="btn" data-i18n="preview" title="Preview">▶ Preview</button>
-    <button id="randomBtn" class="btn" data-i18n="random" title="Random">Random</button>
+    <p-button id="previewBtn" class="btn" data-i18n="preview" title="Preview">▶ Preview</p-button>
+    <p-button id="randomBtn" class="btn" data-i18n="random" title="Random">Random</p-button>
     <pixel-input style="flex:1;"><input id="nick" type="text" placeholder="Ник"></pixel-input>
-    <button id="saveBtn" class="btn" data-i18n="ok">OK</button>
-    <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
-    <button id="exportJson" class="btn" data-i18n="exportJson" title="Export JSON">Export JSON</button>
-    <button id="importJson" class="btn" data-i18n="importJson" title="Import JSON">Import JSON</button>
+    <p-button id="saveBtn" class="btn" data-i18n="ok">OK</p-button>
+    <p-button id="dlBtn" class="btn" title="Скачать PNG">⬇️</p-button>
+    <p-button id="exportJson" class="btn" data-i18n="exportJson" title="Export JSON">Export JSON</p-button>
+    <p-button id="importJson" class="btn" data-i18n="importJson" title="Import JSON">Import JSON</p-button>
   </div>
       </div>
     </div>
@@ -291,7 +291,7 @@ function render(){
 function buildUI(){
   dom.tabs.innerHTML=''; dom.panels.innerHTML='';
   CATS.forEach(cat=>{
-    const b=document.createElement('button');
+    const b=document.createElement('p-button');
     b.className='tab'; b.textContent=cat.n; b.dataset.k=cat.k; b.title=cat.n;
     if(cat.k===active) b.setAttribute('aria-selected','true');
     b.onclick=()=>{ active=cat.k; document.querySelectorAll('.tab').forEach(x=>x.removeAttribute('aria-selected')); b.setAttribute('aria-selected','true'); openPanel(cat.k); };
@@ -337,7 +337,7 @@ function openPanel(k){
   el.append(nav, colors);
 }
 
-function btn(t,fn){const b=document.createElement('button'); b.className='btn'; b.textContent=t; b.onclick=fn; return b;}
+function btn(t,fn){const b=document.createElement('p-button'); b.className='btn'; b.textContent=t; b.onclick=fn; return b;}
 function indexStr(k,total){return ((state[k]??0)+1)+' / '+total}
 
 /* ===== actions ===== */

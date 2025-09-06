@@ -41,7 +41,7 @@
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .muted{color:var(--muted)}
   label{font-size:12px;color:var(--muted);font-weight:700}
-  input,button,select,textarea{font-family:'Press Start 2P',ui-monospace,monospace}
+  input,p-button,select,textarea{font-family:'Press Start 2P',ui-monospace,monospace}
   input:focus,select:focus,textarea:focus{outline:2px solid var(--amber)}
   input[type="checkbox"]{appearance:none;width:20px;height:20px;margin:0;cursor:pointer;padding:0;border:2px solid var(--bezel);border-radius:4px;background:var(--tile-bg);box-shadow:0 2px 0 var(--bezel-lo),inset 0 0 0 2px var(--bezel-hi);}
   input[type="checkbox"]:checked{background:var(--accent)}
@@ -76,8 +76,8 @@
         <div class="content">
           <canvas class="icon" data-icon="anim" aria-hidden="true"></canvas>
           <div class="tabs">
-            <button class="tab active" data-tab="edit">🎨 Редактор</button>
-            <button class="tab" data-tab="io">📤 Импорт · Экспорт</button>
+            <p-button class="tab active" data-tab="edit">🎨 Редактор</p-button>
+            <p-button class="tab" data-tab="io">📤 Импорт · Экспорт</p-button>
           </div>
           <section id="tab-edit" class="workspace">
             <div class="panel screen">
@@ -91,15 +91,15 @@
           <div class="panel">
             <div class="row" style="justify-content:space-between">
               <div class="row">
-                <button class="pill tool" id="tool-pen" title="Кисть"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='5' width='8' height='3' fill='%23b97a56'/><rect x='6' y='3' width='2' height='2' fill='%23ccc'/><rect x='6' y='1' width='2' height='2' fill='%23000'/></svg>" width="16" height="16" alt="Кисть"></button>
-                <button class="pill tool" id="tool-erase" title="Ластик"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='1' y='2' width='6' height='4' fill='%23f99'/><rect x='1' y='2' width='3' height='4' fill='%23fcc'/></svg>" width="16" height="16" alt="Ластик"></button>
-                <button class="pill tool" id="tool-pick" title="Пипетка"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='6' width='2' height='2' fill='%23000'/><rect x='1' y='5' width='2' height='2' fill='%23999'/><rect x='2' y='3' width='2' height='2' fill='%23999'/><rect x='3' y='2' width='2' height='2' fill='%23999'/><rect x='4' y='0' width='4' height='2' fill='%23f0f'/><rect x='5' y='2' width='3' height='2' fill='%23f0f'/><rect x='6' y='4' width='2' height='2' fill='%23f0f'/></svg>" width="16" height="16" alt="Пипетка"></button>
+                <p-button class="pill tool" id="tool-pen" title="Кисть"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='5' width='8' height='3' fill='%23b97a56'/><rect x='6' y='3' width='2' height='2' fill='%23ccc'/><rect x='6' y='1' width='2' height='2' fill='%23000'/></svg>" width="16" height="16" alt="Кисть"></p-button>
+                <p-button class="pill tool" id="tool-erase" title="Ластик"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='1' y='2' width='6' height='4' fill='%23f99'/><rect x='1' y='2' width='3' height='4' fill='%23fcc'/></svg>" width="16" height="16" alt="Ластик"></p-button>
+                <p-button class="pill tool" id="tool-pick" title="Пипетка"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='6' width='2' height='2' fill='%23000'/><rect x='1' y='5' width='2' height='2' fill='%23999'/><rect x='2' y='3' width='2' height='2' fill='%23999'/><rect x='3' y='2' width='2' height='2' fill='%23999'/><rect x='4' y='0' width='4' height='2' fill='%23f0f'/><rect x='5' y='2' width='3' height='2' fill='%23f0f'/><rect x='6' y='4' width='2' height='2' fill='%23f0f'/></svg>" width="16" height="16" alt="Пипетка"></p-button>
               </div>
               <div class="row">
                 <label title="Кадры в секунду">FPS</label>
                 <pixel-range title="Скорость анимации"><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
-                <button class="pill tool" id="play" title="Воспроизвести">▶️</button>
-                <button class="pill tool" id="stop" title="Остановить">⏹</button>
+                <p-button class="pill tool" id="play" title="Воспроизвести">▶️</p-button>
+                <p-button class="pill tool" id="stop" title="Остановить">⏹</p-button>
                 <label class="row" style="gap:6px" title="Показывать предыдущий кадр"><input id="onion" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='1' fill='%236c0'/><rect x='2' y='1' width='4' height='2' fill='%23d6a'/><rect x='1' y='2' width='6' height='3' fill='%23f9c'/><rect x='2' y='4' width='4' height='3' fill='%23d6a'/></svg>" width="16" height="16" alt="Onion"></label>
                 <label class="row" style="gap:6px" title="Зеркальное рисование"><input id="mirror" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='8' fill='%23bbb'/><rect x='0' y='2' width='3' height='4' fill='%236cf'/><rect x='5' y='2' width='3' height='4' fill='%236cf'/></svg>" width="16" height="16" alt="Mirror"></label>
               </div>
@@ -107,10 +107,10 @@
             <div class="toolbar" id="palette" style="margin-top:8px"></div>
             <div class="row" style="justify-content:space-between; margin-top:6px">
               <div class="row">
-                <button class="btn tool" id="add-frame">➕ Кадр</button>
-                <button class="btn tool" id="dup-frame">⧉ Дубликат</button>
-                <button class="btn tool" id="del-frame" data-danger>🗑 Удалить</button>
-                <button class="btn tool" id="undo">↶ Undo</button>
+                <p-button class="btn tool" id="add-frame">➕ Кадр</p-button>
+                <p-button class="btn tool" id="dup-frame">⧉ Дубликат</p-button>
+                <p-button class="btn tool" id="del-frame" data-danger>🗑 Удалить</p-button>
+                <p-button class="btn tool" id="undo">↶ Undo</p-button>
               </div>
               <div class="muted">Текущий: <span id="curIndex">1</span>/<span id="totalFrames">1</span></div>
             </div>
@@ -124,18 +124,18 @@
       <section id="tab-io" class="panel" style="display:none">
         <div class="row" style="justify-content:space-between; flex-wrap:wrap">
           <div class="row" style="gap:8px">
-            <button class="btn tool" id="btn-export">Экспорт JSON</button>
-            <button class="btn tool" id="btn-import">Импорт JSON</button>
-            <button class="btn tool" id="btn-copy">Скопировать</button>
-            <button class="btn tool" id="btn-save">Сохранить</button>
-            <button class="btn tool" id="btn-download">Скачать файл</button>
-            <button class="btn tool" id="btn-upload">Загрузить файл</button>
-            <button class="btn tool" id="btn-png" title="Сохранить как PNG">PNG</button>
-            <button class="btn tool" id="btn-gif" title="Сохранить как GIF">GIF</button>
+            <p-button class="btn tool" id="btn-export">Экспорт JSON</p-button>
+            <p-button class="btn tool" id="btn-import">Импорт JSON</p-button>
+            <p-button class="btn tool" id="btn-copy">Скопировать</p-button>
+            <p-button class="btn tool" id="btn-save">Сохранить</p-button>
+            <p-button class="btn tool" id="btn-download">Скачать файл</p-button>
+            <p-button class="btn tool" id="btn-upload">Загрузить файл</p-button>
+            <p-button class="btn tool" id="btn-png" title="Сохранить как PNG">PNG</p-button>
+            <p-button class="btn tool" id="btn-gif" title="Сохранить как GIF">GIF</p-button>
           </div>
           <div class="row">
-            <button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
-            <button class="btn tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</button>
+            <p-button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</p-button>
+            <p-button class="btn tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</p-button>
           </div>
         </div>
         <textarea id="io" class="code"></textarea>

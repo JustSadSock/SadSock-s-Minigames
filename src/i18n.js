@@ -1,19 +1,13 @@
-const cache = {};
+import en from '../i18n/en.json';
+import ru from '../i18n/ru.json';
+import uk from '../i18n/uk.json';
+
+const cache = { en, ru, uk };
 let currentLang = 'en';
 
 export async function setLang(lang){
-  if(cache[lang]){
-    currentLang = lang;
-    document.documentElement.lang = lang;
-    localStorage.setItem('lang', lang);
-    applyTranslations();
-    return;
-  }
-  try {
-    const res = await fetch(`i18n/${lang}.json`);
-    cache[lang] = await res.json();
-  } catch(err){
-    console.warn('i18n load failed', err);
+  if(!cache[lang]){
+    console.warn('i18n load failed');
     cache[lang] = {};
     const warn=document.createElement('div');
     warn.textContent='Failed to load translations.';

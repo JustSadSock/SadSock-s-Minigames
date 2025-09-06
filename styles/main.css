@@ -62,7 +62,7 @@ html,body{overflow:hidden;}
       position:relative;
       width:100%; height:100%;
       border-radius:var(--crt-curve);
-      background:radial-gradient(120% 140% at 50% -20%, #3b2a12 0%, #1c1711 60%, #14110e 100%);
+      background:radial-gradient(120% 140% at 50% -20%, var(--bg2) 0%, var(--bg1) 60%, var(--bg0) 100%);
       box-shadow:
         0 20px 60px rgba(0,0,0,.45),
         inset 0 10px 22px rgba(255,220,160,.14),
@@ -234,6 +234,14 @@ html,body{overflow:hidden;}
       50%{transform:scale(1.05) translate(2px,0);}
       75%{transform:scale(1.05) translate(-1px,0);}
     }
+    @keyframes tileJitter{
+      0%,100%{transform:scale(1.05) translate(0,0);}
+      50%{transform:scale(1.05) translate(1px,0);}
+    }
+    @keyframes tileFlicker{
+      0%,100%{filter:brightness(1.25);}
+      50%{filter:brightness(1.6);}
+    }
     .tile.flash::after{ opacity:.8; animation:tileFlash .3s steps(1) forwards; }
 
     /* плитки-значки (пастельные рамки и мягкие тени) */
@@ -302,10 +310,10 @@ html,body{overflow:hidden;}
       width:calc(100% - 12px);
       height:calc(100% - 12px);
       image-rendering:pixelated;
-      background:#14110e;
+      background:var(--bg0);
       border-radius:12px;
-      border:2px solid #ffbd69;
-      box-shadow:inset 0 0 0 2px #ffd59e,0 0 0 1px rgba(0,0,0,.12);
+      border:2px solid var(--pastel-peach);
+      box-shadow:inset 0 0 0 2px var(--bezel-hi),0 0 0 1px rgba(0,0,0,.12);
       transform:scale(1);
       transition:transform .2s var(--ease), filter .2s linear;
     }
@@ -321,9 +329,10 @@ html,body{overflow:hidden;}
     .tile[data-active="1"] canvas{
       transform:scale(1.05);
       filter:brightness(1.15);
+      animation:tileJitter .15s steps(2) infinite;
     }
     .tile:active canvas{
-      animation:tileGlitch .3s steps(2);
+      animation:tileGlitch .3s steps(2),tileFlicker .3s steps(2);
       filter:brightness(1.25);
     }
 
@@ -407,5 +416,73 @@ html,body{overflow:hidden;}
     @media (prefers-reduced-motion: reduce){
       :root{ --dur:0ms; }
       .tile{ transition:none !important; filter:brightness(1); }
+    }
+
+    /* --- storefront grid with animated icons --- */
+    .reel{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,16px);
+      gap:12px;
+      padding:20px;
+      overflow:auto;
+      perspective:none;
+      transform-style:flat;
+      mask:none;
+      -webkit-mask:none;
+      justify-content:center;
+      align-content:flex-start;
+    }
+    .reel::before,
+    .reel::after{ display:none; }
+    .reel.zoom{ transform:scale(0.9); }
+
+    .tile{
+      position:relative;
+      top:auto; left:auto;
+      width:16px; height:16px;
+      padding:0;
+      border:none;
+      background:none;
+      transform:none;
+      filter:none;
+      box-shadow:none;
+      border-radius:2px;
+      display:block;
+      cursor:pointer;
+    }
+    .tile canvas{
+      width:100%; height:100%;
+      border:2px solid var(--pastel-peach);
+      border-radius:4px;
+      box-shadow:inset 0 0 0 2px var(--bezel-hi);
+      background:var(--bg0);
+      image-rendering:pixelated;
+      transition:transform .2s var(--ease);
+    }
+    .tile:hover canvas,
+    .tile:focus-visible canvas{
+      transform:translateY(-2px);
+      filter:brightness(1.2);
+      animation:iconHop .4s steps(2) infinite;
+    }
+    .tile:active canvas{
+      transform:translateY(0);
+      filter:brightness(1.4);
+      animation:iconFlicker .3s steps(2);
+    }
+    .tile .label,
+    .tile .badge{ display:none; }
+
+    @keyframes iconHop{
+      0%{ transform:translateY(0); }
+      30%{ transform:translateY(-3px); }
+      50%{ transform:translate(-2px,-2px); }
+      70%{ transform:translate(2px,-2px); }
+      100%{ transform:translateY(0); }
+    }
+
+    @keyframes iconFlicker{
+      0%,100%{ filter:brightness(1.4); }
+      50%{ filter:brightness(1.8); }
     }
 

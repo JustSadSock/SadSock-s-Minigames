@@ -19,13 +19,13 @@
       <canvas class="icon" data-icon="rhythm" aria-hidden="true"></canvas>
       <div class="hud">
         <div class="counter" id="score">0</div>
-        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
+        <p-button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</p-button>
         <div style="display:flex;gap:4px;">
           <div class="counter" id="combo">0</div>
           <div class="counter" id="status">—</div>
         </div>
       </div>
-      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+      <p-button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</p-button>
       <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
       <div class="scanlines"></div>
       <div id="startScreen">
@@ -35,7 +35,7 @@
           <div style="background:var(--pastel-mint)">K</div>
           <div style="background:var(--pastel-peach)">L</div>
         </div>
-        <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
+        <p-button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></p-button>
       </div>
     </div>
     <div id="pad" class="pad pad-center" aria-hidden="true">
@@ -74,11 +74,14 @@ initSettings();
   d('#scoresBtn').onclick=scores.show;
   const ctx=cv.getContext('2d');
   playBtn.onclick=()=>{ game.started=true; startScreen.classList.add('hidden'); Sound.fx('start'); cv.focus(); };
-  const cs=getComputedStyle(document.documentElement);
-  const laneCols=['--pastel-pink','--pastel-blue','--pastel-mint','--pastel-peach']
-    .map(v=>cs.getPropertyValue(v).trim()+"33");
-  const noteCols=['#ff5f9c','#46a0ff','#00d9b8','#ffca3a'];
-  let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
+    const cs=getComputedStyle(document.documentElement);
+    const laneCols=['--pastel-pink','--pastel-blue','--pastel-mint','--pastel-peach']
+      .map(v=>cs.getPropertyValue(v).trim()+"33");
+    const noteCols=['--accent','--accent2','--pastel-peach','--bg2']
+      .map(v=>cs.getPropertyValue(v).trim());
+    const peach=cs.getPropertyValue('--pastel-peach').trim();
+    const accent=cs.getPropertyValue('--accent').trim();
+    let best=parseInt(localStorage.getItem('rhythmBest')||'0',10);
   const scoreBoard=UI.score(scoreEl,globalThis.i18n?.t('score')||'Score');
   scoreBoard.set(0,best);
   const comboLabel=globalThis.i18n?.t('combo')||'Combo';
@@ -152,12 +155,12 @@ initSettings();
       ctx.save(); const sx=cv.width/SETTINGS.W, sy=cv.height/SETTINGS.H; ctx.scale(sx,sy);
       const laneW=SETTINGS.W/this.lanes;
       for(let i=0;i<this.lanes;i++){ ctx.fillStyle=laneCols[i]; ctx.fillRect(i*laneW,0,laneW-2,SETTINGS.H); }
-      ctx.fillStyle='#e6a64c'; ctx.fillRect(0,this.barY,SETTINGS.W,4);
-      for(const n of this.notes){ if(n.hit) continue; ctx.fillStyle=noteCols[n.lane]; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
-      const prog=this.notes.filter(n=>n.hit).length/this.total;
-      ctx.fillStyle='#d18f3f'; ctx.fillRect(0,8,SETTINGS.W*prog,8);
-      ctx.strokeStyle='#bf8a3d'; ctx.strokeRect(0,8,SETTINGS.W,8);
-      if(this.over){ ctx.fillStyle='#bf8a3d'; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Track over. A to retry', SETTINGS.W/2, SETTINGS.H*0.5); }
+        ctx.fillStyle=peach; ctx.fillRect(0,this.barY,SETTINGS.W,4);
+        for(const n of this.notes){ if(n.hit) continue; ctx.fillStyle=noteCols[n.lane]; ctx.fillRect(n.lane*laneW+6, n.y-14, laneW-12, 28); }
+        const prog=this.notes.filter(n=>n.hit).length/this.total;
+        ctx.fillStyle=peach; ctx.fillRect(0,8,SETTINGS.W*prog,8);
+        ctx.strokeStyle=peach; ctx.strokeRect(0,8,SETTINGS.W,8);
+        if(this.over){ ctx.fillStyle=accent; ctx.font='16px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillText('Track over. A to retry', SETTINGS.W/2, SETTINGS.H*0.5); }
       ctx.restore();
     }
   };
