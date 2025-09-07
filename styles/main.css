@@ -300,7 +300,7 @@ html,body{overflow:hidden;}
       position:relative; overflow:hidden;
       box-sizing:border-box;
       width:calc(100% - 8px);
-      height:calc(100% - 12px);
+      height:calc(100% - 8px);
       margin:4px 4px 8px;
       image-rendering:pixelated;
       background:#14110e;

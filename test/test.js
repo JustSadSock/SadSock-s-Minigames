@@ -109,6 +109,24 @@ if(!/drawImage/.test(icons)){
   throw new Error('Icons should use cached drawImage');
 }
 
+// ensure icon canvases render as 16x16 sprites without distortion
+if(!/cv\.width\s*=\s*16/.test(icons) || !/cv\.height\s*=\s*16/.test(icons)){
+  throw new Error('Icon canvas dimensions incorrect');
+}
+
+const cssMin = css.replace(/\s+/g,'');
+if(!/\.tilecanvas\{[^}]*width:calc\(100%-8px\);[^}]*height:calc\(100%-8px\);[^}]*margin:4px4px8px;/.test(cssMin)){
+  throw new Error('Tile canvas styling broken');
+}
+
+// verify that all games referenced from the menu exist on disk
+const gameFiles = [...html.matchAll(/data-game="([^"]+)"/g)].map(m=>m[1]);
+for(const file of gameFiles){
+  if(!fs.existsSync(file)){
+    throw new Error(`Missing game file: ${file}`);
+  }
+}
+
 const tileCount = (html.match(/class="tile"/g)||[]).length;
 if(tileCount !== 11){
   throw new Error('Expected 11 tiles');
