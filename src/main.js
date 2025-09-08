@@ -303,6 +303,7 @@ import { initSettings } from './settings.js';
             gameOverlay.appendChild(close);
             $('#gameClose').addEventListener('click', closeGame);
             screenEl.classList.add('playing');
+            Sound.fx('start');
           }
           gameOverlay.addEventListener('transitionend', launch);
           setTimeout(launch, DUR+50);
@@ -314,6 +315,7 @@ import { initSettings } from './settings.js';
 
       function closeGame(){
         screenEl.classList.remove('playing');
+        Sound.fx('close');
         if(activeFrame){
           activeFrame.remove();
           activeFrame=null;

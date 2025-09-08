@@ -115,7 +115,7 @@ if(!/cv\.width\s*=\s*16/.test(icons) || !/cv\.height\s*=\s*16/.test(icons)){
 }
 
 const cssMin = css.replace(/\s+/g,'');
-if(!/\.tilecanvas\{[^}]*width:calc\(100%-8px\);[^}]*height:calc\(100%-8px\);[^}]*margin:4px4px8px;/.test(cssMin)){
+if(!/\.tilecanvas\{[^}]*width:calc\(100%-16px\);[^}]*height:calc\(100%-16px\);[^}]*margin:8px8px16px;/.test(cssMin)){
   throw new Error('Tile canvas styling broken');
 }
 
@@ -125,8 +125,14 @@ for(const file of gameFiles){
   if(!fs.existsSync(file)){
     throw new Error(`Missing game file: ${file}`);
   }
+  const content = fs.readFileSync(file, 'utf8');
+  if(!/styles\/game.css/.test(content)){
+    throw new Error(`Missing game.css link in ${file}`);
+  }
+  if(!/<canvas/i.test(content)){
+    throw new Error(`Game ${file} missing canvas`);
+  }
 }
-
 const tileCount = (html.match(/class="tile"/g)||[]).length;
 if(tileCount !== 11){
   throw new Error('Expected 11 tiles');
