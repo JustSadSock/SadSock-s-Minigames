@@ -132,6 +132,9 @@ for(const file of gameFiles){
   if(!/<canvas/i.test(content)){
     throw new Error(`Game ${file} missing canvas`);
   }
+  if(/class="dpad"/.test(content) && !/data-icon="arrow-up"/.test(content)){
+    throw new Error(`D-pad icons missing in ${file}`);
+  }
 }
 const tileCount = (html.match(/class="tile"/g)||[]).length;
 if(tileCount !== 8){
