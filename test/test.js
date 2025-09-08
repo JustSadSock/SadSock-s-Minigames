@@ -134,8 +134,8 @@ for(const file of gameFiles){
   }
 }
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 11){
-  throw new Error('Expected 11 tiles');
+if(tileCount !== 8){
+  throw new Error('Expected 8 tiles');
 }
 
 console.log('All tests passed');
