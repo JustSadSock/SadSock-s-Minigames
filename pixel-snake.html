@@ -2,31 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#14110e">
   <title data-i18n="pixelSnake"></title>
   <link rel="stylesheet" href="styles/shell.css">
+  <link rel="stylesheet" href="styles/game.css">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:flex-start;
-      height:100svh;
-      overflow:hidden;
-      gap:12px;
-      color:var(--ink);
-    }
-    h1{margin:0;font-size:18px;}
-    .play{
-      flex:1;
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-    }
     #gameCanvas{
       image-rendering:pixelated;
       background:var(--bg2);
@@ -77,12 +58,12 @@
     <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
     <div id="toast" class="toast"></div>
     <div id="pad" class="pad pad-center">
-      <div class="dpad" aria-hidden="true">
-        <div class="k" data-dir="up" style="grid-area:up">▲</div>
-        <div class="k" data-dir="left" style="grid-area:left">◄</div>
+        <div class="dpad" aria-hidden="true">
+        <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+        <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
         <div class="k" style="grid-area:mid; opacity:.35"></div>
-        <div class="k" data-dir="right" style="grid-area:right">►</div>
-        <div class="k" data-dir="down" style="grid-area:down">▼</div>
+        <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+        <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
       </div>
       <div class="ab">
         <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>

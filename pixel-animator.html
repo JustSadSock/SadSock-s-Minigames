@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title data-i18n="pixelAnimator"></title>
 <link rel="stylesheet" href="styles/shell.css">
+  <link rel="stylesheet" href="styles/game.css">
 <style>
   :root{
     --panel:var(--tile-bg);
@@ -147,11 +148,11 @@
       </div>
       <div id="pad" class="pad pad-center">
         <div class="dpad" aria-hidden="true">
-          <div class="k" data-dir="up" style="grid-area:up">▲</div>
-          <div class="k" data-dir="left" style="grid-area:left">◄</div>
+          <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+          <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
           <div class="k" style="grid-area:mid; opacity:.35"></div>
-          <div class="k" data-dir="right" style="grid-area:right">►</div>
-          <div class="k" data-dir="down" style="grid-area:down">▼</div>
+          <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+          <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
         </div>
       </div>
     </div>

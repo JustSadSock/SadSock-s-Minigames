@@ -110,6 +110,11 @@ canvas.bg-stripes{
   transition:transform .1s, filter .1s;
 }
 .dpad .k{width:100%;height:100%;min-width:56px;min-height:56px;}
+.dpad .k canvas{
+  width:48px;
+  height:48px;
+  image-rendering:pixelated;
+}
 .k.down{
   filter:brightness(1.08);
   transform:translateY(2px);
@@ -160,4 +165,5 @@ canvas.bg-stripes{
   .dpad{width:min(60vw,40svh); max-width:260px;}
   canvas{width:100%; height:auto;}
   .pad button{min-width:72px;min-height:72px;font-size:20px;}
+  .dpad .k canvas{width:64px;height:64px;}
 }

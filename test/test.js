@@ -109,9 +109,36 @@ if(!/drawImage/.test(icons)){
   throw new Error('Icons should use cached drawImage');
 }
 
+// ensure icon canvases render as 16x16 sprites without distortion
+if(!/cv\.width\s*=\s*16/.test(icons) || !/cv\.height\s*=\s*16/.test(icons)){
+  throw new Error('Icon canvas dimensions incorrect');
+}
+
+const cssMin = css.replace(/\s+/g,'');
+if(!/\.tilecanvas\{[^}]*width:calc\(100%-16px\);[^}]*height:calc\(100%-16px\);[^}]*margin:8px8px16px;/.test(cssMin)){
+  throw new Error('Tile canvas styling broken');
+}
+
+// verify that all games referenced from the menu exist on disk
+const gameFiles = [...html.matchAll(/data-game="([^"]+)"/g)].map(m=>m[1]);
+for(const file of gameFiles){
+  if(!fs.existsSync(file)){
+    throw new Error(`Missing game file: ${file}`);
+  }
+  const content = fs.readFileSync(file, 'utf8');
+  if(!/styles\/game.css/.test(content)){
+    throw new Error(`Missing game.css link in ${file}`);
+  }
+  if(!/<canvas/i.test(content)){
+    throw new Error(`Game ${file} missing canvas`);
+  }
+  if(/class="dpad"/.test(content) && !/data-icon="arrow-up"/.test(content)){
+    throw new Error(`D-pad icons missing in ${file}`);
+  }
+}
 const tileCount = (html.match(/class="tile"/g)||[]).length;
-if(tileCount !== 11){
-  throw new Error('Expected 11 tiles');
+if(tileCount !== 8){
+  throw new Error('Expected 8 tiles');
 }
 
 console.log('All tests passed');

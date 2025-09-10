@@ -64,6 +64,7 @@
     toggle.addEventListener('click',e=>{ e.stopPropagation(); show(); });
     addEventListener('keydown',hide);
     addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse' && !pad.contains(e.target) && !toggle.contains(e.target)) hide(); });
+    if(window.matchMedia('(pointer:fine)').matches) hide();
   };
   UI.attachDPad=function(pad,cb,surface=document){
     const setBtn=(dir,val)=>{

@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#14110e">
 <title data-i18n="pixelPong"></title>
 <link rel="stylesheet" href="styles/shell.css">
+  <link rel="stylesheet" href="styles/game.css">
 <style>
   #startScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);gap:8px;}
   #startScreen.hidden{display:none;}
@@ -45,11 +47,11 @@
     </div>
     <div id="pad" class="pad pad-center" aria-hidden="true">
       <div class="dpad" aria-hidden="true">
-        <div class="k" data-btn="up" style="grid-area:up"></div>
-        <div class="k" data-btn="left" style="grid-area:left"></div>
+        <div class="k" data-btn="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+        <div class="k" data-btn="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
         <div class="k" style="grid-area:mid;opacity:.35"></div>
-        <div class="k" data-btn="right" style="grid-area:right"></div>
-        <div class="k" data-btn="down" style="grid-area:down"></div>
+        <div class="k" data-btn="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+        <div class="k" data-btn="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
       </div>
       <div class="ab">
         <div class="k" data-btn="a">A</div>
