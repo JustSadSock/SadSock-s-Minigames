@@ -1,5 +1,5 @@
-import './audio.js';
-import './icons.js';
+import { Sound } from './audio.js';
+import { Icons } from './icons.js';
 import { t } from './i18n.js';
 import { initSettings } from './settings.js';
 
