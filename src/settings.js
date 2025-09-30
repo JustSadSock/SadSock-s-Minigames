@@ -1,4 +1,5 @@
 import { setLang, getLang, applyTranslations } from './i18n.js';
+import { Sound } from './audio.js';
 import './pixel-widgets.js';
 
 // Apply saved preferences early

@@ -11,35 +11,55 @@
     ctx: null,
     master: null,
     unlocked: false,
+    _disabled: false,
     init(){
-      if(this.ctx) return;
-      this.ctx = new (window.AudioContext||window.webkitAudioContext)();
+      if(this.ctx || this._disabled) return;
+      const AudioCtx = globalThis.AudioContext || globalThis.webkitAudioContext;
+      if(!AudioCtx){
+        this._disabled = true;
+        console.warn('Web Audio API not supported');
+        return;
+      }
+      try{
+        this.ctx = new AudioCtx();
+      }catch(err){
+        this._disabled = true;
+        console.warn('Failed to initialise audio context', err);
+        return;
+      }
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.3;
       this.master.connect(this.ctx.destination);
       const unlock = () => {
-        if(this.unlocked) return;
+        if(this.unlocked || !this.ctx) return;
         this.ctx.resume().then(()=>{
           this.unlocked = true;
           Music.play();
+        }).catch(err=>{
+          console.warn('Failed to unlock audio context', err);
         });
       };
-      window.addEventListener('pointerdown', unlock, {once:true,passive:true});
-      window.addEventListener('keydown', unlock, {once:true});
+      if(typeof window !== 'undefined'){
+        window.addEventListener('pointerdown', unlock, {once:true,passive:true});
+        window.addEventListener('keydown', unlock, {once:true});
+      }
     },
     fx(name){
-      if(!this.unlocked) return;
+      if(!this.unlocked || !this.ctx || this._disabled) return;
       const fn = FX[name];
       if(fn) fn();
     },
     stop(){
+      if(this._disabled) return;
       Music.stop();
     },
     start(){
-      if(this.unlocked) Music.play();
+      if(this.unlocked && !this._disabled) Music.play();
     },
     setVolume(v){
-      if(this.master) this.master.gain.value = v;
+      if(!this.master) return;
+      const value = Math.max(0, Math.min(1, Number(v)));
+      this.master.gain.value = Number.isFinite(value) ? value : this.master.gain.value;
     },
     getVolume(){
       return this.master ? this.master.gain.value : 0;
@@ -48,6 +68,7 @@
 
   /* -------------------- ПОЛЕЗНЫЕ УТИЛИТЫ -------------------- */
   function osc(type, freq, t, dur, vol=0.2, slide){
+    if(!Sound.ctx || Sound._disabled) return;
     const o = Sound.ctx.createOscillator();
     o.type = type;
     o.frequency.value = freq;
@@ -63,6 +84,7 @@
   }
 
   function noise(t, dur, vol=0.2){
+    if(!Sound.ctx || Sound._disabled) return;
     const buffer = Sound.ctx.createBuffer(1, Sound.ctx.sampleRate*dur, Sound.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for(let i=0;i<data.length;i++){ data[i] = Math.random()*2-1; }
@@ -213,7 +235,7 @@
     playing: false,
     timer: null,
     play(){
-      if(this.playing) return;
+      if(this.playing || Sound._disabled || !Sound.ctx) return;
       this.playing = true;
       const startTime = Sound.ctx.currentTime + 0.1;
       this.tracks.forEach(tr=>{
@@ -227,6 +249,7 @@
   };
 
   function scheduleTrack(tr, start){
+    if(Sound._disabled || !Sound.ctx) return;
     const beat = 60/Music.tempo/4;
     let t = start;
     for(let i=0;i<tr.pattern.length;i++){
@@ -238,7 +261,9 @@
       t += beat*step.len;
     }
     if(Music.playing){
-      Music.timer = setTimeout(()=>scheduleTrack(tr, t), (t - Sound.ctx.currentTime - 0.05)*1000);
+      if(Sound.ctx){
+        Music.timer = setTimeout(()=>scheduleTrack(tr, t), (t - Sound.ctx.currentTime - 0.05)*1000);
+      }
     }
   }
 
@@ -538,6 +563,12 @@
   ];
 
   /* -------------------- ЭКСПОРТ -------------------- */
-  window.Sound = Sound;
+  const globalScope = typeof window !== 'undefined' ? window : globalThis;
+  globalScope.Sound = Sound;
   Sound.init();
 })();
+
+const SoundExport = (typeof window !== 'undefined' ? window : globalThis).Sound;
+
+export { SoundExport as Sound };
+export default SoundExport;

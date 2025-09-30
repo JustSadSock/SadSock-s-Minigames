@@ -71,6 +71,11 @@
   if(document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 
-  window.Icons = { animate, redraw };
+  const globalScope = typeof window !== 'undefined' ? window : globalThis;
+  globalScope.Icons = { animate, redraw };
 })();
 
+const IconsExport = (typeof window !== 'undefined' ? window : globalThis).Icons;
+
+export { IconsExport as Icons };
+export default IconsExport;
