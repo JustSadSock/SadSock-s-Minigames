@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Music box icon</title>
+  <rect width="64" height="64" fill="#070a16"/>
+  <rect x="4" y="4" width="56" height="56" fill="#11152b"/>
+  <rect x="8" y="8" width="48" height="48" fill="#1a2143"/>
+  <g fill="#262c4f">
+    <rect x="16" y="40" width="32" height="8"/>
+    <rect x="16" y="28" width="8" height="12"/>
+    <rect x="40" y="16" width="8" height="24"/>
+  </g>
+  <g fill="#f7c948">
+    <rect x="24" y="20" width="12" height="4"/>
+    <rect x="24" y="24" width="4" height="16"/>
+    <rect x="36" y="20" width="12" height="4"/>
+    <rect x="36" y="24" width="4" height="16"/>
+  </g>
+  <g fill="#f76d6d">
+    <rect x="18" y="44" width="8" height="4"/>
+    <rect x="38" y="44" width="8" height="4"/>
+  </g>
+  <rect x="28" y="44" width="8" height="4" fill="#6cd9a3"/>
+</svg>

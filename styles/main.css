@@ -10,22 +10,32 @@
   --radius:180px;
   --dur:180ms;
   --ease:cubic-bezier(.2,.9,.1,1.15);
+  --shell-w:1760;
+  --shell-h:980;
+  --shell-width: calc(var(--shell-w) * 1px);
+  --shell-height: calc(var(--shell-h) * 1px);
+  --ui-scale:1;
 }
 
-html,body{overflow:hidden;}
+html,body{overflow:hidden;height:100%;}
 
     /* центрируем «кабинет», растягиваем почти на весь экран */
     .cabinet{
       position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      padding:min(2.5vw,18px);
+      display:block;
+      overflow:hidden;
+      background:#14110e;
       z-index:1;
     }
 
     /* внешний корпус — тоньше, чтобы экран был больше */
     .shell{
-      width:min(1760px, 98vw);
-      height:min(980px, 98svh);
+      position:absolute;
+      top:50%; left:50%;
+      width:var(--shell-width);
+      height:var(--shell-height);
+      transform:translate(-50%,-50%) scale(var(--ui-scale));
+      transform-origin:center;
       display:flex; flex-direction:column; align-items:center;
       border-radius:26px;
       background: linear-gradient(180deg, var(--bg1), #ffc777 55%, #ffb347);
@@ -296,13 +306,13 @@ html,body{overflow:hidden;}
       background:var(--tile-bg-dim);
       filter:blur(.5px) brightness(.9) contrast(.95);
     }
-    .tile canvas{
-      position:relative; overflow:hidden;
+    .tile .tile-thumb{
+      position:relative;
+      overflow:hidden;
       box-sizing:border-box;
-        width:calc(100% - 16px);
-        height:calc(100% - 16px);
-        margin:8px 8px 16px;
-      image-rendering:pixelated;
+      width:calc(100% - 16px);
+      height:calc(100% - 16px);
+      margin:8px 8px 16px;
       background:#14110e;
       border-radius:12px;
       border:2px solid #ffbd69;
@@ -310,20 +320,31 @@ html,body{overflow:hidden;}
       transform:scale(1);
       transition:transform .2s var(--ease), filter .2s linear;
     }
-    .tile canvas::after{
-      content:""; position:absolute; inset:0; border-radius:inherit;
+    .tile .tile-thumb::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
       background:linear-gradient(145deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%);
-      mix-blend-mode:screen; opacity:.4;
+      mix-blend-mode:screen;
+      opacity:.4;
       pointer-events:none;
     }
+    .tile .tile-icon{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      image-rendering:pixelated;
+    }
 
-    .tile:hover canvas,
-    .tile:focus-visible canvas,
-    .tile[data-active="1"] canvas{
+    .tile:hover .tile-thumb,
+    .tile:focus-visible .tile-thumb,
+    .tile[data-active="1"] .tile-thumb{
       transform:scale(1.05);
       filter:brightness(1.15);
     }
-    .tile:active canvas{
+    .tile:active .tile-thumb{
       animation:tileGlitch .3s steps(2);
       filter:brightness(1.25);
     }

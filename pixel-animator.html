@@ -75,7 +75,7 @@
     <div class="frame">
       <div class="inner">
         <div class="content">
-          <canvas class="icon" data-icon="anim" aria-hidden="true"></canvas>
+          <img class="icon" src="assets/icons/anim.svg" alt="" aria-hidden="true">
           <div class="tabs">
             <button class="tab active" data-tab="edit">🎨 Редактор</button>
             <button class="tab" data-tab="io">📤 Импорт · Экспорт</button>
@@ -160,9 +160,11 @@
 
   <div id="toast" class="toast"></div>
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/ui.js';
 import './src/icons.js';
 import './src/i18n.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;

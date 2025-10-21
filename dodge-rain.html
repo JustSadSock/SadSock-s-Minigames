@@ -34,29 +34,37 @@
   </style>
 </head>
   <body class="theme-blue">
-    <canvas class="icon" data-icon="rain" aria-hidden="true"></canvas>
-    <h1 data-i18n="dodgeRain"></h1>
-  <div class="play">
-    <div class="hud">
-      <div id="score" class="counter">0</div>
-      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
-      <div id="status" class="counter" style="visibility:hidden"></div>
-    </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
-    <div id="toast" class="toast"></div>
-    <div id="pad" class="pad pad-center">
-      <div class="dpad" aria-hidden="true">
-        <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-        <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-        <div class="k" style="grid-area:mid;opacity:.35"></div>
-        <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-        <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+    <div class="cabinet">
+      <div class="frame">
+        <div class="inner">
+          <img class="icon" src="assets/icons/rain.svg" alt="" aria-hidden="true">
+          <h1 data-i18n="dodgeRain"></h1>
+          <div class="play">
+            <div class="hud">
+              <div id="score" class="counter">0</div>
+              <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+              <div id="status" class="counter" style="visibility:hidden"></div>
+            </div>
+            <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+            <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+            <div id="toast" class="toast"></div>
+            <div id="pad" class="pad pad-center">
+              <div class="dpad" aria-hidden="true">
+                <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+                <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+                <div class="k" style="grid-area:mid;opacity:.35"></div>
+                <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+                <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+              </div>
+              <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+            </div>
+          </div>
+        </div>
+        <div class="scanlines"></div>
       </div>
-      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
     </div>
-  </div>
     <script type="module">
+      import { applyScale } from './src/viewport.js';
       import './src/ui.js';
       import './src/audio.js';
       import './src/scores.js';
@@ -64,6 +72,7 @@
       import './src/i18n.js';
       import { initSettings } from './src/settings.js';
       import { createGameLoop } from './src/game-loop.js';
+      applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
       initSettings();
 
       const canvas = document.getElementById('gameCanvas');

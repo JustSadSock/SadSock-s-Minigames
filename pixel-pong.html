@@ -19,7 +19,7 @@
 <div class="cabinet">
     <div class="frame">
     <div class="inner">
-      <canvas class="icon" data-icon="pong" aria-hidden="true"></canvas>
+      <img class="icon" src="assets/icons/pong.svg" alt="" aria-hidden="true">
       <div class="hud hud-3">
         <div class="counter" id="score">0 : 0</div>
         <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
@@ -65,12 +65,14 @@
 </div>
 
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/ui.js';
 import './src/audio.js';
 import './src/scores.js';
 import './src/icons.js';
 import './src/i18n.js';
 import { initSettings } from './src/settings.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 initSettings();
 
 (() => {

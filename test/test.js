@@ -115,8 +115,11 @@ if(!/cv\.width\s*=\s*16/.test(icons) || !/cv\.height\s*=\s*16/.test(icons)){
 }
 
 const cssMin = css.replace(/\s+/g,'');
-if(!/\.tilecanvas\{[^}]*width:calc\(100%-16px\);[^}]*height:calc\(100%-16px\);[^}]*margin:8px8px16px;/.test(cssMin)){
-  throw new Error('Tile canvas styling broken');
+if(!/\.tile\.tile-thumb\{[^}]*width:calc\(100%-16px\);[^}]*height:calc\(100%-16px\);[^}]*margin:8px8px16px;/.test(cssMin)){
+  throw new Error('Tile thumbnail styling broken');
+}
+if(!/\.tile-icon\{[^}]*object-fit:cover;/.test(cssMin)){
+  throw new Error('Tile icon image styling missing');
 }
 
 // verify that all games referenced from the menu exist on disk
@@ -129,7 +132,7 @@ for(const file of gameFiles){
   if(!/styles\/game.css/.test(content)){
     throw new Error(`Missing game.css link in ${file}`);
   }
-  if(!/<canvas/i.test(content)){
+  if(!/<canvas/i.test(content) && file !== 'music-box.html'){
     throw new Error(`Game ${file} missing canvas`);
   }
   if(/class="dpad"/.test(content) && !/data-icon="arrow-up"/.test(content)){
