@@ -40,15 +40,18 @@
   </style>
 </head>
   <body class="theme-blue">
-  <img class="icon" src="assets/icons/snake.svg" alt="" aria-hidden="true">
-  <h1>Pixel Snake</h1>
-  <div id="colorPick" class="color-pick" title="Snake color">
-    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
-    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
-    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
-    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
-  </div>
-  <div class="play">
+  <div class="cabinet">
+    <div class="frame">
+      <div class="inner">
+        <img class="icon" src="assets/icons/snake.svg" alt="" aria-hidden="true">
+        <h1>Pixel Snake</h1>
+        <div id="colorPick" class="color-pick" title="Snake color">
+          <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
+          <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
+          <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
+          <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
+        </div>
+        <div class="play">
     <div class="hud">
       <div id="score" class="counter">0</div>
       <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
@@ -68,15 +71,20 @@
       <div class="ab">
         <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
+        </div>
+      </div>
+      <div class="scanlines"></div>
     </div>
   </div>
     <script type="module">
+  import { applyScale } from './src/viewport.js';
   import './src/ui.js';
   import './src/audio.js';
   import './src/scores.js';
   import './src/icons.js';
   import './src/i18n.js';
   import { initSettings } from './src/settings.js';
+  applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
   initSettings();
 
   const Sound=globalThis.Sound;

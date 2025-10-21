@@ -2,6 +2,7 @@ import './audio.js';
 import './icons.js';
 import { t } from './i18n.js';
 import { initSettings } from './settings.js';
+import { applyScale } from './viewport.js';
 
 (function(){
       'use strict';
@@ -18,6 +19,7 @@ import { initSettings } from './settings.js';
       const catBtns = $$('#catNav button');
       const gameOverlay = $('#gameOverlay');
       const screenEl = $('.screen');
+      applyScale({ baseWidth: 1760, baseHeight: 980, property: '--ui-scale' });
       let activeFrame=null, currentTile=null;
       let DUR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur'));
 

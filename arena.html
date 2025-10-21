@@ -15,7 +15,7 @@
       --shield-color:var(--accent2);
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100svh;gap:8px;color:var(--ink);}
+    .inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;color:var(--ink);}
     .screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;}
     .screen .btn{min-width:160px;}
     #gameArea{position:relative;width:100%;max-width:300px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;}
@@ -49,6 +49,9 @@
   </style>
 </head>
 <body>
+  <div class="cabinet">
+    <div class="frame">
+      <div class="inner">
   <img class="icon" src="assets/icons/arena.svg" alt="" aria-hidden="true">
   <div id="modeSelect" class="screen">
     <button class="btn" id="btn1p" data-i18n="singlePlayer">1P</button>
@@ -154,15 +157,21 @@
       </div>
     </div>
   </div>
-  <div id="msgOverlay" class="modal">
+      <div id="msgOverlay" class="modal">
     <h2 id="msgTitle"></h2>
     <p id="msgContent"></p>
     <button id="msgClose" data-i18n="close">Close</button>
+      </div>
+      </div>
+      <div class="scanlines"></div>
+    </div>
   </div>
   <script type="module">
+  import { applyScale } from './src/viewport.js';
   import './src/ui.js';
   import './src/icons.js';
   import('./src/pixel-widgets.js');
+  applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
   (async()=>{
     try{
       await import('./src/i18n.js');

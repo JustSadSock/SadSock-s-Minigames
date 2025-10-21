@@ -75,9 +75,12 @@
   </style>
 </head>
 <body class="theme-blue">
-  <img class="icon" src="assets/icons/cards.svg" alt="" aria-hidden="true">
-  <h1>Memory Flip</h1>
-  <div class="play">
+  <div class="cabinet">
+    <div class="frame">
+      <div class="inner">
+        <img class="icon" src="assets/icons/cards.svg" alt="" aria-hidden="true">
+        <h1>Memory Flip</h1>
+        <div class="play">
     <div class="hud">
       <div id="score" class="counter">0/8</div>
       <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
@@ -102,14 +105,20 @@
         <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
       </div>
     </div>
+        </div>
+      </div>
+      <div class="scanlines"></div>
+    </div>
   </div>
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/audio.js';
 import './src/icons.js';
 import './src/ui.js';
 import './src/scores.js';
 import './src/i18n.js';
 import { initSettings } from './src/settings.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 initSettings();
 
 (function(){

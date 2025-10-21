@@ -232,10 +232,12 @@
 
 <div id="msg" aria-live="polite"></div>
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/ui.js';
 import './src/audio.js';
 import './src/icons.js';
 import './src/i18n.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];

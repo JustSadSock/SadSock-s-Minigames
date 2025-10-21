@@ -160,9 +160,11 @@
 
   <div id="toast" class="toast"></div>
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/ui.js';
 import './src/icons.js';
 import './src/i18n.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;

@@ -65,12 +65,14 @@
 </div>
 
 <script type="module">
+import { applyScale } from './src/viewport.js';
 import './src/ui.js';
 import './src/audio.js';
 import './src/scores.js';
 import './src/icons.js';
 import './src/i18n.js';
 import { initSettings } from './src/settings.js';
+applyScale({ baseWidth: 1280, baseHeight: 900, property: '--game-scale' });
 initSettings();
 
 (() => {
