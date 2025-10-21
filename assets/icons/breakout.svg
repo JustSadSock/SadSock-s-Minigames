@@ -1,9 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title"><title>Retro Breakout icon</title>
-  <rect width="64" height="64" rx="12" fill="#1a1111"/>
-  <rect x="6" y="6" width="52" height="52" rx="10" fill="#261818"/>
-  <rect x="14" y="16" width="36" height="8" rx="4" fill="#ff5f56"/>
-  <rect x="14" y="26" width="36" height="8" rx="4" fill="#ffd166"/>
-  <rect x="14" y="36" width="36" height="8" rx="4" fill="#3ecf8e"/>
-  <rect x="22" y="46" width="20" height="6" rx="3" fill="#6da3ff"/>
-  <circle cx="32" cy="41" r="4" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Retro Breakout icon</title>
+  <rect width="64" height="64" fill="#070a16"/>
+  <rect x="4" y="4" width="56" height="56" fill="#11152b"/>
+  <rect x="8" y="8" width="48" height="48" fill="#1a2143"/>
+  <g fill="#f76d6d">
+    <rect x="12" y="16" width="12" height="4"/>
+    <rect x="24" y="16" width="12" height="4"/>
+    <rect x="36" y="16" width="12" height="4"/>
+  </g>
+  <g fill="#f2c94c">
+    <rect x="12" y="22" width="12" height="4"/>
+    <rect x="24" y="22" width="12" height="4"/>
+    <rect x="36" y="22" width="12" height="4"/>
+  </g>
+  <g fill="#6cd9a3">
+    <rect x="12" y="28" width="12" height="4"/>
+    <rect x="24" y="28" width="12" height="4"/>
+    <rect x="36" y="28" width="12" height="4"/>
+  </g>
+  <rect x="28" y="40" width="8" height="4" fill="#f2a65a"/>
+  <rect x="20" y="48" width="24" height="4" fill="#f7c948"/>
+  <rect x="30" y="36" width="4" height="4" fill="#ffffff"/>
 </svg>

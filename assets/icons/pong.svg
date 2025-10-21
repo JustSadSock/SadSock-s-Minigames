@@ -1,8 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title"><title>Pixel Pong icon</title>
-  <rect width="64" height="64" rx="12" fill="#101820"/>
-  <rect x="6" y="6" width="52" height="52" rx="10" fill="#15242d"/>
-  <rect x="16" y="14" width="6" height="36" rx="3" fill="#6ec9ff"/>
-  <rect x="42" y="14" width="6" height="36" rx="3" fill="#9fffa5"/>
-  <circle cx="32" cy="32" r="6" fill="#ffffff"/>
-  <path fill="#233743" d="M32 10v44" stroke="#233743" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Pixel Pong icon</title>
+  <rect width="64" height="64" fill="#070a16"/>
+  <rect x="4" y="4" width="56" height="56" fill="#11152b"/>
+  <rect x="8" y="8" width="48" height="48" fill="#1a2143"/>
+  <rect x="12" y="24" width="4" height="24" fill="#f7c948"/>
+  <rect x="48" y="16" width="4" height="24" fill="#f76d6d"/>
+  <rect x="28" y="12" width="8" height="8" fill="#6cd9a3"/>
+  <rect x="24" y="24" width="16" height="4" fill="#f2c94c"/>
+  <rect x="32" y="32" width="4" height="12" fill="#f2a65a"/>
+  <rect x="30" y="44" width="8" height="8" fill="#ffffff"/>
 </svg>
