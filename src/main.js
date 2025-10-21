@@ -263,6 +263,25 @@ import { initSettings } from './settings.js';
         Sound.fx("select");
       }
 
+      function cloneTileArt(tile){
+        const canvas = tile.querySelector('canvas');
+        if(canvas){
+          const clone = canvas.cloneNode(true);
+          const ctx = clone.getContext('2d');
+          if(ctx){
+            ctx.drawImage(canvas,0,0);
+          }
+          return clone;
+        }
+        const img = tile.querySelector('img');
+        if(img){
+          const clone = img.cloneNode(true);
+          clone.removeAttribute('id');
+          return clone;
+        }
+        return null;
+      }
+
       function openGame(tile){
         currentTile = tile;
         const gameSrc = tile.dataset.game;
@@ -272,9 +291,12 @@ import { initSettings } from './settings.js';
           reel.removeEventListener('transitionend', startExpand);
           const rect = tile.getBoundingClientRect();
           const srect = screenEl.getBoundingClientRect();
-          const canvas = tile.querySelector('canvas');
-          const clone = canvas.cloneNode(true);
-          clone.getContext('2d').drawImage(canvas,0,0);
+          const clone = cloneTileArt(tile);
+          if(!clone){
+            gameOverlay.classList.add('show');
+            requestAnimationFrame(()=>{ gameOverlay.style.transform='translate(0px,0px) scale(1)'; });
+            return;
+          }
           tile.style.visibility='hidden';
           gameOverlay.innerHTML='';
           gameOverlay.appendChild(clone);
@@ -324,9 +346,17 @@ import { initSettings } from './settings.js';
         if(tile){
           const rect = tile.getBoundingClientRect();
           const srect = screenEl.getBoundingClientRect();
-          const canvas = tile.querySelector('canvas');
-          const clone = canvas.cloneNode(true);
-          clone.getContext('2d').drawImage(canvas,0,0);
+          const clone = cloneTileArt(tile);
+          if(!clone){
+            gameOverlay.classList.remove('show');
+            gameOverlay.innerHTML='';
+            gameOverlay.style.transform='';
+            tile.style.visibility='';
+            currentTile=null;
+            focusTile();
+            requestAnimationFrame(()=> reel.classList.remove('zoom'));
+            return;
+          }
           gameOverlay.innerHTML='';
           gameOverlay.appendChild(clone);
           const scaleX = rect.width/srect.width;
@@ -364,10 +394,12 @@ import { initSettings } from './settings.js';
       // DPI-фикс для чёткого пикселя
       function fixDPR(){
         const dpr = Math.max(1, window.devicePixelRatio||1);
-        const cvs = [...tiles.map(t=>t.querySelector('canvas')), avatarCanvas];
-        cvs.forEach(cv=>{
-          const cssW = Math.max(1, parseInt(getComputedStyle(cv).width,10));
-          const cssH = Math.max(1, parseInt(getComputedStyle(cv).height,10));
+        const cvs = tiles.map(t=>t.querySelector('canvas')).filter(Boolean);
+        cvs.push(avatarCanvas, settingsCanvas);
+        cvs.filter(Boolean).forEach(cv=>{
+          const css = getComputedStyle(cv);
+          const cssW = Math.max(1, parseInt(css.width,10));
+          const cssH = Math.max(1, parseInt(css.height,10));
           if(cv.width !== cssW*dpr || cv.height !== cssH*dpr){
             cv.width = cssW*dpr; cv.height = cssH*dpr;
             const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false; ctx.setTransform(dpr,0,0,dpr,0,0);
