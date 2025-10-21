@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title"><title>Dodge the Rain icon</title>
+  <rect width="64" height="64" rx="12" fill="#12161b"/>
+  <rect x="6" y="6" width="52" height="52" rx="10" fill="#1d252f"/>
+  <path fill="#46a0ff" d="M32 18c-7.7 0-14 5.6-14 12.5 0 1.2.2 2.4.6 3.5h-.1C14 34 11 37.6 11 42s3.5 8 7.8 8h24.5c5.7 0 10.7-4.3 11.5-9.9C55.4 34.6 50 29 43 29c-.9 0-1.7.1-2.5.2C38.4 22.9 31 18 22.8 18h9.2Z"/>
+  <path fill="#8ccdff" d="M20 44c0 3 2.4 5.5 5.5 5.5S31 47 31 44s-5.5-11-5.5-11S20 41 20 44Zm12 4c0 2.2 1.8 4 4 4s4-1.8 4-4-4-9-4-9-4 6.8-4 9Zm10-6c0 2.2 1.8 4 4 4s4-1.8 4-4-4-7-4-7-4 4.8-4 7Z"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title"><title>Arena icon</title>
+  <rect width="64" height="64" rx="12" fill="#16120f"/>
+  <rect x="6" y="6" width="52" height="52" rx="10" fill="#221b15"/>
+  <path fill="#f2c16d" d="M32 12 18 18v16c0 8.4 5.8 16 14 18.5 8.2-2.5 14-10.1 14-18.5V18l-14-6Z"/>
+  <path fill="#ffebc4" d="M32 18.5 22 23v11c0 6.2 4.1 11.9 10 13.9 5.9-2 10-7.7 10-13.9V23l-10-4.5Z"/>
+  <path fill="#c06b3e" d="M24 32h16v4H24z"/>
+  <path fill="#8d4c2b" d="m27 36 5 11 5-11H27Z"/>
+</svg>
