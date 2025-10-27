@@ -5,6 +5,8 @@ const main = fs.readFileSync('src/main.js','utf8');
 const audio = fs.readFileSync('src/audio.js', 'utf8');
 const retro = fs.readFileSync('src/retrofx.js','utf8');
 const icons = fs.readFileSync('src/icons.js','utf8');
+const storageModule = fs.readFileSync('src/core/storage/namespaced-storage.js','utf8');
+const baseGameModule = fs.readFileSync('src/core/game/base-game.js','utf8');
 
 if(!/class="reel"/.test(html)){
   throw new Error('Reel container missing');
@@ -107,6 +109,14 @@ if(!/index\s*=\s*\(Math\.round\(index \+ dist\) % rows \+ rows\) % rows;/.test(m
 
 if(!/drawImage/.test(icons)){
   throw new Error('Icons should use cached drawImage');
+}
+
+if(!/class NamespacedStorage/.test(storageModule)){
+  throw new Error('Namespaced storage helper missing');
+}
+
+if(!/class BaseGame/.test(baseGameModule)){
+  throw new Error('BaseGame abstraction missing');
 }
 
 // ensure icon canvases render as 16x16 sprites without distortion

@@ -73,8 +73,8 @@
     };
     pad.querySelectorAll('[data-dir]').forEach(btn=>{
       const dir=btn.dataset.dir;
-      const on=e=>{e.preventDefault();cb(dir);setBtn(dir,true);};
-      const off=e=>{e.preventDefault();setBtn(dir,false);};
+      const on=e=>{e.preventDefault();cb(dir,true);setBtn(dir,true);};
+      const off=e=>{e.preventDefault();cb(dir,false);setBtn(dir,false);};
       btn.addEventListener('touchstart',on,{passive:false});
       btn.addEventListener('touchend',off,{passive:false});
       btn.addEventListener('touchcancel',off,{passive:false});
