@@ -28,6 +28,8 @@
   --hi:var(--pastel-mint);
   --warn:var(--accent3);
   --r:8px;
+  --vh:100vh;
+  --vw:100vw;
 }
 
 *{box-sizing:border-box}
