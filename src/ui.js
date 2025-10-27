@@ -1,6 +1,29 @@
 (function(global){
   'use strict';
   const UI={};
+
+  function updateViewportUnits(){
+    const doc=document.documentElement;
+    const vh=Math.max(window.innerHeight,1);
+    const vw=Math.max(window.innerWidth,1);
+    doc.style.setProperty('--vh', vh+'px');
+    doc.style.setProperty('--vw', vw+'px');
+  }
+
+  let pendingVU=false;
+  function scheduleViewportUpdate(){
+    if(pendingVU) return;
+    pendingVU=true;
+    requestAnimationFrame(()=>{
+      pendingVU=false;
+      updateViewportUnits();
+    });
+  }
+
+  updateViewportUnits();
+  addEventListener('resize', scheduleViewportUpdate, { passive:true });
+  addEventListener('orientationchange', ()=>setTimeout(updateViewportUnits,200));
+  addEventListener('pageshow', updateViewportUnits);
   UI.score=function(el,label,bestLabel){
     if(el) el.classList.add('counter');
     return {

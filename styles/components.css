@@ -83,7 +83,7 @@ canvas.bg-stripes{
 }
 
 .dpad{
-  width:min(40vw,40svh);
+  width:min(40vw, calc(var(--vh, 100vh)*0.4));
   max-width:260px;
   aspect-ratio:1;
   display:grid;
@@ -162,7 +162,7 @@ canvas.bg-stripes{
 @media (max-width:600px){
   .hud{flex-direction:column; align-items:center; text-align:center; gap:4px;}
   .pad{flex-direction:column; align-items:center;}
-  .dpad{width:min(60vw,40svh); max-width:260px;}
+  .dpad{width:min(60vw, calc(var(--vh, 100vh)*0.4)); max-width:260px;}
   canvas{width:100%; height:auto;}
   .pad button{min-width:72px;min-height:72px;font-size:20px;}
   .dpad .k canvas{width:64px;height:64px;}

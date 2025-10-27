@@ -2,8 +2,8 @@
 @import url('themes.css');
 @import url('components.css');
 
-.cabinet{min-height:100svh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;}
-.frame{width:min(520px,94vw); height:84svh;
+.cabinet{min-height:var(--vh, 100vh); display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;}
+.frame{width:min(520px,94vw); height:min(calc(var(--vh, 100vh)*0.84),84vh);
   background:linear-gradient(180deg, var(--bg1), #ffc777 60%, #ffb347);
   border-radius:22px; position:relative; padding:12px; box-shadow:
     inset 0 2px 0 var(--bezel-hi),
