@@ -155,6 +155,24 @@ function initShell(container, options = {}) {
     }
   }
 
+  let leftPinned = leftDock.querySelector('.game-shell__pinned--left');
+  if (!leftPinned) {
+    leftPinned = document.createElement('div');
+    leftPinned.className = 'game-shell__pinned game-shell__pinned--left';
+    leftDock.appendChild(leftPinned);
+  }
+
+  let rightPinned = rightDock.querySelector('.game-shell__pinned--right');
+  if (!rightPinned) {
+    rightPinned = document.createElement('div');
+    rightPinned.className = 'game-shell__pinned game-shell__pinned--right';
+    rightDock.appendChild(rightPinned);
+  }
+
+  if (headerSlot) {
+    leftPinned.appendChild(headerSlot);
+  }
+
   const canvas = root.querySelector('[data-shell-canvas]') || viewport?.querySelector('canvas');
   const aspectRatio = options.aspectRatio || parseAspect(root.dataset.aspect, undefined);
   const resizer = createResizeController(viewport, canvas, aspectRatio);
@@ -168,6 +186,31 @@ function initShell(container, options = {}) {
   root.appendChild(backdrop);
 
   let activeDrawer = null;
+
+  function updateDockVisibility() {
+    const hasLeftPinned = leftPinned && leftPinned.childElementCount > 0;
+    const hasRightPinned = rightPinned && rightPinned.childElementCount > 0;
+    let leftOpen = false;
+    let rightOpen = false;
+    drawers.forEach(drawer => {
+      if (!drawer.classList.contains('is-open')) return;
+      const side = drawer.dataset.shellDrawerSide || 'right';
+      if (side === 'left') leftOpen = true;
+      if (side === 'right') rightOpen = true;
+    });
+
+    if (hasLeftPinned || leftOpen) {
+      root.dataset.leftVisible = 'true';
+    } else {
+      delete root.dataset.leftVisible;
+    }
+
+    if (hasRightPinned || rightOpen) {
+      root.dataset.rightVisible = 'true';
+    } else {
+      delete root.dataset.rightVisible;
+    }
+  }
 
   function syncDrawerState() {
     const hasActive = Boolean(activeDrawer && drawers.has(activeDrawer));
@@ -204,6 +247,8 @@ function initShell(container, options = {}) {
       backdrop.classList.remove('is-active');
       document.body.classList.remove('shell-drawer-open');
     }
+
+    updateDockVisibility();
   }
 
   function closeDrawer() {
@@ -284,6 +329,12 @@ function initShell(container, options = {}) {
       }
     });
   });
+
+  if (footerSlot) {
+    rightPinned.appendChild(footerSlot);
+  }
+
+  updateDockVisibility();
 
   syncDrawerState();
 
