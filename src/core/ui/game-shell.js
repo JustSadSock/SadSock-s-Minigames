@@ -133,6 +133,28 @@ function initShell(container, options = {}) {
     }
   }
 
+  let leftDock = bodySlot.querySelector('.game-shell__dock--left');
+  if (!leftDock) {
+    leftDock = document.createElement('div');
+    leftDock.className = 'game-shell__dock game-shell__dock--left';
+    if (viewport) {
+      bodySlot.insertBefore(leftDock, viewport);
+    } else {
+      bodySlot.insertBefore(leftDock, bodySlot.firstChild);
+    }
+  }
+
+  let rightDock = bodySlot.querySelector('.game-shell__dock--right');
+  if (!rightDock) {
+    rightDock = document.createElement('div');
+    rightDock.className = 'game-shell__dock game-shell__dock--right';
+    if (viewport && viewport.nextSibling) {
+      bodySlot.insertBefore(rightDock, viewport.nextSibling);
+    } else {
+      bodySlot.appendChild(rightDock);
+    }
+  }
+
   const canvas = root.querySelector('[data-shell-canvas]') || viewport?.querySelector('canvas');
   const aspectRatio = options.aspectRatio || parseAspect(root.dataset.aspect, undefined);
   const resizer = createResizeController(viewport, canvas, aspectRatio);
@@ -149,12 +171,14 @@ function initShell(container, options = {}) {
 
   function syncDrawerState() {
     const hasActive = Boolean(activeDrawer && drawers.has(activeDrawer));
+    let activeSide = '';
     drawers.forEach((drawer, key) => {
       const open = hasActive && key === activeDrawer;
       drawer.classList.toggle('is-open', open);
       if (open) {
         drawer.removeAttribute('aria-hidden');
         drawer.focus({ preventScroll: true });
+        activeSide = drawer.dataset.shellDrawerSide || '';
       } else {
         drawer.setAttribute('aria-hidden', 'true');
       }
@@ -167,10 +191,16 @@ function initShell(container, options = {}) {
     root.classList.toggle('drawer-open', hasActive);
     if (hasActive) {
       root.dataset.drawer = activeDrawer;
+      if (activeSide) {
+        root.dataset.drawerSide = activeSide;
+      } else {
+        delete root.dataset.drawerSide;
+      }
       backdrop.classList.add('is-active');
       document.body.classList.add('shell-drawer-open');
     } else {
       delete root.dataset.drawer;
+      delete root.dataset.drawerSide;
       backdrop.classList.remove('is-active');
       document.body.classList.remove('shell-drawer-open');
     }
@@ -213,12 +243,22 @@ function initShell(container, options = {}) {
     ['controls', controlsSlot]
   ]);
 
+  const dockMap = new Map([
+    ['left', leftDock],
+    ['right', rightDock]
+  ]);
+
   DRAWER_PRESETS.forEach(preset => {
     const slot = slotMap.get(preset.slot);
     if (!slot) return;
-    assignDrawerMeta(slot, preset.name);
+    assignDrawerMeta(slot, preset.name, preset.side);
     prependCloseButton(slot, preset.name);
-    root.appendChild(slot);
+    const dock = dockMap.get(preset.side || 'right');
+    if (dock) {
+      dock.appendChild(slot);
+    } else {
+      root.appendChild(slot);
+    }
     drawers.set(preset.name, slot);
 
     if (actions) {
@@ -312,21 +352,24 @@ const DRAWER_PRESETS = [
     slot: 'hud',
     icon: '🏆',
     label: 'shell.toggleStats',
-    fallback: 'Stats'
+    fallback: 'Stats',
+    side: 'left'
   },
   {
     name: 'info',
     slot: 'sidebar',
     icon: 'ℹ️',
     label: 'shell.toggleInfo',
-    fallback: 'Info'
+    fallback: 'Info',
+    side: 'right'
   },
   {
     name: 'controls',
     slot: 'controls',
     icon: '🎮',
     label: 'shell.toggleControls',
-    fallback: 'Controls'
+    fallback: 'Controls',
+    side: 'right'
   }
 ];
 
@@ -347,12 +390,17 @@ function ensureActionsContainer(header) {
   return actions;
 }
 
-function assignDrawerMeta(slot, name) {
+function assignDrawerMeta(slot, name, side) {
   if (!slot) return null;
   slot.classList.add('game-shell__drawer');
   slot.classList.add('game-shell__drawer-content');
   slot.classList.remove('game-shell__side', 'game-shell__controls', 'game-shell__hud');
   slot.dataset.shellDrawer = name;
+  if (side) {
+    slot.dataset.shellDrawerSide = side;
+  } else {
+    delete slot.dataset.shellDrawerSide;
+  }
   slot.setAttribute('aria-hidden', 'true');
   if (!slot.hasAttribute('tabindex')) {
     slot.setAttribute('tabindex', '-1');
