@@ -23,10 +23,13 @@ body.game-surface {
   margin: 0;
   min-height: 100svh;
   min-height: 100vh;
+  height: 100svh;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--shell-frame);
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
   font-family: var(--shell-font);
   color: var(--ink);
   background: radial-gradient(120% 120% at 50% 15%, rgba(255, 255, 255, 0.18), transparent 55%), #1a1208;
@@ -64,18 +67,14 @@ body.game-surface::after {
 .game-shell {
   position: relative;
   z-index: 1;
-  width: min(1180px, calc(100vw - var(--shell-frame) * 2));
-  height: min(880px, calc(100vh - var(--shell-frame) * 2));
-  height: min(880px, calc(100svh - var(--shell-frame) * 2));
-  max-width: 100%;
-  max-height: calc(100vh - var(--shell-frame) * 2);
-  max-height: calc(100svh - var(--shell-frame) * 2);
-  min-height: min(640px, calc(100vh - var(--shell-frame) * 2));
-  min-height: min(640px, calc(100svh - var(--shell-frame) * 2));
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  align-self: stretch;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: var(--shell-gap);
-  padding: clamp(18px, 3vw, 32px);
+  padding: clamp(12px, 2.4vw, 24px);
   border-radius: var(--shell-radius);
   border: 3px solid rgba(255, 243, 214, 0.65);
   box-shadow:
@@ -183,9 +182,11 @@ body.game-surface::after {
 
 .game-shell__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(220px, 26vw, 320px);
+  grid-template-columns: clamp(220px, 24vw, 360px) minmax(0, 1fr) clamp(220px, 26vw, 360px);
   gap: clamp(12px, 3vw, 28px);
   min-height: 0;
+  align-items: stretch;
+  height: 100%;
 }
 
 .game-shell__viewport {
@@ -193,24 +194,62 @@ body.game-surface::after {
   background: var(--shell-screen);
   border-radius: var(--shell-screen-radius);
   box-shadow:
-    inset 0 10px 16px rgba(255, 210, 150, 0.15),
-    inset 0 -14px 26px rgba(0, 0, 0, 0.45),
-    0 22px 36px rgba(0, 0, 0, 0.35);
-  padding: clamp(12px, 2vw, 24px);
+    inset 0 -18px 32px rgba(0, 0, 0, 0.45),
+    0 24px 48px rgba(0, 0, 0, 0.4);
+  padding: clamp(6px, 1vw, 12px);
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
   min-height: 0;
 }
 
 .game-shell__viewport canvas {
   image-rendering: pixelated;
-  border: 4px solid var(--shell-screen-border);
-  border-radius: clamp(12px, 2vw, 20px);
+  border: none;
+  border-radius: clamp(10px, 2vw, 18px);
   box-shadow:
-    0 12px 26px rgba(0, 0, 0, 0.55),
-    0 0 38px var(--shell-screen-glow);
+    0 20px 60px rgba(0, 0, 0, 0.55),
+    0 0 42px var(--shell-screen-glow);
   background: rgba(10, 6, 4, 0.75);
+}
+
+.game-shell__side {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.4vw, 24px);
+  background: var(--shell-panel);
+  border-radius: calc(var(--shell-frame-radius) - 4px);
+  padding: clamp(16px, 2.4vw, 28px);
+  box-shadow:
+    inset 0 4px 0 rgba(255, 230, 190, 0.65),
+    inset 0 -6px 16px rgba(120, 70, 20, 0.3);
+  border: 2px solid rgba(255, 228, 190, 0.65);
+  min-height: 0;
+  overflow: auto;
+}
+
+.game-shell__side .panel-title {
+  font-size: clamp(12px, 1.8vw, 16px);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(45, 22, 0, 0.8);
+  margin: 0;
+}
+
+.game-shell__side .panel-card {
+  background: rgba(255, 240, 210, 0.85);
+  border-radius: clamp(12px, 2vw, 18px);
+  padding: clamp(12px, 2vw, 18px);
+  box-shadow: inset 0 3px 0 rgba(255, 220, 160, 0.6);
+  color: rgba(42, 20, 0, 0.85);
+  display: grid;
+  gap: clamp(8px, 1.8vw, 14px);
+}
+
+.game-shell__side .panel-card strong {
+  font-size: clamp(14px, 2.2vw, 18px);
+  color: rgba(30, 12, 0, 0.9);
 }
 
 .game-shell__overlay {
@@ -247,6 +286,28 @@ body.game-surface::after {
   font-size: clamp(10px, 1.6vw, 14px);
   color: rgba(45, 22, 0, 0.75);
   padding-inline: clamp(6px, 2vw, 12px);
+}
+
+@media (max-width: 1200px) {
+  .game-shell__body {
+    grid-template-columns: clamp(200px, 28vw, 320px) minmax(0, 1fr) clamp(200px, 28vw, 320px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .game-shell__body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+
+  .game-shell__side,
+  .game-shell__controls {
+    max-height: 320px;
+  }
+
+  .game-shell__controls {
+    order: 3;
+  }
 }
 
 .game-shell__footer a {

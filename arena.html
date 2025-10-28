@@ -56,11 +56,22 @@
         <canvas class="icon" data-icon="arena" aria-hidden="true"></canvas>
         <h1 data-i18n="arena">Arena</h1>
       </div>
-      <div class="game-shell__hud" data-shell-slot="hud">
-        <div class="counter" data-i18n="arena.tagline">Program your squad and clash on a 5×5 grid</div>
-      </div>
     </header>
     <div class="game-shell__body" data-shell-slot="body">
+      <aside class="game-shell__side" data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="arena"></h2>
+        <div class="panel-card">
+          <strong data-i18n="rules"></strong>
+          <p data-i18n="arena.tagline">Program your squad and clash on a 5×5 grid</p>
+          <p data-i18n="rulesIntro"></p>
+        </div>
+        <div class="panel-card">
+          <strong data-i18n="tutorial"></strong>
+          <p data-i18n="tutorial1"></p>
+          <p data-i18n="tutorial2"></p>
+          <p data-i18n="tutorial3"></p>
+        </div>
+      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="arena-stage">
           <div id="modeSelect" class="screen">

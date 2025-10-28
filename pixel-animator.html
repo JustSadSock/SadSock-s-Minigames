@@ -80,11 +80,20 @@
         <canvas class="icon" data-icon="anim" aria-hidden="true"></canvas>
         <h1 data-i18n="pixelAnimator">Pixel Animator</h1>
       </div>
-      <div class="game-shell__hud" data-shell-slot="hud">
-        <div class="counter" data-i18n="animator.tagline">Frame-by-frame pixel art studio</div>
-      </div>
     </header>
     <div class="game-shell__body" data-shell-slot="body">
+      <aside class="game-shell__side" data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="pixelAnimator"></h2>
+        <div class="panel-card">
+          <strong data-i18n="rules"></strong>
+          <p data-i18n="animator.tagline">Frame-by-frame pixel art studio</p>
+          <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
+        </div>
+        <div class="panel-card">
+          <strong data-i18n="tutorial"></strong>
+          <p data-i18n="animator.tipDetail">Use onion skin, mirror strokes, and the timeline thumbnails to speed up animation.</p>
+        </div>
+      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="anim-stage">
           <div class="frame">

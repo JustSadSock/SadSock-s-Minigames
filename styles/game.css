@@ -109,6 +109,41 @@ button.btn:hover {
   color: inherit;
 }
 
+.stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat.has-best {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.stat strong.counter {
+  font-size: clamp(16px, 2.6vw, 24px);
+  color: rgba(35, 12, 0, 0.9);
+}
+
+.stat-best {
+  font-size: clamp(10px, 1.4vw, 12px);
+  color: rgba(60, 28, 0, 0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.stat-best:empty {
+  display: none;
+}
+
+.status-line {
+  min-height: 1.6em;
+  font-size: clamp(11px, 1.6vw, 14px);
+  color: rgba(60, 28, 0, 0.75);
+}
+
 .pad .dpad {
   display: grid;
   grid-template-areas:

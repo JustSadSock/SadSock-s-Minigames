@@ -16,12 +16,23 @@
           <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
           <h1 data-i18n="pixelSnake">Pixel Snake</h1>
         </div>
-        <div class="game-shell__hud" data-shell-slot="hud">
-          <div id="score" class="counter">0</div>
-          <div id="status" class="counter" style="visibility:hidden"></div>
-        </div>
       </header>
       <div class="game-shell__body" data-shell-slot="body">
+        <aside class="game-shell__side" data-shell-slot="sidebar">
+          <h2 class="panel-title" data-i18n="score"></h2>
+          <div class="panel-card">
+            <div class="stat" id="score">
+              <span data-score-label data-i18n="score"></span>
+              <strong class="counter" data-score-value>0</strong>
+              <span class="stat-best" data-score-best></span>
+            </div>
+            <div id="status" class="status-line" aria-live="polite"></div>
+          </div>
+          <div class="panel-card">
+            <strong data-i18n="rules"></strong>
+            <p data-i18n="pixelSnakeDesc"></p>
+          </div>
+        </aside>
         <div class="game-shell__viewport" data-shell-slot="viewport">
           <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
           <div class="game-shell__overlay">

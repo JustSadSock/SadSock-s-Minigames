@@ -2,11 +2,37 @@
   'use strict';
   const UI={};
   UI.score=function(el,label,bestLabel){
-    if(el) el.classList.add('counter');
+    if(!el) return { set() {} };
+    const labelEl = el.querySelector('[data-score-label]');
+    const valueEl = el.querySelector('[data-score-value]');
+    const bestEl = el.querySelector('[data-score-best]');
+    if(valueEl) {
+      valueEl.classList.add('counter');
+    } else {
+      el.classList.add('counter');
+    }
+    if(labelEl) {
+      labelEl.textContent = label;
+    }
     return {
       set(value,best){
-        const bl = bestLabel || (global.i18n ? i18n.t('best') : 'best');
-        el.textContent=label+': '+value+(best!=null?' ('+bl+': '+best+')':'');
+        const bestText = bestLabel || (global.i18n ? i18n.t('best') : 'best');
+        if(valueEl) {
+          valueEl.textContent = value;
+        } else {
+          el.textContent = label + ': ' + value + (best!=null ? ' (' + bestText + ': ' + best + ')' : '');
+        }
+        if(bestEl) {
+          if(best != null) {
+            bestEl.textContent = bestText + ': ' + best;
+            bestEl.parentElement?.classList.add('has-best');
+          } else {
+            bestEl.textContent = '';
+            bestEl.parentElement?.classList.remove('has-best');
+          }
+        } else if(!valueEl && best != null) {
+          el.textContent = label + ': ' + value + ' (' + bestText + ': ' + best + ')';
+        }
       }
     };
   };

@@ -89,11 +89,20 @@ import './src/i18n.js';
         <canvas class="icon" data-icon="avatar" aria-hidden="true"></canvas>
         <h1 data-i18n="avatarEditor">Avatar Editor</h1>
       </div>
-      <div class="game-shell__hud" data-shell-slot="hud">
-        <div class="counter" data-i18n="avatar.tagline">Craft your retro portrait pixel-by-pixel</div>
-      </div>
     </header>
     <div class="game-shell__body" data-shell-slot="body">
+      <aside class="game-shell__side" data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="avatarEditor"></h2>
+        <div class="panel-card">
+          <strong data-i18n="rules"></strong>
+          <p data-i18n="avatar.tagline">Craft your retro portrait pixel-by-pixel</p>
+          <p data-i18n="avatar.tipText">Use the tabs to swap features, tweak colors, and export PNG or JSON for your friends.</p>
+        </div>
+        <div class="panel-card">
+          <strong data-i18n="tutorial"></strong>
+          <p data-i18n="avatar.tipDetail">Tap Random for ideas, hold and drag to paint details, and save presets to revisit later.</p>
+        </div>
+      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="avatar-stage">
           <div class="editor">

@@ -106,6 +106,7 @@ function initShell(container, options = {}) {
   const hudSlot = collectSlot(root, 'hud');
   const bodySlot = collectSlot(root, 'body');
   const viewportSlot = collectSlot(root, 'viewport') || root.querySelector('[data-shell-canvas]')?.parentElement;
+  const sidebarSlot = collectSlot(root, 'sidebar');
   const controlsSlot = collectSlot(root, 'controls');
   const footerSlot = collectSlot(root, 'footer');
 
@@ -118,6 +119,9 @@ function initShell(container, options = {}) {
     const createdBody = document.createElement('div');
     createdBody.className = 'game-shell__body';
     const viewportCandidate = viewportSlot ?? collectSlot(root, 'viewport');
+    if (sidebarSlot) {
+      createdBody.appendChild(sidebarSlot);
+    }
     if (viewportCandidate) {
       createdBody.appendChild(viewportCandidate);
     }
@@ -130,6 +134,7 @@ function initShell(container, options = {}) {
   const viewport = collectSlot(root, 'viewport') || root.querySelector('[data-shell-viewport]');
   if (viewport) viewport.classList.add('game-shell__viewport');
 
+  if (sidebarSlot) sidebarSlot.classList.add('game-shell__side');
   const controls = collectSlot(root, 'controls');
   if (controls) controls.classList.add('game-shell__controls');
 
@@ -145,6 +150,7 @@ function initShell(container, options = {}) {
     header: headerSlot,
     hud: hudSlot,
     viewport,
+    sidebar: sidebarSlot,
     controls,
     footer: footerSlot,
     refresh() {

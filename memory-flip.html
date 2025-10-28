@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="styles/shell.css">
   <link rel="stylesheet" href="styles/game.css">
   <style>
-  body{padding-top:12px;}
     #grid{
       width:100%;
       max-width:300px;
@@ -81,13 +80,32 @@
         <canvas class="icon" data-icon="cards" aria-hidden="true"></canvas>
         <h1 data-i18n="memoryFlip">Memory Flip</h1>
       </div>
-      <div class="game-shell__hud" data-shell-slot="hud">
-        <div id="score" class="counter">0/8</div>
-        <div id="timer" class="counter">0s</div>
-        <div id="moves" class="counter">0</div>
-      </div>
     </header>
     <div class="game-shell__body" data-shell-slot="body">
+      <aside class="game-shell__side" data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="score"></h2>
+        <div class="panel-card">
+          <div class="stat" id="score">
+            <span data-score-label data-i18n="foundPairs"></span>
+            <strong class="counter" data-score-value>0/8</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+          <div class="stat" id="timer">
+            <span data-score-label data-i18n="time"></span>
+            <strong class="counter" data-score-value>0s</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+          <div class="stat" id="moves">
+            <span data-score-label data-i18n="moves"></span>
+            <strong class="counter" data-score-value>0</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+        </div>
+        <div class="panel-card">
+          <strong data-i18n="rules"></strong>
+          <p data-i18n="memoryFlipDesc"></p>
+        </div>
+      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div id="grid" role="grid"></div>
         <div class="game-shell__overlay">

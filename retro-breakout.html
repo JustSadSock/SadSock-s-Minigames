@@ -15,12 +15,23 @@
           <canvas class="icon" data-icon="breakout" aria-hidden="true"></canvas>
           <h1 data-i18n="retroBreakout"></h1>
         </div>
-        <div class="game-shell__hud" data-shell-slot="hud">
-          <div id="score" class="counter"></div>
-          <div id="lives" class="counter"></div>
-        </div>
       </header>
       <div class="game-shell__body" data-shell-slot="body">
+        <aside class="game-shell__side" data-shell-slot="sidebar">
+          <h2 class="panel-title" data-i18n="score"></h2>
+          <div class="panel-card">
+          <div class="stat" id="score">
+            <span data-score-label data-i18n="score"></span>
+            <strong class="counter" data-score-value>0</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+          <div class="stat" id="lives">
+            <span data-score-label data-i18n="lives"></span>
+            <strong class="counter" data-score-value>3</strong>
+          </div>
+            <p class="status-line" data-i18n="retroBreakoutDesc"></p>
+          </div>
+        </aside>
         <div class="game-shell__viewport" data-shell-slot="viewport">
           <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
           <div class="game-shell__overlay">
@@ -66,6 +77,8 @@
     const pad = document.getElementById('pad');
     const scoreEl = document.getElementById('score');
     const livesEl = document.getElementById('lives');
+    const livesLabelEl = livesEl?.querySelector('[data-score-label]');
+    const livesValueEl = livesEl?.querySelector('[data-score-value]');
     const scoresBtn = document.getElementById('scoresBtn');
     const toastEl = document.getElementById('toast');
     const scores = Scores('breakout');
@@ -74,7 +87,12 @@
     const scoreBoard = UI.score(scoreEl, globalThis.i18n?.t('score') || 'Score', globalThis.i18n?.t('best') || 'best');
     const livesLabel = globalThis.i18n?.t('lives') || 'Lives';
     scoreBoard.set(0, best);
-    livesEl.textContent = livesLabel + ': 3';
+    if (livesLabelEl) livesLabelEl.textContent = livesLabel;
+    if (livesValueEl) {
+      livesValueEl.textContent = '3';
+    } else {
+      livesEl.textContent = livesLabel + ': 3';
+    }
 
     const styles = getComputedStyle(document.documentElement);
     const bgColor = styles.getPropertyValue('--bg2');
@@ -110,7 +128,11 @@
 
     function updateScore() {
       scoreBoard.set(score, best);
-      livesEl.textContent = livesLabel + ': ' + lives;
+      if (livesValueEl) {
+        livesValueEl.textContent = String(lives);
+      } else {
+        livesEl.textContent = livesLabel + ': ' + lives;
+      }
     }
 
     function update({ dt, keys }) {
