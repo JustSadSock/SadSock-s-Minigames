@@ -178,165 +178,100 @@ function initShell(container, options = {}) {
   const resizer = createResizeController(viewport, canvas, aspectRatio);
 
   const actions = ensureActionsContainer(headerSlot);
-  const drawers = new Map();
-  const toggles = new Map();
-
-  const backdrop = document.createElement('div');
-  backdrop.className = 'game-shell__drawer-backdrop';
-  root.appendChild(backdrop);
-
-  let activeDrawer = null;
+  const panels = new Map();
+  const cleanups = [];
 
   function updateDockVisibility() {
+    const leftPanels = toArray(leftDock?.querySelectorAll('.shell-panel'));
+    const rightPanels = toArray(rightDock?.querySelectorAll('.shell-panel'));
     const hasLeftPinned = leftPinned && leftPinned.childElementCount > 0;
     const hasRightPinned = rightPinned && rightPinned.childElementCount > 0;
-    let leftOpen = false;
-    let rightOpen = false;
-    drawers.forEach(drawer => {
-      if (!drawer.classList.contains('is-open')) return;
-      const side = drawer.dataset.shellDrawerSide || 'right';
-      if (side === 'left') leftOpen = true;
-      if (side === 'right') rightOpen = true;
-    });
 
-    if (hasLeftPinned || leftOpen) {
+    if (leftPanels.length || hasLeftPinned) {
       root.dataset.leftVisible = 'true';
+      const hasOpen = leftPanels.some(panel => panel.classList.contains('is-open'));
+      root.dataset.leftState = hasOpen || hasLeftPinned ? 'open' : 'collapsed';
     } else {
       delete root.dataset.leftVisible;
+      delete root.dataset.leftState;
     }
 
-    if (hasRightPinned || rightOpen) {
+    if (rightPanels.length || hasRightPinned) {
       root.dataset.rightVisible = 'true';
+      const hasOpen = rightPanels.some(panel => panel.classList.contains('is-open'));
+      root.dataset.rightState = hasOpen || hasRightPinned ? 'open' : 'collapsed';
     } else {
       delete root.dataset.rightVisible;
+      delete root.dataset.rightState;
     }
   }
 
-  function syncDrawerState() {
-    const hasActive = Boolean(activeDrawer && drawers.has(activeDrawer));
-    let activeSide = '';
-    drawers.forEach((drawer, key) => {
-      const open = hasActive && key === activeDrawer;
-      drawer.classList.toggle('is-open', open);
-      if (open) {
-        drawer.removeAttribute('aria-hidden');
-        drawer.focus({ preventScroll: true });
-        activeSide = drawer.dataset.shellDrawerSide || '';
-      } else {
-        drawer.setAttribute('aria-hidden', 'true');
+  function attachPanel(slot, preset) {
+    if (!slot || !preset) return;
+    const meta = { ...preset };
+    meta.slot = meta.slot || slot.dataset.shellSlot;
+    let panelEntry = null;
+    const decorated = decoratePanel(slot, meta, isOpen => {
+      updateDockVisibility();
+      resizer.refresh();
+      if (panelEntry?.quickToggle) {
+        panelEntry.quickToggle.classList.toggle('is-active', isOpen);
+        panelEntry.quickToggle.setAttribute('aria-expanded', String(isOpen));
       }
     });
-    toggles.forEach((btn, key) => {
-      const open = hasActive && key === activeDrawer;
-      btn.classList.toggle('is-active', open);
-      btn.setAttribute('aria-expanded', String(open));
-    });
-    root.classList.toggle('drawer-open', hasActive);
-    if (hasActive) {
-      root.dataset.drawer = activeDrawer;
-      if (activeSide) {
-        root.dataset.drawerSide = activeSide;
-      } else {
-        delete root.dataset.drawerSide;
-      }
-      backdrop.classList.add('is-active');
-      document.body.classList.add('shell-drawer-open');
-    } else {
-      delete root.dataset.drawer;
-      delete root.dataset.drawerSide;
-      backdrop.classList.remove('is-active');
-      document.body.classList.remove('shell-drawer-open');
-    }
-
-    updateDockVisibility();
-  }
-
-  function closeDrawer() {
-    if (!activeDrawer) return;
-    activeDrawer = null;
-    syncDrawerState();
-  }
-
-  function openDrawer(name) {
-    if (!drawers.has(name)) return;
-    if (activeDrawer === name) return;
-    activeDrawer = name;
-    syncDrawerState();
-  }
-
-  function toggleDrawer(name) {
-    if (activeDrawer === name) {
-      closeDrawer();
-    } else {
-      openDrawer(name);
-    }
-  }
-
-  const onBackdropClick = () => closeDrawer();
-  backdrop.addEventListener('click', onBackdropClick);
-
-  const keyListener = event => {
-    if (event.key === 'Escape') {
-      closeDrawer();
-    }
-  };
-  window.addEventListener('keydown', keyListener);
-
-  const slotMap = new Map([
-    ['hud', hudSlot],
-    ['sidebar', sidebarSlot],
-    ['controls', controlsSlot]
-  ]);
-
-  const dockMap = new Map([
-    ['left', leftDock],
-    ['right', rightDock]
-  ]);
-
-  DRAWER_PRESETS.forEach(preset => {
-    const slot = slotMap.get(preset.slot);
-    if (!slot) return;
-    assignDrawerMeta(slot, preset.name, preset.side);
-    prependCloseButton(slot, preset.name);
-    const dock = dockMap.get(preset.side || 'right');
+    if (!decorated) return;
+    panelEntry = decorated;
+    const dock = meta.side === 'left' ? leftPinned : rightPinned;
     if (dock) {
-      dock.appendChild(slot);
-    } else {
-      root.appendChild(slot);
+      dock.appendChild(decorated.slot);
     }
-    drawers.set(preset.name, slot);
-
-    if (actions) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'pill shell-toggle';
-      button.dataset.shellToggle = preset.name;
-      button.setAttribute('aria-haspopup', 'dialog');
-      button.setAttribute('aria-controls', slot.id);
-      button.textContent = `${preset.icon} ${preset.fallback}`;
-      if (preset.label) {
-        button.setAttribute('data-i18n', preset.label);
-      }
-      button.addEventListener('click', () => toggleDrawer(preset.name));
-      actions.appendChild(button);
-      toggles.set(preset.name, button);
-    }
-
-    slot.addEventListener('click', event => {
-      const target = event.target;
-      if (target instanceof HTMLElement && target.hasAttribute('data-shell-close')) {
-        closeDrawer();
-      }
+    panels.set(meta.name, decorated);
+    cleanups.push(() => {
+      decorated.toggle.removeEventListener('click', decorated.toggleHandler);
     });
-  });
+  }
+
+  attachPanel(hudSlot, PANEL_PRESETS.hud);
+  attachPanel(sidebarSlot, PANEL_PRESETS.sidebar);
+  attachPanel(controlsSlot, PANEL_PRESETS.controls);
+
+  function setPanelState(name, open) {
+    const entry = panels.get(name);
+    if (!entry) return;
+    entry.setOpen(Boolean(open));
+  }
+
+  function togglePanel(name) {
+    const entry = panels.get(name);
+    if (!entry) return;
+    const isOpen = entry.slot.classList.contains('is-open');
+    setPanelState(name, !isOpen);
+  }
+
+  if (actions) {
+    panels.forEach((panel, name) => {
+      const { meta } = panel;
+      const quickToggle = createPanelToggle(meta);
+      quickToggle.classList.add('shell-panel__toggle--small', 'pill');
+      const quickToggleHandler = () => togglePanel(name);
+      quickToggle.addEventListener('click', quickToggleHandler);
+      const isOpen = panel.slot.classList.contains('is-open');
+      quickToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      quickToggle.classList.toggle('is-active', isOpen);
+      actions.appendChild(quickToggle);
+      panel.quickToggle = quickToggle;
+      panel.quickToggleHandler = quickToggleHandler;
+      cleanups.push(() => quickToggle.removeEventListener('click', quickToggleHandler));
+    });
+  }
+
+  updateDockVisibility();
 
   if (footerSlot) {
     rightPinned.appendChild(footerSlot);
   }
 
   updateDockVisibility();
-
-  syncDrawerState();
 
   if (footerSlot) footerSlot.classList.add('game-shell__footer');
 
@@ -353,14 +288,29 @@ function initShell(container, options = {}) {
       resizer.refresh();
     },
     destroy() {
-      closeDrawer();
-      window.removeEventListener('keydown', keyListener);
-      backdrop.removeEventListener('click', onBackdropClick);
+      cleanups.forEach(fn => {
+        try {
+          fn();
+        } catch (err) {
+          // ignore cleanup errors
+        }
+      });
+      panels.forEach(panel => {
+        if (panel.quickToggle && panel.quickToggle.parentElement) {
+          panel.quickToggle.parentElement.removeChild(panel.quickToggle);
+        }
+      });
+      panels.clear();
       resizer.disconnect();
       root.dataset.shellReady = 'false';
     },
-    openDrawer,
-    closeDrawer
+    openPanel(name) {
+      setPanelState(name, true);
+    },
+    closePanel(name) {
+      setPanelState(name, false);
+    },
+    togglePanel
   };
 }
 
@@ -397,32 +347,32 @@ function markDataCanvas(canvas) {
 
 const OVERLAY_SELECTORS = ['#toast', '.toast', '[data-overlay]', '.start-screen', '#startScreen', '.modal', '.dialog', '.overlay', '.overlay-layer'];
 const CONTROL_SELECTORS = ['#startBtn', '.start-btn', '.start-button', '.control-bar', '.controls', '.actions'];
-const DRAWER_PRESETS = [
-  {
+const PANEL_PRESETS = {
+  hud: {
     name: 'stats',
-    slot: 'hud',
     icon: '🏆',
-    label: 'shell.toggleStats',
+    label: 'shell.panelStats',
     fallback: 'Stats',
-    side: 'left'
+    side: 'left',
+    defaultOpen: true
   },
-  {
+  sidebar: {
     name: 'info',
-    slot: 'sidebar',
     icon: 'ℹ️',
-    label: 'shell.toggleInfo',
+    label: 'shell.panelInfo',
     fallback: 'Info',
-    side: 'right'
+    side: 'left',
+    defaultOpen: false
   },
-  {
+  controls: {
     name: 'controls',
-    slot: 'controls',
     icon: '🎮',
-    label: 'shell.toggleControls',
+    label: 'shell.panelControls',
     fallback: 'Controls',
-    side: 'right'
+    side: 'right',
+    defaultOpen: true
   }
-];
+};
 
 function createElement(tag, className) {
   const el = document.createElement(tag);
@@ -441,35 +391,63 @@ function ensureActionsContainer(header) {
   return actions;
 }
 
-function assignDrawerMeta(slot, name, side) {
-  if (!slot) return null;
-  slot.classList.add('game-shell__drawer');
-  slot.classList.add('game-shell__drawer-content');
-  slot.classList.remove('game-shell__side', 'game-shell__controls', 'game-shell__hud');
-  slot.dataset.shellDrawer = name;
-  if (side) {
-    slot.dataset.shellDrawerSide = side;
-  } else {
-    delete slot.dataset.shellDrawerSide;
+function createPanelToggle(meta) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'shell-panel__toggle';
+  const iconSpan = document.createElement('span');
+  iconSpan.className = 'shell-panel__icon';
+  iconSpan.textContent = meta.icon || '';
+  button.appendChild(iconSpan);
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'shell-panel__label';
+  labelSpan.textContent = meta.fallback || '';
+  if (meta.label) {
+    labelSpan.setAttribute('data-i18n', meta.label);
   }
-  slot.setAttribute('aria-hidden', 'true');
-  if (!slot.hasAttribute('tabindex')) {
-    slot.setAttribute('tabindex', '-1');
-  }
-  slot.id = slot.id || `shell-drawer-${name}`;
-  return slot;
+  button.appendChild(labelSpan);
+  return button;
 }
 
-function prependCloseButton(slot, name) {
-  if (!slot) return;
-  if (slot.querySelector('[data-shell-close]')) return;
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'pill shell-close';
-  close.dataset.shellClose = name;
-  close.setAttribute('data-i18n', 'close');
-  close.textContent = 'Close';
-  slot.insertBefore(close, slot.firstChild);
+function decoratePanel(slot, meta, onToggle) {
+  if (!slot) return null;
+  slot.classList.remove('game-shell__drawer', 'game-shell__drawer-content');
+  slot.classList.add('shell-panel');
+  slot.classList.add(`shell-panel--${meta.side || 'left'}`);
+  slot.dataset.shellPanel = meta.name || meta.slot || '';
+
+  const currentChildren = Array.from(slot.childNodes);
+  const body = document.createElement('div');
+  body.className = 'shell-panel__body';
+  currentChildren.forEach(node => body.appendChild(node));
+
+  const toggle = createPanelToggle(meta);
+  slot.appendChild(body);
+  slot.insertBefore(toggle, body);
+
+  const defaultOpen = meta.defaultOpen !== false;
+
+  function setOpen(open) {
+    const willOpen = Boolean(open);
+    slot.classList.toggle('is-open', willOpen);
+    slot.classList.toggle('is-collapsed', !willOpen);
+    body.hidden = !willOpen;
+    toggle.setAttribute('aria-expanded', String(willOpen));
+    if (typeof onToggle === 'function') {
+      onToggle(willOpen, slot, meta);
+    }
+  }
+
+  setOpen(defaultOpen);
+
+  const toggleHandler = () => {
+    const willOpen = !slot.classList.contains('is-open');
+    setOpen(willOpen);
+  };
+
+  toggle.addEventListener('click', toggleHandler);
+
+  return { slot, toggle, body, meta, setOpen, toggleHandler };
 }
 
 function bootstrapFromStructure(structure) {
