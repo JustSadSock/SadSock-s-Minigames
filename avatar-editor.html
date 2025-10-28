@@ -115,6 +115,8 @@ import './src/i18n.js';
 <div id="toast" class="toast"></div>
 
 <script type="module">
+import { initGameShell } from './src/core/ui/game-shell.js';
+const shell = initGameShell();
 /* ===== base ===== */
 const S=16, cv=document.getElementById('cv'), ctx=cv.getContext('2d',{alpha:true});
 cv.width=cv.height=S;
@@ -420,6 +422,7 @@ document.getElementById('randomBtn').onclick=()=>{
   });
   save(); render(); openPanel(active);
 };
+shell.refresh();
 </script>
 </body>
 </html>

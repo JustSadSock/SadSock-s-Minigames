@@ -2,18 +2,280 @@
 @import url('themes.css');
 @import url('components.css');
 
-.cabinet{min-height:100svh; display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px;}
-.frame{width:min(520px,94vw); height:84svh;
-  background:linear-gradient(180deg, var(--bg1), #ffc777 60%, #ffb347);
-  border-radius:22px; position:relative; padding:12px; box-shadow:
-    inset 0 2px 0 var(--bezel-hi),
-    inset 0 -4px 0 var(--bezel),
-    0 10px 30px var(--shadow);
-  border:2px solid var(--bezel);}
-.inner{position:absolute; inset:16px 16px 100px 16px; border-radius:16px;
-  background:linear-gradient(180deg, var(--bg2), var(--tile-bg));
-  box-shadow: inset 0 2px 0 var(--bezel-hi), inset 0 -4px 0 var(--bezel);
-  overflow:hidden;}
-.scanlines{ position:absolute; inset:0; pointer-events:none;
-  background:repeating-linear-gradient(0deg, #0000 0 3px, rgba(0,0,0,.05) 3px 4px); mix-blend-mode:multiply; opacity:.35 }
-canvas{width:100%; height:100%; display:block; image-rendering:pixelated}
+:root {
+  --shell-gap: clamp(12px, 2vw, 24px);
+  --shell-radius: 28px;
+  --shell-frame-radius: 22px;
+  --shell-border: 3px;
+  --shell-screen-radius: 18px;
+  --shell-font: 'Press Start 2P', var(--font-mono);
+}
+
+body.game-surface {
+  margin: 0;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 4vw, 40px);
+  font-family: var(--shell-font);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.2), rgba(255,255,255,0) 45%),
+    linear-gradient(180deg, #1a1235 0%, #09070f 45%, #110808 100%);
+  background-attachment: fixed;
+}
+
+.game-shell {
+  width: min(100%, 1100px);
+  min-height: clamp(520px, 94svh, 880px);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--shell-gap);
+  padding: clamp(16px, 3vw, 32px);
+  border-radius: var(--shell-radius);
+  border: var(--shell-border) solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 4px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.45),
+    0 20px 45px rgba(0, 0, 0, 0.65);
+  background:
+    linear-gradient(155deg, rgba(42, 22, 67, 0.9), rgba(19, 12, 29, 0.95));
+  position: relative;
+  overflow: hidden;
+}
+
+.game-shell::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: calc(var(--shell-radius) - 10px);
+  pointer-events: none;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(0, 0, 0, 0.45), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+
+.game-shell[data-theme='sunset'] {
+  --accent: #f88c5e;
+  --shell-screen: linear-gradient(180deg, #1e112a, #381c4a 55%, #311537);
+  --shell-panel: linear-gradient(180deg, rgba(255, 196, 164, 0.25), rgba(120, 64, 143, 0.2));
+}
+
+.game-shell[data-theme='ocean'] {
+  --accent: #68d2ff;
+  --shell-screen: linear-gradient(180deg, #081a34, #103a5e 55%, #081d3d);
+  --shell-panel: linear-gradient(180deg, rgba(104, 210, 255, 0.18), rgba(10, 45, 82, 0.35));
+}
+
+.game-shell[data-theme='forest'] {
+  --accent: #8ef79a;
+  --shell-screen: linear-gradient(180deg, #061b11, #0f3720 55%, #041a10);
+  --shell-panel: linear-gradient(180deg, rgba(142, 247, 154, 0.18), rgba(6, 38, 23, 0.45));
+}
+
+.game-shell[data-theme='violet'] {
+  --accent: #b68cff;
+  --shell-screen: linear-gradient(180deg, #1a1239, #251863 55%, #160d3a);
+  --shell-panel: linear-gradient(180deg, rgba(182, 140, 255, 0.2), rgba(31, 15, 66, 0.35));
+}
+
+.game-shell[data-theme='ember'] {
+  --accent: #ffbf6b;
+  --shell-screen: linear-gradient(180deg, #211006, #5b2807 55%, #2a1104);
+  --shell-panel: linear-gradient(180deg, rgba(255, 191, 107, 0.22), rgba(61, 29, 9, 0.4));
+}
+
+.game-shell[data-theme='neon'] {
+  --accent: #ff6bba;
+  --shell-screen: linear-gradient(180deg, #090921, #1a1848 55%, #0b0a26);
+  --shell-panel: linear-gradient(180deg, rgba(255, 107, 186, 0.24), rgba(15, 12, 44, 0.45));
+}
+
+.game-shell__header,
+.game-shell__hud,
+.game-shell__footer {
+  position: relative;
+  z-index: 1;
+}
+
+.game-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.game-shell__identity {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6vw, 18px);
+}
+
+.game-shell__identity canvas.icon {
+  width: clamp(54px, 8vw, 88px);
+  height: clamp(54px, 8vw, 88px);
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.45));
+}
+
+.game-shell__title,
+.game-shell__identity h1 {
+  font-size: clamp(16px, 3vw, 24px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff7f0;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.65);
+}
+
+.game-shell__hud {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: clamp(8px, 1.6vw, 16px);
+  padding: 12px clamp(12px, 2.4vw, 20px);
+  border-radius: calc(var(--shell-frame-radius) - 4px);
+  background: var(--shell-panel);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.game-shell__hud .counter {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: clamp(12px, 1.8vw, 16px);
+  color: #fff7f0;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.game-shell__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 28vw, 320px);
+  gap: clamp(12px, 3vw, 28px);
+  min-height: 0;
+}
+
+.game-shell__viewport {
+  position: relative;
+  background: var(--shell-screen);
+  border-radius: var(--shell-screen-radius);
+  box-shadow:
+    inset 0 6px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.6),
+    0 20px 30px rgba(0, 0, 0, 0.45);
+  padding: clamp(12px, 2vw, 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.game-shell__viewport canvas {
+  image-rendering: pixelated;
+  border: 4px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.game-shell__overlay {
+  position: absolute;
+  inset: clamp(12px, 2vw, 24px);
+  pointer-events: none;
+}
+
+.game-shell__controls {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2.5vw, 24px);
+  background: var(--shell-panel);
+  border-radius: calc(var(--shell-frame-radius) - 6px);
+  padding: clamp(16px, 2.8vw, 28px);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.2), inset 0 -4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 0;
+}
+
+.game-shell__controls .pad {
+  margin-top: auto;
+}
+
+.game-shell__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(6px, 2vw, 12px);
+  justify-content: space-between;
+  align-items: center;
+  font-size: clamp(10px, 1.6vw, 14px);
+  color: rgba(255, 255, 255, 0.75);
+  padding-inline: clamp(6px, 2vw, 12px);
+}
+
+.game-shell__footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.toast {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff4da;
+  border-radius: 14px;
+  padding: 14px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
+  min-width: 180px;
+}
+
+.pill,
+.btn,
+button {
+  font-family: var(--shell-font);
+}
+
+@media (max-width: 980px) {
+  .game-shell__body {
+    grid-template-columns: 1fr;
+  }
+
+  .game-shell__controls {
+    order: 2;
+  }
+
+  .game-shell__viewport {
+    min-height: clamp(240px, 52svh, 480px);
+  }
+}
+
+@media (max-width: 680px) {
+  .game-shell {
+    grid-template-rows: auto auto 1fr auto;
+    padding: clamp(12px, 4vw, 20px);
+  }
+
+  .game-shell__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .game-shell__hud {
+    grid-template-columns: 1fr;
+  }
+
+  .game-shell__controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .game-shell__controls .pad {
+    width: 100%;
+    order: 3;
+  }
+}

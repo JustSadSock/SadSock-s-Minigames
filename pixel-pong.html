@@ -71,7 +71,9 @@ import './src/scores.js';
 import './src/icons.js';
 import './src/i18n.js';
 import { initSettings } from './src/settings.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
 initSettings();
+const shell = initGameShell({ aspectRatio: 360 / 640 });
 
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
@@ -190,8 +192,7 @@ initSettings();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt); game.draw(); scoreBoard.set(`${game.s1} : ${game.s2}`,best); }
   game.init();
-
-
+  shell.refresh();
 })();
 </script>
 </body>

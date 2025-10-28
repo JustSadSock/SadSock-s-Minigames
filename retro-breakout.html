@@ -66,7 +66,10 @@
     import './src/i18n.js';
     import { initSettings } from './src/settings.js';
     import { createGameLoop } from './src/game-loop.js';
+    import { initGameShell } from './src/core/ui/game-shell.js';
     initSettings();
+
+    const shell = initGameShell({ aspectRatio: 120 / 160 });
 
     const canvas = document.getElementById('gameCanvas');
     const startBtn = document.getElementById('startBtn');
@@ -200,6 +203,7 @@
     }
 
     const { ctx, keys, attachPad } = createGameLoop(canvas, { width: 120, height: 160, update, draw });
+    shell.refresh();
     attachPad(pad, (dir, val) => { if (!gameRunning && val) startGame(); });
     document.addEventListener('keydown', e => {
       const k = e.key.toLowerCase();

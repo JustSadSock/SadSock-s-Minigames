@@ -76,8 +76,11 @@
   import './src/scores.js';
   import './src/icons.js';
   import './src/i18n.js';
+  import { initGameShell } from './src/core/ui/game-shell.js';
   import { initSettings } from './src/settings.js';
   initSettings();
+
+  const shell = initGameShell({ aspectRatio: 120 / 160 });
 
   const Sound=globalThis.Sound;
   const canvas=document.getElementById('gameCanvas');
@@ -244,7 +247,7 @@
       const t=e.touches[0];
       touchStartX=t.clientX; touchStartY=t.clientY;
     },{passive:true});
-    canvas.addEventListener('touchend',e=>{
+  canvas.addEventListener('touchend',e=>{
       const t=e.changedTouches[0];
       const dx=t.clientX-touchStartX;
       const dy=t.clientY-touchStartY;
@@ -257,6 +260,7 @@
       }
     },{passive:true});
     startBtn.addEventListener('click',startGame);
+    shell.refresh();
     resetGame();
     draw();
     </script>

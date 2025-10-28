@@ -163,6 +163,8 @@
   import './src/ui.js';
   import './src/icons.js';
   import('./src/pixel-widgets.js');
+  import { initGameShell } from './src/core/ui/game-shell.js';
+  const shell = initGameShell();
   (async()=>{
     try{
       await import('./src/i18n.js');
@@ -291,6 +293,7 @@
     i18n.applyTranslations();
     bindUI();
     langSelect.value=i18n.lang;
+    shell.refresh();
   })();
   </script>
 </body>

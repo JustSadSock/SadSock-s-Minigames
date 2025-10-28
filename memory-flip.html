@@ -109,8 +109,11 @@ import './src/icons.js';
 import './src/ui.js';
 import './src/scores.js';
 import './src/i18n.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
 import { initSettings } from './src/settings.js';
 initSettings();
+
+const shell = initGameShell();
 
 (function(){
   'use strict';
@@ -132,7 +135,7 @@ initSettings();
   const startBtn=document.getElementById('startBtn');
   const pad=document.getElementById('pad');
   const header=document.querySelector('h1');
-  const play=document.querySelector('.play');
+  const play=shell.viewport || shell.root;
   const toastEl=document.getElementById('toast');
   const timerEl=document.getElementById('timer');
   const movesEl=document.getElementById('moves');
@@ -304,6 +307,7 @@ initSettings();
   }
   window.addEventListener('resize',adjustGrid);
   adjustGrid();
+  shell.refresh();
   resetGame();
 })();
 </script>

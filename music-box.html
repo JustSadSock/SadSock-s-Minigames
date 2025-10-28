@@ -236,6 +236,9 @@ import './src/ui.js';
 import './src/audio.js';
 import './src/icons.js';
 import './src/i18n.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
+
+const shell = initGameShell();
 
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -513,6 +516,7 @@ $('loadFile').onclick=()=>{
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
+shell.refresh();
 </script>
 </body>
 </html>

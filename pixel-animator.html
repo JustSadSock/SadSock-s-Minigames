@@ -163,6 +163,9 @@
 import './src/ui.js';
 import './src/icons.js';
 import './src/i18n.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
+
+const shell = initGameShell();
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;
@@ -391,6 +394,7 @@ import './src/i18n.js';
     tabIO.style.display   = showEdit?'none':'block';
     fitSquare();
   }));
+  shell.refresh();
 })();
 </script>
 </body>
