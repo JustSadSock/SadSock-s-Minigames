@@ -15,54 +15,78 @@
   .color-pick button.sel{outline:2px solid var(--accent);}
 </style>
 </head>
-<body>
-<div class="cabinet">
-    <div class="frame">
-    <div class="inner">
-      <canvas class="icon" data-icon="pong" aria-hidden="true"></canvas>
-      <div class="hud hud-3">
-        <div class="counter" id="score">0 : 0</div>
-        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
-        <div class="counter" id="status">—</div>
+<body class="game-surface">
+  <div class="game-shell" data-game-shell data-theme="neon" data-aspect="9/16">
+    <header class="game-shell__header" data-shell-slot="header">
+      <div class="game-shell__identity">
+        <canvas class="icon" data-icon="pong" aria-hidden="true"></canvas>
+        <h1 data-i18n="pixelPong">Pixel Pong</h1>
       </div>
-      <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-      <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
-      <div class="scanlines"></div>
-      <div id="startScreen">
-        <div id="colorPick" class="color-pick" title="Paddle color">
-          <button data-col="--pastel-mint" style="background:var(--pastel-mint)"></button>
-          <button data-col="--pastel-blue" style="background:var(--pastel-blue)"></button>
-          <button data-col="--pastel-pink" style="background:var(--pastel-pink)"></button>
-          <button data-col="--pastel-peach" style="background:var(--pastel-peach)"></button>
+    </header>
+    <section data-shell-slot="hud">
+      <h2 class="panel-title" data-i18n="score"></h2>
+      <div class="panel-card">
+        <div class="stat" id="score">
+          <span data-score-label data-i18n="score"></span>
+          <strong class="counter" data-score-value>0 : 0</strong>
+          <span class="stat-best" data-score-best></span>
         </div>
-        <label style="color:#fff;font-family:'Press Start 2P',ui-monospace,monospace;font-size:12px">AI:
-          <select id="aiSelect">
-            <option value="0">Easy</option>
-            <option value="1" selected>Normal</option>
-            <option value="2">Hard</option>
-          </select>
-        </label>
-        <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
+        <div id="status" class="status-line">—</div>
+      </div>
+    </section>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="rules"></h2>
+      <div class="panel-card">
+        <p data-i18n="pixelPongDesc"></p>
+      </div>
+    </section>
+    <div class="game-shell__body" data-shell-slot="body">
+      <div class="game-shell__viewport" data-shell-slot="viewport">
+        <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+        <div class="scanlines" aria-hidden="true"></div>
+        <div class="game-shell__overlay">
+          <div id="startScreen">
+            <div id="colorPick" class="color-pick" title="Paddle color">
+              <button data-col="--pastel-mint" style="background:var(--pastel-mint)"></button>
+              <button data-col="--pastel-blue" style="background:var(--pastel-blue)"></button>
+              <button data-col="--pastel-pink" style="background:var(--pastel-pink)"></button>
+              <button data-col="--pastel-peach" style="background:var(--pastel-peach)"></button>
+            </div>
+            <label class="control-label">AI:
+              <select id="aiSelect">
+                <option value="0">Easy</option>
+                <option value="1" selected>Normal</option>
+                <option value="2">Hard</option>
+              </select>
+            </label>
+            <button id="playBtn" class="pill" data-i18n="start" data-i18n-aria-label="start"></button>
+          </div>
+        </div>
       </div>
     </div>
-    <div id="pad" class="pad pad-center" aria-hidden="true">
-      <div class="dpad" aria-hidden="true">
-        <div class="k" data-btn="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-        <div class="k" data-btn="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-        <div class="k" style="grid-area:mid;opacity:.35"></div>
-        <div class="k" data-btn="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-        <div class="k" data-btn="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="controls-grid">
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
+        <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
       </div>
-      <div class="ab">
-        <div class="k" data-btn="a">A</div>
-        <div class="k" data-btn="b">B</div>
+      <div id="pad" class="pad pad-center" aria-hidden="true">
+        <div class="dpad" aria-hidden="true">
+          <div class="k" data-btn="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+          <div class="k" data-btn="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+          <div class="k" style="grid-area:mid;opacity:.35"></div>
+          <div class="k" data-btn="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+          <div class="k" data-btn="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+        </div>
+        <div class="ab">
+          <div class="k" data-btn="a">A</div>
+          <div class="k" data-btn="b">B</div>
+        </div>
       </div>
-    </div>
-    <div class="label">Pixel Pong</div>
-    <div class="hint">Pong: ↑/↓. Space to dash.</div>
+    </aside>
+    <footer class="game-shell__footer" data-shell-slot="footer">
+      <span class="hint" data-i18n="pong.hint">Mobile arrows • Keyboard: ↑/↓, Space to dash</span>
+    </footer>
   </div>
-  <div class="footer">Mobile arrows • Keyboard: ↑/↓, Space to dash</div>
-</div>
 
 <script type="module">
 import './src/ui.js';
@@ -71,7 +95,9 @@ import './src/scores.js';
 import './src/icons.js';
 import './src/i18n.js';
 import { initSettings } from './src/settings.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
 initSettings();
+const shell = initGameShell({ aspectRatio: 360 / 640 });
 
 (() => {
   const SETTINGS = { W:360, H:640, sfx:0.6 };
@@ -190,8 +216,7 @@ initSettings();
   function loop(){ requestAnimationFrame(loop); resize(); clear(); const t=performance.now(), dt=Math.min(.033,(t-last)/1000); last=t;
     game.step(dt); game.draw(); scoreBoard.set(`${game.s1} : ${game.s2}`,best); }
   game.init();
-
-
+  shell.refresh();
 })();
 </script>
 </body>

@@ -15,7 +15,8 @@
       --shield-color:var(--accent2);
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100svh;gap:8px;color:var(--ink);}
+    body{margin:0;}
+    .arena-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;color:var(--ink);}
     .screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;}
     .screen .btn{min-width:160px;}
     #gameArea{position:relative;width:100%;max-width:300px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;}
@@ -48,121 +49,146 @@
     .modal.show{display:block;}
   </style>
 </head>
-<body>
-  <canvas class="icon" data-icon="arena" aria-hidden="true"></canvas>
-  <div id="modeSelect" class="screen">
-    <button class="btn" id="btn1p" data-i18n="singlePlayer">1P</button>
-    <button class="btn" id="btn2p" data-i18n="twoPlayers">2P</button>
-    <button class="btn" id="rulesBtnInitial" data-i18n="rules">Rules</button>
-  </div>
-  <div id="difficultySelect" class="screen" style="display:none;">
-    <button class="btn" data-level="easy" data-i18n="easy">Easy</button>
-    <button class="btn" data-level="medium" data-i18n="medium">Medium</button>
-    <button class="btn" data-level="hard" data-i18n="hard">Hard</button>
-    <button class="btn" data-level="expert" data-i18n="expert">Expert</button>
-    <button class="btn" data-level="insane" data-i18n="insane">Insane</button>
-  </div>
-  <div id="gameArea" style="display:none;">
-    <div id="scoreboard">
-      <span id="scoreA" class="counter">0</span>
-      <span>:</span>
-      <span id="scoreB" class="counter">0</span>
-      <button id="scoreReset" class="btn" data-i18n="resetScore">Reset</button>
-      <button id="menuBtn" class="btn" data-i18n="toMenu">Menu</button>
-      <button id="btnReplay" class="btn" data-i18n="replay">Replay</button>
-    </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙</button>
-    <div id="board"></div>
-    <div id="ui" class="panel">
-      <div id="phase"></div>
-      <div id="planCells">
-        <div id="pc0" class="planCell"></div>
-        <div id="pc1" class="planCell"></div>
-        <div id="pc2" class="planCell"></div>
-        <div id="pc3" class="planCell"></div>
-        <div id="pc4" class="planCell"></div>
+<body class="game-surface">
+  <div class="game-shell" data-game-shell data-theme="neon">
+    <header class="game-shell__header" data-shell-slot="header">
+      <div class="game-shell__identity">
+        <canvas class="icon" data-icon="arena" aria-hidden="true"></canvas>
+        <h1 data-i18n="arena">Arena</h1>
       </div>
-      <div id="pad" class="pad pad-inline">
-        <div class="dpad" aria-hidden="true">
-          <div class="k" data-act="up" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-          <div class="k" data-act="left" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-          <div class="k" style="grid-area:mid;opacity:.35"></div>
-          <div class="k" data-act="right" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-          <div class="k" data-act="down" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+    </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="arena"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="arena.tagline">Program your squad and clash on a 5×5 grid</p>
+        <p data-i18n="rulesIntro"></p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="tutorial1"></p>
+        <p data-i18n="tutorial2"></p>
+        <p data-i18n="tutorial3"></p>
+      </div>
+    </section>
+    <div class="game-shell__body" data-shell-slot="body">
+      <div class="game-shell__viewport" data-shell-slot="viewport">
+        <div class="arena-stage">
+          <div id="modeSelect" class="screen">
+            <button class="btn" id="btn1p" data-i18n="singlePlayer">1P</button>
+            <button class="btn" id="btn2p" data-i18n="twoPlayers">2P</button>
+            <button class="btn" id="rulesBtnInitial" data-i18n="rules">Rules</button>
+          </div>
+          <div id="difficultySelect" class="screen" style="display:none;">
+            <button class="btn" data-level="easy" data-i18n="easy">Easy</button>
+            <button class="btn" data-level="medium" data-i18n="medium">Medium</button>
+            <button class="btn" data-level="hard" data-i18n="hard">Hard</button>
+            <button class="btn" data-level="expert" data-i18n="expert">Expert</button>
+            <button class="btn" data-level="insane" data-i18n="insane">Insane</button>
+          </div>
+          <div id="gameArea" style="display:none;">
+            <div id="scoreboard">
+              <span id="scoreA" class="counter">0</span>
+              <span>:</span>
+              <span id="scoreB" class="counter">0</span>
+              <button id="scoreReset" class="btn" data-i18n="resetScore">Reset</button>
+              <button id="menuBtn" class="btn" data-i18n="toMenu">Menu</button>
+              <button id="btnReplay" class="btn" data-i18n="replay">Replay</button>
+            </div>
+            <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙</button>
+            <div id="board"></div>
+            <div id="ui" class="panel">
+              <div id="phase"></div>
+              <div id="planCells">
+                <div id="pc0" class="planCell"></div>
+                <div id="pc1" class="planCell"></div>
+                <div id="pc2" class="planCell"></div>
+                <div id="pc3" class="planCell"></div>
+                <div id="pc4" class="planCell"></div>
+              </div>
+              <div id="pad" class="pad pad-inline">
+                <div class="dpad" aria-hidden="true">
+                  <div class="k" data-act="up" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+                  <div class="k" data-act="left" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+                  <div class="k" style="grid-area:mid;opacity:.35"></div>
+                  <div class="k" data-act="right" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+                  <div class="k" data-act="down" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+                </div>
+                <div class="ab">
+                  <div class="k" data-act="attack">⚔</div>
+                  <div class="k" data-act="shield">🛡</div>
+                </div>
+              </div>
+              <div id="navButtons">
+                <button id="btn-del" class="btn" data-i18n="deleteBtn">Delete</button>
+                <button id="btn-next" class="btn" data-i18n="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="ab">
-          <div class="k" data-act="attack">⚔</div>
-          <div class="k" data-act="shield">🛡</div>
+        <div class="game-shell__overlay">
+          <div id="atkOverlay"><div class="atkBox"></div></div>
+          <div id="rulesOverlay" class="modal">
+            <h2 data-i18n="rulesHeader"></h2>
+            <h3 data-i18n="rulesGeneral"></h3>
+            <p data-i18n="rulesIntro"></p>
+            <ul style="margin-left:15px;">
+              <li data-i18n="rule1"></li>
+              <li data-i18n="rule2"></li>
+              <li data-i18n="rule3"></li>
+              <li data-i18n="rule4"></li>
+              <li data-i18n="rule5"></li>
+              <li data-i18n="rule6"></li>
+              <li data-i18n="rule7"></li>
+              <li data-i18n="rule8"></li>
+            </ul>
+            <button id="rulesClose" data-i18n="close">Close</button>
+            <button id="rulesTutorial" data-i18n="tutorial">Tutorial</button>
+          </div>
+          <div id="tutorialOverlay" class="modal">
+            <h2 data-i18n="tutorial"></h2>
+            <p data-i18n="tutorialIntro"></p>
+            <ol style="margin-left:15px;">
+              <li data-i18n="tutorialStep1"></li>
+              <li data-i18n="tutorialStep2"></li>
+              <li data-i18n="tutorialStep3"></li>
+              <li data-i18n="tutorialStep4"></li>
+            </ol>
+            <button id="tutorialClose" data-i18n="close">Close</button>
+          </div>
+          <div id="replayOverlay">
+            <div id="replayControls">
+              <div style="display:flex;gap:8px;">
+                <button id="replayPlay" class="btn" data-i18n="play">Play</button>
+                <button id="replayPause" class="btn" data-i18n="pause" style="display:none;">Pause</button>
+                <button id="replayStop" class="btn" data-i18n="stop">Stop</button>
+              </div>
+              <input id="replaySlider" type="range" min="0" max="0" value="0">
+            </div>
+          </div>
+          <div id="msgOverlay" class="modal">
+            <h3 id="msgTitle"></h3>
+            <p id="msgContent"></p>
+            <button id="msgClose" data-i18n="close">Close</button>
+          </div>
         </div>
-      </div>
-      <div id="navButtons">
-        <button id="btn-del" class="btn" data-i18n="deleteBtn">Delete</button>
-        <button id="btn-next" class="btn" data-i18n="nextBtn">Next</button>
-      </div>
     </div>
-  </div>
-  <div id="atkOverlay"><div class="atkBox"></div></div>
-  <div id="rulesOverlay" class="modal">
-    <h2 data-i18n="rulesHeader"></h2>
-    <h3 data-i18n="rulesGeneral"></h3>
-    <p data-i18n="rulesIntro"></p>
-    <ul style="margin-left:15px;">
-      <li data-i18n="rule1"></li>
-      <li data-i18n="rule2"></li>
-      <li data-i18n="rule3"></li>
-      <li data-i18n="rule4"></li>
-      <li data-i18n="rule5"></li>
-      <li data-i18n="rule6"></li>
-      <li data-i18n="rule7"></li>
-      <li data-i18n="rule8"></li>
-    </ul>
-    <button id="rulesClose" data-i18n="close">Close</button>
-    <button id="rulesTutorial" data-i18n="tutorial">Tutorial</button>
-  </div>
-  <div id="settingsModal" class="modal">
-    <h2>⚙</h2>
-    <label data-i18n="volume">Volume:</label>
-    <pixel-range><input type="range" id="volumeRange" min="0" max="1" step="0.1"></pixel-range>
-    <label data-i18n="language">Language:</label>
-    <pixel-select><select id="langSelect">
-      <option value="en" data-i18n="selectEnglish">English</option>
-      <option value="ru" data-i18n="selectRussian">Русский</option>
-      <option value="uk" data-i18n="selectUkrainian">Українська</option>
-    </select></pixel-select>
-    <button id="settingsClose" data-i18n="close">Close</button>
-  </div>
-  <div id="tutorialOverlay" class="modal">
-    <h2 data-i18n="tutorial"></h2>
-    <p id="tutorialContent"></p>
-    <button id="tutorialNext" data-i18n="nextBtn">Next</button>
-    <button id="tutorialClose" data-i18n="close">Close</button>
-  </div>
-  <div id="replayOverlay">
-    <div id="replayControls">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button id="replayClose" data-i18n="close">Close</button>
-        <button id="replayPlay">▶</button>
-        <button id="replayPause" style="display:none;">❚❚</button>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="control-card">
+        <h2 data-i18n="arena.tipTitle">How to Play</h2>
+        <p data-i18n="arena.tipText">Queue five commands, unleash attacks, and shield wisely to win the round.</p>
       </div>
-      <pixel-range><input type="range" id="replaySlider" min="0" max="0" value="0"></pixel-range>
-      <div id="speedButtons">
-        <button data-speed="1">1x</button>
-        <button data-speed="2">2x</button>
-        <button data-speed="3">3x</button>
-        <button data-speed="4">4x</button>
-        <button data-speed="5">5x</button>
-      </div>
-    </div>
+    </aside>
+    <footer class="game-shell__footer" data-shell-slot="footer">
+      <span class="hint" data-i18n="arena.hint">Use arrows + ⚔/🛡 to program your turn</span>
+    </footer>
   </div>
-  <div id="msgOverlay" class="modal">
-    <h2 id="msgTitle"></h2>
-    <p id="msgContent"></p>
-    <button id="msgClose" data-i18n="close">Close</button>
-  </div>
-  <script type="module">
+<script type="module">
   import './src/ui.js';
   import './src/icons.js';
   import('./src/pixel-widgets.js');
+  import { initGameShell } from './src/core/ui/game-shell.js';
+  const shell = initGameShell();
   (async()=>{
     try{
       await import('./src/i18n.js');
@@ -291,6 +317,7 @@
     i18n.applyTranslations();
     bindUI();
     langSelect.value=i18n.lang;
+    shell.refresh();
   })();
   </script>
 </body>

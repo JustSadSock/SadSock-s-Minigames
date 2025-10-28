@@ -7,77 +7,82 @@
   <title data-i18n="pixelSnake"></title>
   <link rel="stylesheet" href="styles/shell.css">
   <link rel="stylesheet" href="styles/game.css">
-  <style>
-    #gameCanvas{
-      image-rendering:pixelated;
-      background:var(--bg2);
-      border:4px solid var(--pastel-peach);
-      box-shadow:0 10px 20px rgba(0,0,0,0.2);
-      width:clamp(60vw,75svh,96vw);
-      height:auto;
-      aspect-ratio:3/4;
-    }
-    #score{margin:0;font-size:14px;font-weight:bold;text-shadow:0 1px 0 var(--bg0);}
-
-    .toast{
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      background:var(--pastel-pink);
-      border:1px solid var(--accent);
-      border-radius:8px;
-      padding:12px 16px;
-      font-size:14px;
-      color:var(--ink);
-    }
-
-
-    .color-pick{display:flex;gap:4px;}
-    .color-pick button{width:36px;height:36px;border:2px solid var(--bezel);border-radius:8px;box-shadow:inset 0 0 0 2px var(--bezel-hi);cursor:pointer;}
-    .color-pick button.sel{outline:2px solid var(--accent);}
-
-  </style>
 </head>
-  <body class="theme-blue">
-  <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
-  <h1>Pixel Snake</h1>
-  <div id="colorPick" class="color-pick" title="Snake color">
-    <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
-    <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
-    <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
-    <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
-  </div>
-  <div class="play">
-    <div class="hud">
-      <div id="score" class="counter">0</div>
-      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
-      <div id="status" class="counter" style="visibility:hidden"></div>
-    </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
-    <div id="toast" class="toast"></div>
-    <div id="pad" class="pad pad-center">
-        <div class="dpad" aria-hidden="true">
-        <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-        <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-        <div class="k" style="grid-area:mid; opacity:.35"></div>
-        <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-        <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+  <body class="game-surface">
+    <div class="game-shell" data-game-shell data-theme="forest" data-aspect="3/4">
+      <header class="game-shell__header" data-shell-slot="header">
+        <div class="game-shell__identity">
+          <canvas class="icon" data-icon="snake" aria-hidden="true"></canvas>
+          <h1 data-i18n="pixelSnake">Pixel Snake</h1>
+        </div>
+      </header>
+      <section data-shell-slot="hud">
+        <h2 class="panel-title" data-i18n="score"></h2>
+        <div class="panel-card">
+          <div class="stat" id="score">
+            <span data-score-label data-i18n="score"></span>
+            <strong class="counter" data-score-value>0</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+          <div id="status" class="status-line" aria-live="polite"></div>
+        </div>
+      </section>
+      <section data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="rules"></h2>
+        <div class="panel-card">
+          <p data-i18n="pixelSnakeDesc"></p>
+        </div>
+      </section>
+      <div class="game-shell__body" data-shell-slot="body">
+        <div class="game-shell__viewport" data-shell-slot="viewport">
+          <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+          <div class="game-shell__overlay">
+            <div id="toast" class="toast" aria-live="polite"></div>
+          </div>
+        </div>
       </div>
-      <div class="ab">
-        <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
-      </div>
+      <aside class="game-shell__controls" data-shell-slot="controls">
+        <div class="controls-grid">
+          <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+          <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+        </div>
+        <div class="control-card">
+          <h2 data-i18n="snake.color">Snake Color</h2>
+          <div id="colorPick" class="color-pick" title="Snake color">
+            <button data-col="--pastel-mint" style="background:var(--pastel-mint)" aria-label="Green"></button>
+            <button data-col="--pastel-blue" style="background:var(--pastel-blue)" aria-label="Blue"></button>
+            <button data-col="--pastel-pink" style="background:var(--pastel-pink)" aria-label="Pink"></button>
+            <button data-col="--pastel-peach" style="background:var(--pastel-peach)" aria-label="Peach"></button>
+          </div>
+        </div>
+        <div id="pad" class="pad pad-center">
+          <div class="dpad" aria-hidden="true">
+            <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+            <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+            <div class="k" style="grid-area:mid; opacity:.35"></div>
+            <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+            <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+          </div>
+          <div class="ab">
+            <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+          </div>
+        </div>
+      </aside>
+      <footer class="game-shell__footer" data-shell-slot="footer">
+        <span class="hint" data-i18n="shell.footerHint">Feed the snake and avoid your own tail.</span>
+      </footer>
     </div>
-  </div>
     <script type="module">
   import './src/ui.js';
   import './src/audio.js';
   import './src/scores.js';
   import './src/icons.js';
   import './src/i18n.js';
+  import { initGameShell } from './src/core/ui/game-shell.js';
   import { initSettings } from './src/settings.js';
   initSettings();
+
+  const shell = initGameShell({ aspectRatio: 120 / 160 });
 
   const Sound=globalThis.Sound;
   const canvas=document.getElementById('gameCanvas');
@@ -244,7 +249,7 @@
       const t=e.touches[0];
       touchStartX=t.clientX; touchStartY=t.clientY;
     },{passive:true});
-    canvas.addEventListener('touchend',e=>{
+  canvas.addEventListener('touchend',e=>{
       const t=e.changedTouches[0];
       const dx=t.clientX-touchStartX;
       const dy=t.clientY-touchStartY;
@@ -257,6 +262,7 @@
       }
     },{passive:true});
     startBtn.addEventListener('click',startGame);
+    shell.refresh();
     resetGame();
     draw();
     </script>

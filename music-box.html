@@ -13,17 +13,19 @@
     --cell-on:var(--accent3);
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; color:var(--ink); font-size:14px; line-height:1.35;
-    font-family:'Press Start 2P', ui-monospace, monospace;
-    background:var(--bg0);
-  }
+  body{margin:0;}
   .frame{width:min(920px,94vw);height:auto;}
-  .inner{
+  .inner.music-stage{
     position:relative; inset:auto; border-radius:18px; padding:10px 10px 4px;
     background:var(--tile-bg);
     box-shadow: inset 0 2px 0 rgba(255,255,255,.55), inset 0 -8px 22px rgba(0,0,0,.08);
     overflow:hidden;
+  }
+  .music-stage{
+    color:var(--ink);
+    font-size:14px;
+    line-height:1.35;
+    font-family:'Press Start 2P', ui-monospace, monospace;
   }
 
   /* header + tabs */
@@ -108,127 +110,157 @@
   }
 </style>
 </head>
-<body>
-  <div class="cabinet">
-    <div class="frame">
-        <div class="inner">
-          <canvas class="icon" data-icon="music" aria-hidden="true"></canvas>
-        <div class="topbar">
-        <div class="transport">
-          <div class="left">
-            <button id="playBtn" class="btn key">▶</button>
-            <button id="stopBtn" class="btn key">■</button>
-            <button id="clearBtn" class="btn key">✖</button>
-          </div>
-          <details class="opts" open>
-            <summary class="pill">⚙ Options</summary>
-            <div class="right">
-              <div class="pill">BPM
-                <pixel-range><input type="range" id="bpm" min="60" max="200" value="120"></pixel-range><b id="bpmv">120</b>
-              </div>
-              <label class="pill">Root
-                <pixel-select><select id="root"></select></pixel-select>
-              </label>
-              <label class="pill">Scale
-                <pixel-select><select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select></pixel-select>
-              </label>
-              <label class="pill">Steps
-                <pixel-select><select id="steps"><option>8</option><option selected>16</option><option>32</option></select></pixel-select>
-              </label>
-            </div>
-          </details>
-        </div>
-        <div class="tabs">
-          <button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
-          <button class="tab" data-tab="code">📤 Import / Export</button>
-          <button class="tab" data-tab="info">ℹ Info</button>
-        </div>
+<body class="game-surface">
+  <div class="game-shell" data-game-shell data-theme="violet">
+    <header class="game-shell__header" data-shell-slot="header">
+      <div class="game-shell__identity">
+        <canvas class="icon" data-icon="music" aria-hidden="true"></canvas>
+        <h1 data-i18n="musicBox">Music Box</h1>
       </div>
-
-      <div class="section active" id="melody">
-        <div class="panel two-col">
-          <div>
-            <div class="row">
-              <strong>Lead</strong>
-              <div class="row">
-                <label class="pill">Wave
-                  <pixel-select><select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select></pixel-select>
-                </label>
-                <label class="pill">A<pixel-range><input type="range" id="leadA" min="0" max="200" value="15"></pixel-range></label>
-                <label class="pill">R<pixel-range><input type="range" id="leadR" min="0" max="400" value="80"></pixel-range></label>
+    </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="musicBox"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="musicBox.tagline">Compose 8-bit loops anywhere</p>
+        <p data-i18n="musicBoxDesc"></p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="musicBox.tip">Tap steps to toggle notes, tweak BPM and scales on the right, then export your groove.</p>
+      </div>
+    </section>
+    <div class="game-shell__body" data-shell-slot="body">
+      <div class="game-shell__viewport" data-shell-slot="viewport">
+        <div class="frame">
+          <div class="inner music-stage">
+            <div class="topbar">
+              <div class="transport">
+                <div class="left">
+                  <button id="playBtn" class="btn key">▶</button>
+                  <button id="stopBtn" class="btn key">■</button>
+                  <button id="clearBtn" class="btn key">✖</button>
+                </div>
+                <details class="opts" open>
+                  <summary class="pill">⚙ Options</summary>
+                  <div class="right">
+                    <div class="pill">BPM
+                      <pixel-range><input type="range" id="bpm" min="60" max="200" value="120"></pixel-range><b id="bpmv">120</b>
+                    </div>
+                    <label class="pill">Root
+                      <pixel-select><select id="root"></select></pixel-select>
+                    </label>
+                    <label class="pill">Scale
+                      <pixel-select><select id="scale"><option value="major">Major</option><option value="minor">Minor</option></select></pixel-select>
+                    </label>
+                    <label class="pill">Steps
+                      <pixel-select><select id="steps"><option>8</option><option selected>16</option><option>32</option></select></pixel-select>
+                    </label>
+                  </div>
+                </details>
               </div>
-            </div>
-            <div class="legend" id="leadLegend"></div>
-            <div class="grid" id="leadGrid" style="--cols:16; --rows:8"></div>
-          </div>
-
-          <div>
-            <div class="row">
-              <strong>Bass</strong>
-              <div class="row">
-                <label class="pill">Wave
-                  <pixel-select><select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select></pixel-select>
-                </label>
-                <label class="pill">A<pixel-range><input type="range" id="bassA" min="0" max="200" value="10"></pixel-range></label>
-                <label class="pill">R<pixel-range><input type="range" id="bassR" min="0" max="400" value="60"></pixel-range></label>
+              <div class="tabs">
+                <button class="tab active" data-tab="melody">🎹 Melody & Bass (+Drums)</button>
+                <button class="tab" data-tab="code">📤 Import / Export</button>
+                <button class="tab" data-tab="info">ℹ Info</button>
               </div>
             </div>
-            <div class="legend" id="bassLegend"></div>
-            <div class="grid" id="bassGrid" style="--cols:16; --rows:8"></div>
+
+            <div class="section active" id="melody">
+              <div class="panel two-col">
+                <div>
+                  <div class="row">
+                    <strong>Lead</strong>
+                    <div class="row">
+                      <label class="pill">Wave
+                        <pixel-select><select id="leadWave"><option>square</option><option>triangle</option><option>sawtooth</option><option>sine</option></select></pixel-select>
+                      </label>
+                      <label class="pill">A<pixel-range><input type="range" id="leadA" min="0" max="200" value="15"></pixel-range></label>
+                      <label class="pill">R<pixel-range><input type="range" id="leadR" min="0" max="400" value="80"></pixel-range></label>
+                    </div>
+                  </div>
+                  <div class="legend" id="leadLegend"></div>
+                  <div class="grid" id="leadGrid" style="--cols:16; --rows:8"></div>
+                </div>
+
+                <div>
+                  <div class="row">
+                    <strong>Bass</strong>
+                    <div class="row">
+                      <label class="pill">Wave
+                        <pixel-select><select id="bassWave"><option>triangle</option><option>square</option><option>sawtooth</option><option>sine</option></select></pixel-select>
+                      </label>
+                      <label class="pill">A<pixel-range><input type="range" id="bassA" min="0" max="200" value="10"></pixel-range></label>
+                      <label class="pill">R<pixel-range><input type="range" id="bassR" min="0" max="400" value="60"></pixel-range></label>
+                    </div>
+                  </div>
+                  <div class="legend" id="bassLegend"></div>
+                  <div class="grid" id="bassGrid" style="--cols:16; --rows:8"></div>
+                </div>
+              </div>
+
+              <!-- Барабаны в той же колонке -->
+              <details class="panel accordion" open>
+                <summary class="row"><strong>Drums</strong><span style="color:#86694b">Ряды: Kick • Snare • Hat</span></summary>
+                <div class="grid drums" id="drumGrid" style="--cols:16; --rows:3"></div>
+              </details>
+            </div>
+
+            <div class="section" id="code">
+              <div class="panel">
+                <strong>Export</strong>
+                <div class="row" style="gap:8px; margin:8px 0">
+                  <button class="btn" id="exportJSON">↥ Export JSON</button>
+                  <button class="btn" id="exportCode">↥ Export as Code</button>
+                  <button class="btn" id="copyOut">Copy</button>
+                  <button class="btn" id="saveFile">Save file</button>
+                </div>
+                <textarea id="out" class="code" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
+              </div>
+              <div class="panel">
+                <strong>Import</strong>
+                <div class="row" style="gap:8px; margin:8px 0">
+                  <button class="btn" id="importPlay">Play imported</button>
+                  <button class="btn" id="loadIntoEditor">Load into editor</button>
+                  <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
+                  <button class="btn" id="loadFile">Load file</button>
+                </div>
+                <textarea id="inp" class="code" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
+              </div>
+            </div>
+
+            <div class="section" id="info">
+              <div class="panel">
+                <strong>Как пользоваться</strong>
+                <ul style="margin:8px 0 0 18px; padding:0; line-height:1.35">
+                  <li>Тап по клетке ставит/убирает ноту. **Одна нота в колонке** (моно). Верхняя строка — самый <b>высокий</b> звук.</li>
+                  <li>Прокрутка страницы не ставит ноты — сначала закончите скролл, потом тапайте.</li>
+                  <li>Lead/Bass редактируются здесь же, барабаны ниже. Play/Stop — сверху.</li>
+                  <li>Во вкладке <b>Import / Export</b> можно сохранить JSON/код или вставить готовый и сразу проиграть.</li>
+                  <li>Если у устройства включено «уменьшение движения» — анимации минимальны.</li>
+                </ul>
+              </div>
+              <div class="panel">
+                <strong>Навигация</strong>
+                <p style="margin:6px 0 0">Вкладки вверху: <b>Melody & Bass</b> — редактирование; <b>Import / Export</b> — код; <b>Info</b> — помощь.
+                Все элементы крупные и рассчитаны на палец.</p>
+              </div>
+            </div>
+            <div class="scanlines"></div>
           </div>
         </div>
-
-        <!-- Барабаны в той же колонке -->
-        <details class="panel accordion" open>
-          <summary class="row"><strong>Drums</strong><span style="color:#86694b">Ряды: Kick • Snare • Hat</span></summary>
-          <div class="grid drums" id="drumGrid" style="--cols:16; --rows:3"></div>
-        </details>
       </div>
-
-      <div class="section" id="code">
-        <div class="panel">
-          <strong>Export</strong>
-          <div class="row" style="gap:8px; margin:8px 0">
-            <button class="btn" id="exportJSON">↥ Export JSON</button>
-            <button class="btn" id="exportCode">↥ Export as Code</button>
-            <button class="btn" id="copyOut">Copy</button>
-            <button class="btn" id="saveFile">Save file</button>
-          </div>
-          <textarea id="out" class="code" placeholder="Здесь появится JSON или JS-сниппет…"></textarea>
-        </div>
-        <div class="panel">
-          <strong>Import</strong>
-          <div class="row" style="gap:8px; margin:8px 0">
-            <button class="btn" id="importPlay">Play imported</button>
-            <button class="btn" id="loadIntoEditor">Load into editor</button>
-            <button class="btn" id="pasteBtn">📋 Paste из буфера</button>
-            <button class="btn" id="loadFile">Load file</button>
-          </div>
-          <textarea id="inp" class="code" placeholder="Вставь JSON SONG_DATA или ранее сгенерированный JS-сниппет…"></textarea>
-        </div>
-      </div>
-
-      <div class="section" id="info">
-        <div class="panel">
-          <strong>Как пользоваться</strong>
-          <ul style="margin:8px 0 0 18px; padding:0; line-height:1.35">
-            <li>Тап по клетке ставит/убирает ноту. **Одна нота в колонке** (моно). Верхняя строка — самый <b>высокий</b> звук.</li>
-            <li>Прокрутка страницы не ставит ноты — сначала закончите скролл, потом тапайте.</li>
-            <li>Lead/Bass редактируются здесь же, барабаны ниже. Play/Stop — сверху.</li>
-            <li>Во вкладке <b>Import / Export</b> можно сохранить JSON/код или вставить готовый и сразу проиграть.</li>
-            <li>Если у устройства включено «уменьшение движения» — анимации минимальны.</li>
-          </ul>
-        </div>
-        <div class="panel">
-          <strong>Навигация</strong>
-          <p style="margin:6px 0 0">Вкладки вверху: <b>Melody & Bass</b> — редактирование; <b>Import / Export</b> — код; <b>Info</b> — помощь.  
-          Все элементы крупные и рассчитаны на палец.</p>
-        </div>
-      </div>
-      <div class="scanlines"></div>
     </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="control-card">
+        <h2 data-i18n="musicBox.tipTitle">Quick Tips</h2>
+        <p data-i18n="musicBox.tipText">Tap notes into the grid, tweak the sliders, and export your track when it feels right.</p>
+      </div>
+    </aside>
+    <footer class="game-shell__footer" data-shell-slot="footer">
+      <span class="hint" data-i18n="musicBox.hint">Best experienced with headphones • Works offline</span>
+    </footer>
   </div>
-</div>
 
 <div id="msg" aria-live="polite"></div>
 <script type="module">
@@ -236,6 +268,9 @@ import './src/ui.js';
 import './src/audio.js';
 import './src/icons.js';
 import './src/i18n.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
+
+const shell = initGameShell();
 
 /* ======= State & helpers ======= */
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -513,8 +548,7 @@ $('loadFile').onclick=()=>{
 /* ======= Small init ======= */
 $('bpmv').textContent=state.bpm;
 $('steps').value=state.steps;
+shell.refresh();
 </script>
-</body>
-</html>
 </body>
 </html>

@@ -14,11 +14,16 @@
     --muted:var(--dim);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{
-    margin:0;color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-    padding:16px;box-sizing:border-box;height:100svh;overflow:hidden;
-    background:var(--bg0);
+  body{margin:0;}
+  .anim-stage{
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    box-sizing:border-box;
+    width:100%;
+    height:100%;
   }
   .frame{width:min(1100px,100%);height:100%;}
   .content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;gap:10px;}
@@ -57,8 +62,6 @@
   textarea.code{font-family:ui-monospace,monospace}
   .codeBox{background:#0c0f12;color:#cbe4ff;border:2px solid #2a405b;border-radius:12px;padding:10px;overflow:auto;max-height:220px;font-family:ui-monospace,monospace}
 
-  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--amber);border:2px solid var(--bezel);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink);}
-
   @media (max-width:600px){
     .workspace{grid-template-columns:1fr;grid-template-rows:1fr auto}
     .tools{max-height:50svh;overflow:auto}
@@ -70,82 +73,107 @@
   }
 </style>
 </head>
-<body class="theme-blue">
-  <div class="cabinet">
-    <div class="frame">
-      <div class="inner">
-        <div class="content">
-          <canvas class="icon" data-icon="anim" aria-hidden="true"></canvas>
-          <div class="tabs">
-            <button class="tab active" data-tab="edit">🎨 Редактор</button>
-            <button class="tab" data-tab="io">📤 Импорт · Экспорт</button>
-          </div>
-          <section id="tab-edit" class="workspace">
-            <div class="panel screen">
-              <div class="canvasWrap">
-                <div id="square" class="square">
-                  <canvas id="paint" tabindex="0" aria-label="Поле рисования"></canvas>
+<body class="game-surface">
+  <div class="game-shell" data-game-shell data-theme="violet">
+    <header class="game-shell__header" data-shell-slot="header">
+      <div class="game-shell__identity">
+        <canvas class="icon" data-icon="anim" aria-hidden="true"></canvas>
+        <h1 data-i18n="pixelAnimator">Pixel Animator</h1>
+      </div>
+    </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="pixelAnimator"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="animator.tagline">Frame-by-frame pixel art studio</p>
+        <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="animator.tipDetail">Use onion skin, mirror strokes, and the timeline thumbnails to speed up animation.</p>
+      </div>
+    </section>
+    <div class="game-shell__body" data-shell-slot="body">
+      <div class="game-shell__viewport" data-shell-slot="viewport">
+        <div class="anim-stage">
+          <div class="frame">
+            <div class="content">
+              <div class="tabs">
+                <button class="tab active" data-tab="edit">🎨 Редактор</button>
+                <button class="tab" data-tab="io">📤 Импорт · Экспорт</button>
+              </div>
+              <section id="tab-edit" class="workspace">
+                <div class="panel screen">
+                  <div class="canvasWrap">
+                    <div id="square" class="square">
+                      <canvas id="paint" tabindex="0" aria-label="Поле рисования"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="tools">
+              <div class="panel">
+                <div class="row" style="justify-content:space-between">
+                  <div class="row">
+                    <button class="pill tool" id="tool-pen" title="Кисть"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='5' width='8' height='3' fill='%23b97a56'/><rect x='6' y='3' width='2' height='2' fill='%23ccc'/><rect x='6' y='1' width='2' height='2' fill='%23000'/></svg>" width="16" height="16" alt="Кисть"></button>
+                    <button class="pill tool" id="tool-erase" title="Ластик"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='1' y='2' width='6' height='4' fill='%23f99'/><rect x='1' y='2' width='3' height='4' fill='%23fcc'/></svg>" width="16" height="16" alt="Ластик"></button>
+                    <button class="pill tool" id="tool-pick" title="Пипетка"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='6' width='2' height='2' fill='%23000'/><rect x='1' y='5' width='2' height='2' fill='%23999'/><rect x='2' y='3' width='2' height='2' fill='%23999'/><rect x='3' y='2' width='2' height='2' fill='%23999'/><rect x='4' y='0' width='4' height='2' fill='%23f0f'/><rect x='5' y='2' width='3' height='2' fill='%23f0f'/><rect x='6' y='4' width='2' height='2' fill='%23f0f'/></svg>" width="16" height="16" alt="Пипетка"></button>
+                  </div>
+                  <div class="row">
+                    <label title="Кадры в секунду">FPS</label>
+                    <pixel-range title="Скорость анимации"><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
+                    <button class="pill tool" id="play" title="Воспроизвести">▶️</button>
+                    <button class="pill tool" id="stop" title="Остановить">⏹</button>
+                    <label class="row" style="gap:6px" title="Показывать предыдущий кадр"><input id="onion" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='1' fill='%236c0'/><rect x='2' y='1' width='4' height='2' fill='%23d6a'/><rect x='1' y='2' width='6' height='3' fill='%23f9c'/><rect x='2' y='4' width='4' height='3' fill='%23d6a'/></svg>" width="16" height="16" alt="Onion"></label>
+                    <label class="row" style="gap:6px" title="Зеркальное рисование"><input id="mirror" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='8' fill='%23bbb'/><rect x='0' y='2' width='3' height='4' fill='%236cf'/><rect x='5' y='2' width='3' height='4' fill='%236cf'/></svg>" width="16" height="16" alt="Mirror"></label>
+                  </div>
+                </div>
+                <div class="toolbar" id="palette" style="margin-top:8px"></div>
+                <div class="row" style="justify-content:space-between; margin-top:6px">
+                  <div class="row">
+                    <button class="btn tool" id="add-frame">➕ Кадр</button>
+                    <button class="btn tool" id="dup-frame">⧉ Дубликат</button>
+                    <button class="btn tool" id="del-frame" data-danger>🗑 Удалить</button>
+                    <button class="btn tool" id="undo">↶ Undo</button>
+                  </div>
+                  <div class="muted">Текущий: <span id="curIndex">1</span>/<span id="totalFrames">1</span></div>
                 </div>
               </div>
-            </div>
-            <div class="tools">
-          <div class="panel">
-            <div class="row" style="justify-content:space-between">
-              <div class="row">
-                <button class="pill tool" id="tool-pen" title="Кисть"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='5' width='8' height='3' fill='%23b97a56'/><rect x='6' y='3' width='2' height='2' fill='%23ccc'/><rect x='6' y='1' width='2' height='2' fill='%23000'/></svg>" width="16" height="16" alt="Кисть"></button>
-                <button class="pill tool" id="tool-erase" title="Ластик"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='1' y='2' width='6' height='4' fill='%23f99'/><rect x='1' y='2' width='3' height='4' fill='%23fcc'/></svg>" width="16" height="16" alt="Ластик"></button>
-                <button class="pill tool" id="tool-pick" title="Пипетка"><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='0' y='6' width='2' height='2' fill='%23000'/><rect x='1' y='5' width='2' height='2' fill='%23999'/><rect x='2' y='3' width='2' height='2' fill='%23999'/><rect x='3' y='2' width='2' height='2' fill='%23999'/><rect x='4' y='0' width='4' height='2' fill='%23f0f'/><rect x='5' y='2' width='3' height='2' fill='%23f0f'/><rect x='6' y='4' width='2' height='2' fill='%23f0f'/></svg>" width="16" height="16" alt="Пипетка"></button>
-              </div>
-              <div class="row">
-                <label title="Кадры в секунду">FPS</label>
-                <pixel-range title="Скорость анимации"><input id="fps" type="range" min="1" max="24" value="6" /></pixel-range>
-                <button class="pill tool" id="play" title="Воспроизвести">▶️</button>
-                <button class="pill tool" id="stop" title="Остановить">⏹</button>
-                <label class="row" style="gap:6px" title="Показывать предыдущий кадр"><input id="onion" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='1' fill='%236c0'/><rect x='2' y='1' width='4' height='2' fill='%23d6a'/><rect x='1' y='2' width='6' height='3' fill='%23f9c'/><rect x='2' y='4' width='4' height='3' fill='%23d6a'/></svg>" width="16" height="16" alt="Onion"></label>
-                <label class="row" style="gap:6px" title="Зеркальное рисование"><input id="mirror" type="checkbox"/><img style="image-rendering:pixelated" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><rect x='3' y='0' width='2' height='8' fill='%23bbb'/><rect x='0' y='2' width='3' height='4' fill='%236cf'/><rect x='5' y='2' width='3' height='4' fill='%236cf'/></svg>" width="16" height="16" alt="Mirror"></label>
-              </div>
-            </div>
-            <div class="toolbar" id="palette" style="margin-top:8px"></div>
-            <div class="row" style="justify-content:space-between; margin-top:6px">
-              <div class="row">
-                <button class="btn tool" id="add-frame">➕ Кадр</button>
-                <button class="btn tool" id="dup-frame">⧉ Дубликат</button>
-                <button class="btn tool" id="del-frame" data-danger>🗑 Удалить</button>
-                <button class="btn tool" id="undo">↶ Undo</button>
-              </div>
-              <div class="muted">Текущий: <span id="curIndex">1</span>/<span id="totalFrames">1</span></div>
+              <details class="panel accordion" open>
+                <summary style="display:block;margin-bottom:6px">Кадры</summary>
+                <div id="timeline" class="timeline"></div>
+              </details>
             </div>
           </div>
-          <details class="panel accordion" open>
-            <summary style="display:block;margin-bottom:6px">Кадры</summary>
-            <div id="timeline" class="timeline"></div>
-          </details>
+          <section id="tab-io" class="panel" style="display:none">
+            <div class="row" style="justify-content:space-between; flex-wrap:wrap">
+              <div class="row" style="gap:8px">
+                <button class="btn tool" id="btn-export">Экспорт JSON</button>
+                <button class="btn tool" id="btn-import">Импорт JSON</button>
+                <button class="btn tool" id="btn-copy">Скопировать</button>
+                <button class="btn tool" id="btn-save">Сохранить</button>
+                <button class="btn tool" id="btn-download">Скачать файл</button>
+                <button class="btn tool" id="btn-upload">Загрузить файл</button>
+                <button class="btn tool" id="btn-png" title="Сохранить как PNG">PNG</button>
+                <button class="btn tool" id="btn-gif" title="Сохранить как GIF">GIF</button>
+              </div>
+              <div class="row">
+                <button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
+                <button class="btn tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</button>
+              </div>
+            </div>
+            <textarea id="io" class="code"></textarea>
+            <p class="muted">Формат: { grid:16, palette:["#RRGGBB",...], frames:[ [индексы палитры длиной 256], ... ], fps:n }</p>
+            <div id="embed" class="codeBox" style="display:none"></div>
+          </section>
         </div>
-      </section>
-      <section id="tab-io" class="panel" style="display:none">
-        <div class="row" style="justify-content:space-between; flex-wrap:wrap">
-          <div class="row" style="gap:8px">
-            <button class="btn tool" id="btn-export">Экспорт JSON</button>
-            <button class="btn tool" id="btn-import">Импорт JSON</button>
-            <button class="btn tool" id="btn-copy">Скопировать</button>
-            <button class="btn tool" id="btn-save">Сохранить</button>
-            <button class="btn tool" id="btn-download">Скачать файл</button>
-            <button class="btn tool" id="btn-upload">Загрузить файл</button>
-            <button class="btn tool" id="btn-png" title="Сохранить как PNG">PNG</button>
-            <button class="btn tool" id="btn-gif" title="Сохранить как GIF">GIF</button>
-          </div>
-          <div class="row">
-            <button class="btn tool" id="btn-gencode">Сгенерировать встраиваемый код</button>
-            <button class="btn tool" id="btn-record" title="Экспорт WebM (если поддерживается)">🎬 WebM</button>
+            <div class="scanlines"></div>
           </div>
         </div>
-        <textarea id="io" class="code"></textarea>
-        <p class="muted">Формат: { grid:16, palette:["#RRGGBB",...], frames:[ [индексы палитры длиной 256], ... ], fps:n }</p>
-        <div id="embed" class="codeBox" style="display:none"></div>
-      </section>
+        <div class="game-shell__overlay">
+          <div id="toast" class="toast" aria-live="polite"></div>
+        </div>
     </div>
-        <div class="scanlines"></div>
-      </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
       <div id="pad" class="pad pad-center">
         <div class="dpad" aria-hidden="true">
           <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
@@ -155,14 +183,22 @@
           <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
         </div>
       </div>
-    </div>
+      <div class="control-card">
+        <h2 data-i18n="animator.tipTitle">Workflow</h2>
+        <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
+      </div>
+    </aside>
+    <footer class="game-shell__footer" data-shell-slot="footer">
+      <span class="hint" data-i18n="animator.hint">Shortcuts: ⌘/Ctrl+Z to undo, Shift+drag to draw straight lines</span>
+    </footer>
   </div>
-
-  <div id="toast" class="toast"></div>
 <script type="module">
 import './src/ui.js';
 import './src/icons.js';
 import './src/i18n.js';
+import { initGameShell } from './src/core/ui/game-shell.js';
+
+const shell = initGameShell();
 (function(){
   const GRID = 16;
   const LEN = GRID*GRID;
@@ -391,6 +427,7 @@ import './src/i18n.js';
     tabIO.style.display   = showEdit?'none':'block';
     fitSquare();
   }));
+  shell.refresh();
 })();
 </script>
 </body>
