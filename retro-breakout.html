@@ -7,57 +7,47 @@
   <title data-i18n="retroBreakout"></title>
   <link rel="stylesheet" href="styles/shell.css">
   <link rel="stylesheet" href="styles/game.css">
-  <style>
-  h1{color:var(--accent);}
-    #gameCanvas{
-      background:var(--bg2);
-      border:4px solid var(--accent);
-      box-shadow:0 10px 20px rgba(0,0,0,0.2);
-      image-rendering:pixelated;
-      width:min(70svh,96vw);
-      height:auto;
-      aspect-ratio:3/4;
-    }
-    #score{margin:0;font-size:14px;}
-
-    .toast{
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      background:var(--pastel-pink);
-      border:1px solid var(--accent);
-      border-radius:8px;
-      padding:12px 16px;
-      font-size:14px;
-      color:var(--ink);
-    }
-
-  </style>
 </head>
-  <body class="theme-blue">
-  <canvas class="icon" data-icon="breakout" aria-hidden="true"></canvas>
-  <h1 data-i18n="retroBreakout"></h1>
-  <div class="play">
-    <div class="hud">
-      <div id="score" class="counter"></div>
-      <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
-      <div id="lives" class="counter"></div>
-    </div>
-    <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-    <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
-    <div id="toast" class="toast" aria-live="polite"></div>
-    <div id="pad" class="pad pad-center">
-      <div class="dpad" aria-hidden="true">
-        <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-        <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-        <div class="k" style="grid-area:mid;opacity:.35"></div>
-        <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-        <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+  <body class="game-surface">
+    <div class="game-shell" data-game-shell data-theme="ocean" data-aspect="3/4">
+      <header class="game-shell__header" data-shell-slot="header">
+        <div class="game-shell__identity">
+          <canvas class="icon" data-icon="breakout" aria-hidden="true"></canvas>
+          <h1 data-i18n="retroBreakout"></h1>
+        </div>
+        <div class="game-shell__hud" data-shell-slot="hud">
+          <div id="score" class="counter"></div>
+          <div id="lives" class="counter"></div>
+        </div>
+      </header>
+      <div class="game-shell__body" data-shell-slot="body">
+        <div class="game-shell__viewport" data-shell-slot="viewport">
+          <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
+          <div class="game-shell__overlay">
+            <div id="toast" class="toast" aria-live="polite"></div>
+          </div>
+        </div>
+        <aside class="game-shell__controls" data-shell-slot="controls">
+          <div class="controls-grid">
+            <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+            <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+          </div>
+          <div id="pad" class="pad pad-center">
+            <div class="dpad" aria-hidden="true">
+              <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+              <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+              <div class="k" style="grid-area:mid;opacity:.35"></div>
+              <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+              <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+            </div>
+            <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+          </div>
+        </aside>
       </div>
-      <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+      <footer class="game-shell__footer" data-shell-slot="footer">
+        <span class="hint" data-i18n="shell.footerHint">Keep the ball alive and chase the high score!</span>
+      </footer>
     </div>
-  </div>
   <script type="module">
     import './src/audio.js';
     import './src/ui.js';

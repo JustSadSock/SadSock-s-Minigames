@@ -18,7 +18,17 @@
     --tab-bg:var(--tile-bg);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:transparent;color:var(--ink);font-family:'Press Start 2P',ui-monospace,monospace}
+  body{margin:0;}
+  .avatar-stage{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    color:var(--ink);
+    font-family:'Press Start 2P',ui-monospace,monospace;
+  }
   input,select,textarea{font:inherit}
   .editor{
     width:min(440px,100%);padding:8px;background:linear-gradient(var(--bg2),var(--bg1));
@@ -65,18 +75,6 @@
   @media (max-height:600px){
     .stage{max-width:120px}
   }
-  .toast{
-    position:fixed;
-    top:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:var(--pastel-pink);
-    border:2px solid var(--accent);
-    border-radius:8px;
-    padding:8px 12px;
-    font-size:14px;
-    color:var(--ink);
-  }
 </style>
 <script type="module">
 import './src/pixel-widgets.js';
@@ -84,35 +82,56 @@ import './src/ui.js';
 import './src/i18n.js';
 </script>
 </head>
-<body>
-<div class="cabinet">
-  <div class="frame">
-    <div class="inner" style="display:flex;align-items:center;justify-content:center;">
-      <div class="editor">
-  <div class="stage">
-    <canvas id="cv" tabindex="0" aria-label="Редактор аватара"></canvas>
-    <div class="gesture" id="gesture"></div>
-  </div>
-
-  <div class="panels">
-    <nav class="tabs" id="tabs"></nav>
-    <div id="panels"></div>
-  </div>
-  <div class="row" style="margin-top:8px; gap:8px;">
-    <button id="previewBtn" class="btn" data-i18n="preview" title="Preview">▶ Preview</button>
-    <button id="randomBtn" class="btn" data-i18n="random" title="Random">Random</button>
-    <pixel-input style="flex:1;"><input id="nick" type="text" placeholder="Ник"></pixel-input>
-    <button id="saveBtn" class="btn" data-i18n="ok">OK</button>
-    <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
-    <button id="exportJson" class="btn" data-i18n="exportJson" title="Export JSON">Export JSON</button>
-    <button id="importJson" class="btn" data-i18n="importJson" title="Import JSON">Import JSON</button>
-  </div>
+<body class="game-surface">
+  <div class="game-shell" data-game-shell data-theme="ember">
+    <header class="game-shell__header" data-shell-slot="header">
+      <div class="game-shell__identity">
+        <canvas class="icon" data-icon="avatar" aria-hidden="true"></canvas>
+        <h1 data-i18n="avatarEditor">Avatar Editor</h1>
       </div>
-    </div>
-  </div>
-</div>
+      <div class="game-shell__hud" data-shell-slot="hud">
+        <div class="counter" data-i18n="avatar.tagline">Craft your retro portrait pixel-by-pixel</div>
+      </div>
+    </header>
+    <div class="game-shell__body" data-shell-slot="body">
+      <div class="game-shell__viewport" data-shell-slot="viewport">
+        <div class="avatar-stage">
+          <div class="editor">
+            <div class="stage">
+              <canvas id="cv" tabindex="0" aria-label="Редактор аватара"></canvas>
+              <div class="gesture" id="gesture"></div>
+            </div>
 
-<div id="toast" class="toast"></div>
+            <div class="panels">
+              <nav class="tabs" id="tabs"></nav>
+              <div id="panels"></div>
+            </div>
+            <div class="row" style="margin-top:8px; gap:8px;">
+              <button id="previewBtn" class="btn" data-i18n="preview" title="Preview">▶ Preview</button>
+              <button id="randomBtn" class="btn" data-i18n="random" title="Random">Random</button>
+              <pixel-input style="flex:1;"><input id="nick" type="text" placeholder="Ник"></pixel-input>
+              <button id="saveBtn" class="btn" data-i18n="ok">OK</button>
+              <button id="dlBtn" class="btn" title="Скачать PNG">⬇️</button>
+              <button id="exportJson" class="btn" data-i18n="exportJson" title="Export JSON">Export JSON</button>
+              <button id="importJson" class="btn" data-i18n="importJson" title="Import JSON">Import JSON</button>
+            </div>
+          </div>
+        </div>
+        <div class="game-shell__overlay">
+          <div id="toast" class="toast" aria-live="polite"></div>
+        </div>
+      </div>
+      <aside class="game-shell__controls" data-shell-slot="controls">
+        <div class="control-card">
+          <h2 data-i18n="avatar.tipTitle">Tips</h2>
+          <p data-i18n="avatar.tipText">Use the tabs to swap features, tweak colors, and export PNG or JSON for your friends.</p>
+        </div>
+      </aside>
+    </div>
+    <footer class="game-shell__footer" data-shell-slot="footer">
+      <span class="hint" data-i18n="avatar.hint">Controls: drag to paint, tap Random for inspiration</span>
+    </footer>
+  </div>
 
 <script type="module">
 import { initGameShell } from './src/core/ui/game-shell.js';
