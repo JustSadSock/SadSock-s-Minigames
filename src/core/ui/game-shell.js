@@ -104,45 +104,150 @@ function initShell(container, options = {}) {
 
   const headerSlot = collectSlot(root, 'header');
   const hudSlot = collectSlot(root, 'hud');
-  const bodySlot = collectSlot(root, 'body');
-  const viewportSlot = collectSlot(root, 'viewport') || root.querySelector('[data-shell-canvas]')?.parentElement;
+  let bodySlot = collectSlot(root, 'body');
+  const initialViewportSlot = collectSlot(root, 'viewport') || root.querySelector('[data-shell-canvas]')?.parentElement;
   const sidebarSlot = collectSlot(root, 'sidebar');
   const controlsSlot = collectSlot(root, 'controls');
   const footerSlot = collectSlot(root, 'footer');
 
   if (headerSlot) headerSlot.classList.add('game-shell__header');
-  if (hudSlot) hudSlot.classList.add('game-shell__hud');
 
   if (bodySlot) {
     bodySlot.classList.add('game-shell__body');
-  } else {
-    const createdBody = document.createElement('div');
-    createdBody.className = 'game-shell__body';
-    const viewportCandidate = viewportSlot ?? collectSlot(root, 'viewport');
-    if (sidebarSlot) {
-      createdBody.appendChild(sidebarSlot);
-    }
-    if (viewportCandidate) {
-      createdBody.appendChild(viewportCandidate);
-    }
-    if (controlsSlot) {
-      createdBody.appendChild(controlsSlot);
-    }
-    root.insertBefore(createdBody, footerSlot ?? null);
   }
 
-  const viewport = collectSlot(root, 'viewport') || root.querySelector('[data-shell-viewport]');
-  if (viewport) viewport.classList.add('game-shell__viewport');
+  let viewport = collectSlot(root, 'viewport') || root.querySelector('[data-shell-viewport]') || initialViewportSlot;
+  if (viewport) {
+    viewport.classList.add('game-shell__viewport');
+    if (bodySlot && viewport.parentElement !== bodySlot) {
+      bodySlot.appendChild(viewport);
+    }
+  }
 
-  if (sidebarSlot) sidebarSlot.classList.add('game-shell__side');
-  const controls = collectSlot(root, 'controls');
-  if (controls) controls.classList.add('game-shell__controls');
-
-  if (footerSlot) footerSlot.classList.add('game-shell__footer');
+  if (!bodySlot) {
+    bodySlot = document.createElement('div');
+    bodySlot.className = 'game-shell__body';
+    root.insertBefore(bodySlot, footerSlot ?? null);
+    if (viewport) {
+      bodySlot.appendChild(viewport);
+    }
+  }
 
   const canvas = root.querySelector('[data-shell-canvas]') || viewport?.querySelector('canvas');
   const aspectRatio = options.aspectRatio || parseAspect(root.dataset.aspect, undefined);
   const resizer = createResizeController(viewport, canvas, aspectRatio);
+
+  const actions = ensureActionsContainer(headerSlot);
+  const drawers = new Map();
+  const toggles = new Map();
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'game-shell__drawer-backdrop';
+  root.appendChild(backdrop);
+
+  let activeDrawer = null;
+
+  function syncDrawerState() {
+    const hasActive = Boolean(activeDrawer && drawers.has(activeDrawer));
+    drawers.forEach((drawer, key) => {
+      const open = hasActive && key === activeDrawer;
+      drawer.classList.toggle('is-open', open);
+      if (open) {
+        drawer.removeAttribute('aria-hidden');
+        drawer.focus({ preventScroll: true });
+      } else {
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+    });
+    toggles.forEach((btn, key) => {
+      const open = hasActive && key === activeDrawer;
+      btn.classList.toggle('is-active', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    root.classList.toggle('drawer-open', hasActive);
+    if (hasActive) {
+      root.dataset.drawer = activeDrawer;
+      backdrop.classList.add('is-active');
+      document.body.classList.add('shell-drawer-open');
+    } else {
+      delete root.dataset.drawer;
+      backdrop.classList.remove('is-active');
+      document.body.classList.remove('shell-drawer-open');
+    }
+  }
+
+  function closeDrawer() {
+    if (!activeDrawer) return;
+    activeDrawer = null;
+    syncDrawerState();
+  }
+
+  function openDrawer(name) {
+    if (!drawers.has(name)) return;
+    if (activeDrawer === name) return;
+    activeDrawer = name;
+    syncDrawerState();
+  }
+
+  function toggleDrawer(name) {
+    if (activeDrawer === name) {
+      closeDrawer();
+    } else {
+      openDrawer(name);
+    }
+  }
+
+  const onBackdropClick = () => closeDrawer();
+  backdrop.addEventListener('click', onBackdropClick);
+
+  const keyListener = event => {
+    if (event.key === 'Escape') {
+      closeDrawer();
+    }
+  };
+  window.addEventListener('keydown', keyListener);
+
+  const slotMap = new Map([
+    ['hud', hudSlot],
+    ['sidebar', sidebarSlot],
+    ['controls', controlsSlot]
+  ]);
+
+  DRAWER_PRESETS.forEach(preset => {
+    const slot = slotMap.get(preset.slot);
+    if (!slot) return;
+    assignDrawerMeta(slot, preset.name);
+    prependCloseButton(slot, preset.name);
+    root.appendChild(slot);
+    drawers.set(preset.name, slot);
+
+    if (actions) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'pill shell-toggle';
+      button.dataset.shellToggle = preset.name;
+      button.setAttribute('aria-haspopup', 'dialog');
+      button.setAttribute('aria-controls', slot.id);
+      button.textContent = `${preset.icon} ${preset.fallback}`;
+      if (preset.label) {
+        button.setAttribute('data-i18n', preset.label);
+      }
+      button.addEventListener('click', () => toggleDrawer(preset.name));
+      actions.appendChild(button);
+      toggles.set(preset.name, button);
+    }
+
+    slot.addEventListener('click', event => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.hasAttribute('data-shell-close')) {
+        closeDrawer();
+      }
+    });
+  });
+
+  syncDrawerState();
+
+  if (footerSlot) footerSlot.classList.add('game-shell__footer');
 
   return {
     root,
@@ -151,15 +256,20 @@ function initShell(container, options = {}) {
     hud: hudSlot,
     viewport,
     sidebar: sidebarSlot,
-    controls,
+    controls: controlsSlot,
     footer: footerSlot,
     refresh() {
       resizer.refresh();
     },
     destroy() {
+      closeDrawer();
+      window.removeEventListener('keydown', keyListener);
+      backdrop.removeEventListener('click', onBackdropClick);
       resizer.disconnect();
       root.dataset.shellReady = 'false';
-    }
+    },
+    openDrawer,
+    closeDrawer
   };
 }
 
@@ -196,11 +306,71 @@ function markDataCanvas(canvas) {
 
 const OVERLAY_SELECTORS = ['#toast', '.toast', '[data-overlay]', '.start-screen', '#startScreen', '.modal', '.dialog', '.overlay', '.overlay-layer'];
 const CONTROL_SELECTORS = ['#startBtn', '.start-btn', '.start-button', '.control-bar', '.controls', '.actions'];
+const DRAWER_PRESETS = [
+  {
+    name: 'stats',
+    slot: 'hud',
+    icon: '🏆',
+    label: 'shell.toggleStats',
+    fallback: 'Stats'
+  },
+  {
+    name: 'info',
+    slot: 'sidebar',
+    icon: 'ℹ️',
+    label: 'shell.toggleInfo',
+    fallback: 'Info'
+  },
+  {
+    name: 'controls',
+    slot: 'controls',
+    icon: '🎮',
+    label: 'shell.toggleControls',
+    fallback: 'Controls'
+  }
+];
 
 function createElement(tag, className) {
   const el = document.createElement(tag);
   if (className) el.className = className;
   return el;
+}
+
+function ensureActionsContainer(header) {
+  if (!header) return null;
+  let actions = header.querySelector('.game-shell__actions');
+  if (!actions) {
+    actions = document.createElement('div');
+    actions.className = 'game-shell__actions';
+    header.appendChild(actions);
+  }
+  return actions;
+}
+
+function assignDrawerMeta(slot, name) {
+  if (!slot) return null;
+  slot.classList.add('game-shell__drawer');
+  slot.classList.add('game-shell__drawer-content');
+  slot.classList.remove('game-shell__side', 'game-shell__controls', 'game-shell__hud');
+  slot.dataset.shellDrawer = name;
+  slot.setAttribute('aria-hidden', 'true');
+  if (!slot.hasAttribute('tabindex')) {
+    slot.setAttribute('tabindex', '-1');
+  }
+  slot.id = slot.id || `shell-drawer-${name}`;
+  return slot;
+}
+
+function prependCloseButton(slot, name) {
+  if (!slot) return;
+  if (slot.querySelector('[data-shell-close]')) return;
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'pill shell-close';
+  close.dataset.shellClose = name;
+  close.setAttribute('data-i18n', 'close');
+  close.textContent = 'Close';
+  slot.insertBefore(close, slot.firstChild);
 }
 
 function bootstrapFromStructure(structure) {
@@ -215,6 +385,7 @@ function bootstrapFromStructure(structure) {
   body.appendChild(shell);
 
   const header = createElement('header', 'game-shell__header');
+  header.dataset.shellSlot = 'header';
   const identity = createElement('div', 'game-shell__identity');
   if (icon) identity.appendChild(icon);
   if (title) identity.appendChild(title);
@@ -231,15 +402,18 @@ function bootstrapFromStructure(structure) {
   let hud = null;
   if (hudSource && hudSource.childNodes.length) {
     hud = createElement('section', 'game-shell__hud');
+    hud.dataset.shellSlot = 'hud';
     moveChildren(hudSource, hud, node => node.nodeType === Node.ELEMENT_NODE);
     shell.appendChild(hud);
     hudSource.remove();
   }
 
   const bodyWrap = createElement('div', 'game-shell__body');
+  bodyWrap.dataset.shellSlot = 'body';
   shell.appendChild(bodyWrap);
 
   const viewport = createElement('div', 'game-shell__viewport');
+  viewport.dataset.shellSlot = 'viewport';
   bodyWrap.appendChild(viewport);
 
   const overlay = createElement('div', 'game-shell__overlay');
@@ -267,7 +441,8 @@ function bootstrapFromStructure(structure) {
   });
 
   const controls = createElement('aside', 'game-shell__controls');
-  bodyWrap.appendChild(controls);
+  controls.dataset.shellSlot = 'controls';
+  shell.appendChild(controls);
 
   CONTROL_SELECTORS.forEach(selector => {
     toArray(container.querySelectorAll(selector)).forEach(el => {
@@ -294,6 +469,7 @@ function bootstrapFromStructure(structure) {
   }
 
   const footer = createElement('footer', 'game-shell__footer');
+  footer.dataset.shellSlot = 'footer';
   const hint = container.querySelector('.hint');
   if (hint) {
     footer.appendChild(hint);

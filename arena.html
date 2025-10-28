@@ -57,21 +57,21 @@
         <h1 data-i18n="arena">Arena</h1>
       </div>
     </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="arena"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="arena.tagline">Program your squad and clash on a 5×5 grid</p>
+        <p data-i18n="rulesIntro"></p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="tutorial1"></p>
+        <p data-i18n="tutorial2"></p>
+        <p data-i18n="tutorial3"></p>
+      </div>
+    </section>
     <div class="game-shell__body" data-shell-slot="body">
-      <aside class="game-shell__side" data-shell-slot="sidebar">
-        <h2 class="panel-title" data-i18n="arena"></h2>
-        <div class="panel-card">
-          <strong data-i18n="rules"></strong>
-          <p data-i18n="arena.tagline">Program your squad and clash on a 5×5 grid</p>
-          <p data-i18n="rulesIntro"></p>
-        </div>
-        <div class="panel-card">
-          <strong data-i18n="tutorial"></strong>
-          <p data-i18n="tutorial1"></p>
-          <p data-i18n="tutorial2"></p>
-          <p data-i18n="tutorial3"></p>
-        </div>
-      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="arena-stage">
           <div id="modeSelect" class="screen">
@@ -172,14 +172,13 @@
             <button id="msgClose" data-i18n="close">Close</button>
           </div>
         </div>
-      </div>
-      <aside class="game-shell__controls" data-shell-slot="controls">
-        <div class="control-card">
-          <h2 data-i18n="arena.tipTitle">How to Play</h2>
-          <p data-i18n="arena.tipText">Queue five commands, unleash attacks, and shield wisely to win the round.</p>
-        </div>
-      </aside>
     </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="control-card">
+        <h2 data-i18n="arena.tipTitle">How to Play</h2>
+        <p data-i18n="arena.tipText">Queue five commands, unleash attacks, and shield wisely to win the round.</p>
+      </div>
+    </aside>
     <footer class="game-shell__footer" data-shell-slot="footer">
       <span class="hint" data-i18n="arena.hint">Use arrows + ⚔/🛡 to program your turn</span>
     </footer>

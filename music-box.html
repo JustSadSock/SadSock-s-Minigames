@@ -118,19 +118,19 @@
         <h1 data-i18n="musicBox">Music Box</h1>
       </div>
     </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="musicBox"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="musicBox.tagline">Compose 8-bit loops anywhere</p>
+        <p data-i18n="musicBoxDesc"></p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="musicBox.tip">Tap steps to toggle notes, tweak BPM and scales on the right, then export your groove.</p>
+      </div>
+    </section>
     <div class="game-shell__body" data-shell-slot="body">
-      <aside class="game-shell__side" data-shell-slot="sidebar">
-        <h2 class="panel-title" data-i18n="musicBox"></h2>
-        <div class="panel-card">
-          <strong data-i18n="rules"></strong>
-          <p data-i18n="musicBox.tagline">Compose 8-bit loops anywhere</p>
-          <p data-i18n="musicBoxDesc"></p>
-        </div>
-        <div class="panel-card">
-          <strong data-i18n="tutorial"></strong>
-          <p data-i18n="musicBox.tip">Tap steps to toggle notes, tweak BPM and scales on the right, then export your groove.</p>
-        </div>
-      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="frame">
           <div class="inner music-stage">
@@ -250,13 +250,13 @@
           </div>
         </div>
       </div>
-      <aside class="game-shell__controls" data-shell-slot="controls">
-        <div class="control-card">
-          <h2 data-i18n="musicBox.tipTitle">Quick Tips</h2>
-          <p data-i18n="musicBox.tipText">Tap notes into the grid, tweak the sliders, and export your track when it feels right.</p>
-        </div>
-      </aside>
     </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="control-card">
+        <h2 data-i18n="musicBox.tipTitle">Quick Tips</h2>
+        <p data-i18n="musicBox.tipText">Tap notes into the grid, tweak the sliders, and export your track when it feels right.</p>
+      </div>
+    </aside>
     <footer class="game-shell__footer" data-shell-slot="footer">
       <span class="hint" data-i18n="musicBox.hint">Best experienced with headphones • Works offline</span>
     </footer>

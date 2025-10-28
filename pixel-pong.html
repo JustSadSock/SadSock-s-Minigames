@@ -23,22 +23,24 @@
         <h1 data-i18n="pixelPong">Pixel Pong</h1>
       </div>
     </header>
+    <section data-shell-slot="hud">
+      <h2 class="panel-title" data-i18n="score"></h2>
+      <div class="panel-card">
+        <div class="stat" id="score">
+          <span data-score-label data-i18n="score"></span>
+          <strong class="counter" data-score-value>0 : 0</strong>
+          <span class="stat-best" data-score-best></span>
+        </div>
+        <div id="status" class="status-line">—</div>
+      </div>
+    </section>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="rules"></h2>
+      <div class="panel-card">
+        <p data-i18n="pixelPongDesc"></p>
+      </div>
+    </section>
     <div class="game-shell__body" data-shell-slot="body">
-      <aside class="game-shell__side" data-shell-slot="sidebar">
-        <h2 class="panel-title" data-i18n="score"></h2>
-        <div class="panel-card">
-          <div class="stat" id="score">
-            <span data-score-label data-i18n="score"></span>
-            <strong class="counter" data-score-value>0 : 0</strong>
-            <span class="stat-best" data-score-best></span>
-          </div>
-          <div id="status" class="status-line">—</div>
-        </div>
-        <div class="panel-card">
-          <strong data-i18n="rules"></strong>
-          <p data-i18n="pixelPongDesc"></p>
-        </div>
-      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <canvas id="cv" class="bg-stripes" tabindex="0" data-i18n-aria-label="gameField"></canvas>
         <div class="scanlines" aria-hidden="true"></div>
@@ -61,26 +63,26 @@
           </div>
         </div>
       </div>
-      <aside class="game-shell__controls" data-shell-slot="controls">
-        <div class="controls-grid">
-          <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
-          <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-        </div>
-        <div id="pad" class="pad pad-center" aria-hidden="true">
-          <div class="dpad" aria-hidden="true">
-            <div class="k" data-btn="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-            <div class="k" data-btn="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-            <div class="k" style="grid-area:mid;opacity:.35"></div>
-            <div class="k" data-btn="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-            <div class="k" data-btn="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
-          </div>
-          <div class="ab">
-            <div class="k" data-btn="a">A</div>
-            <div class="k" data-btn="b">B</div>
-          </div>
-        </div>
-      </aside>
     </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div class="controls-grid">
+        <button class="pill" id="scoresBtn" data-i18n-aria-label="records">🏆</button>
+        <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+      </div>
+      <div id="pad" class="pad pad-center" aria-hidden="true">
+        <div class="dpad" aria-hidden="true">
+          <div class="k" data-btn="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+          <div class="k" data-btn="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+          <div class="k" style="grid-area:mid;opacity:.35"></div>
+          <div class="k" data-btn="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+          <div class="k" data-btn="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+        </div>
+        <div class="ab">
+          <div class="k" data-btn="a">A</div>
+          <div class="k" data-btn="b">B</div>
+        </div>
+      </div>
+    </aside>
     <footer class="game-shell__footer" data-shell-slot="footer">
       <span class="hint" data-i18n="pong.hint">Mobile arrows • Keyboard: ↑/↓, Space to dash</span>
     </footer>

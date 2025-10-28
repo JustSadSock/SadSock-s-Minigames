@@ -81,19 +81,19 @@
         <h1 data-i18n="pixelAnimator">Pixel Animator</h1>
       </div>
     </header>
+    <section data-shell-slot="sidebar">
+      <h2 class="panel-title" data-i18n="pixelAnimator"></h2>
+      <div class="panel-card">
+        <strong data-i18n="rules"></strong>
+        <p data-i18n="animator.tagline">Frame-by-frame pixel art studio</p>
+        <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
+      </div>
+      <div class="panel-card">
+        <strong data-i18n="tutorial"></strong>
+        <p data-i18n="animator.tipDetail">Use onion skin, mirror strokes, and the timeline thumbnails to speed up animation.</p>
+      </div>
+    </section>
     <div class="game-shell__body" data-shell-slot="body">
-      <aside class="game-shell__side" data-shell-slot="sidebar">
-        <h2 class="panel-title" data-i18n="pixelAnimator"></h2>
-        <div class="panel-card">
-          <strong data-i18n="rules"></strong>
-          <p data-i18n="animator.tagline">Frame-by-frame pixel art studio</p>
-          <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
-        </div>
-        <div class="panel-card">
-          <strong data-i18n="tutorial"></strong>
-          <p data-i18n="animator.tipDetail">Use onion skin, mirror strokes, and the timeline thumbnails to speed up animation.</p>
-        </div>
-      </aside>
       <div class="game-shell__viewport" data-shell-slot="viewport">
         <div class="anim-stage">
           <div class="frame">
@@ -172,23 +172,22 @@
         <div class="game-shell__overlay">
           <div id="toast" class="toast" aria-live="polite"></div>
         </div>
-      </div>
-      <aside class="game-shell__controls" data-shell-slot="controls">
-        <div id="pad" class="pad pad-center">
-          <div class="dpad" aria-hidden="true">
-            <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-            <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-            <div class="k" style="grid-area:mid; opacity:.35"></div>
-            <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-            <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
-          </div>
-        </div>
-        <div class="control-card">
-          <h2 data-i18n="animator.tipTitle">Workflow</h2>
-          <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
-        </div>
-      </aside>
     </div>
+    <aside class="game-shell__controls" data-shell-slot="controls">
+      <div id="pad" class="pad pad-center">
+        <div class="dpad" aria-hidden="true">
+          <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+          <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+          <div class="k" style="grid-area:mid; opacity:.35"></div>
+          <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+          <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+        </div>
+      </div>
+      <div class="control-card">
+        <h2 data-i18n="animator.tipTitle">Workflow</h2>
+        <p data-i18n="animator.tipText">Sketch with the pad or mouse, manage frames, then export GIFs or sprite sheets.</p>
+      </div>
+    </aside>
     <footer class="game-shell__footer" data-shell-slot="footer">
       <span class="hint" data-i18n="animator.hint">Shortcuts: ⌘/Ctrl+Z to undo, Shift+drag to draw straight lines</span>
     </footer>

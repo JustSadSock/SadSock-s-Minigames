@@ -16,45 +16,47 @@
           <h1 data-i18n="dodgeRain"></h1>
         </div>
       </header>
+      <section data-shell-slot="hud">
+        <h2 class="panel-title" data-i18n="score"></h2>
+        <div class="panel-card">
+          <div class="stat" id="score">
+            <span data-score-label data-i18n="score"></span>
+            <strong class="counter" data-score-value>0</strong>
+            <span class="stat-best" data-score-best></span>
+          </div>
+          <div id="status" class="status-line" aria-live="polite"></div>
+        </div>
+      </section>
+      <section data-shell-slot="sidebar">
+        <h2 class="panel-title" data-i18n="rules"></h2>
+        <div class="panel-card">
+          <p data-i18n="dodgeRainDesc"></p>
+        </div>
+      </section>
       <div class="game-shell__body" data-shell-slot="body">
-        <aside class="game-shell__side" data-shell-slot="sidebar">
-          <h2 class="panel-title" data-i18n="score"></h2>
-          <div class="panel-card">
-            <div class="stat" id="score">
-              <span data-score-label data-i18n="score"></span>
-              <strong class="counter" data-score-value>0</strong>
-              <span class="stat-best" data-score-best></span>
-            </div>
-            <div id="status" class="status-line" aria-live="polite"></div>
-          </div>
-          <div class="panel-card">
-            <strong data-i18n="rules"></strong>
-            <p data-i18n="dodgeRainDesc"></p>
-          </div>
-        </aside>
         <div class="game-shell__viewport" data-shell-slot="viewport">
           <canvas id="gameCanvas" tabindex="0" data-i18n-aria-label="gameField"></canvas>
           <div class="game-shell__overlay">
             <div id="toast" class="toast" aria-live="polite"></div>
           </div>
         </div>
-        <aside class="game-shell__controls" data-shell-slot="controls">
-          <div class="controls-grid">
-            <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
-            <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
-          </div>
-          <div id="pad" class="pad pad-center">
-            <div class="dpad" aria-hidden="true">
-              <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
-              <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
-              <div class="k" style="grid-area:mid;opacity:.35"></div>
-              <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
-              <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
-            </div>
-            <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
-          </div>
-        </aside>
       </div>
+      <aside class="game-shell__controls" data-shell-slot="controls">
+        <div class="controls-grid">
+          <button id="scoresBtn" class="pill" data-i18n-aria-label="records">🏆</button>
+          <button id="settingsBtn" class="pill settings-btn" data-i18n-aria-label="settings">⚙️</button>
+        </div>
+        <div id="pad" class="pad pad-center">
+          <div class="dpad" aria-hidden="true">
+            <div class="k" data-dir="up" style="grid-area:up"><canvas data-icon="arrow-up"></canvas></div>
+            <div class="k" data-dir="left" style="grid-area:left"><canvas data-icon="arrow-left"></canvas></div>
+            <div class="k" style="grid-area:mid;opacity:.35"></div>
+            <div class="k" data-dir="right" style="grid-area:right"><canvas data-icon="arrow-right"></canvas></div>
+            <div class="k" data-dir="down" style="grid-area:down"><canvas data-icon="arrow-down"></canvas></div>
+          </div>
+          <button class="btn" id="startBtn" data-i18n="start" data-i18n-aria-label="start"></button>
+        </div>
+      </aside>
       <footer class="game-shell__footer" data-shell-slot="footer">
         <span class="hint" data-i18n="shell.footerHint">Use the pad or keyboard arrows to dodge the rain</span>
       </footer>
